@@ -25,5 +25,5 @@
 	TUIFont *exampleFont1;
 	TUIFont *exampleFont2;
 }
-
+@property (nonatomic, retain) TUIViewController *popoC;
 @end

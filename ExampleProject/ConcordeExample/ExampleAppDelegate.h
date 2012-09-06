@@ -16,11 +16,14 @@
 
 #import <Cocoa/Cocoa.h>
 #import "TUIKit.h"
+#import <AtoZ/AtoZ.h>
+
 
 @interface ExampleAppDelegate : NSObject <NSApplicationDelegate>
 {
   NSWindow    * tableViewWindow;
   NSWindow    * scrollViewWindow;
+//  AtoZ		*z;
 }
 
 -(IBAction)showTableViewExampleWindow:(id)sender;

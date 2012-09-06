@@ -15,12 +15,14 @@
  */
 
 #import "TUIKit.h"
+#import <AtoZ/AtoZ.h>
 
 @interface ExampleTableViewCell : TUITableViewCell
 {
 	TUITextRenderer *textRenderer;
-}
 
+}
+@property (nonatomic, retain) AZFile *file;
 @property (nonatomic, copy) NSAttributedString *attributedString;
 @property (nonatomic, strong) TUIView *textFieldContainer;
 

@@ -20,6 +20,7 @@
 		5ED56688139DC30300031CDF /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 5ED56686139DC30300031CDF /* Credits.rtf */; };
 		5ED5668B139DC30300031CDF /* ExampleAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5ED5668A139DC30300031CDF /* ExampleAppDelegate.m */; };
 		5ED5668E139DC30300031CDF /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5ED5668C139DC30300031CDF /* MainMenu.xib */; };
+		7B495F7B15C07ADE002DC694 /* AtoZ.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B495F7A15C07ADE002DC694 /* AtoZ.framework */; };
 		D01D9CF4146F54BC00147234 /* TwUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D01D9CEB146F54B300147234 /* TwUI.framework */; };
 		D3CE671313C6646B00D47B2D /* ExampleSectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3CE671213C6646B00D47B2D /* ExampleSectionHeaderView.m */; };
 		D3EC0C491432325A003C162C /* ExampleScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EC0C471432325A003C162C /* ExampleScrollView.m */; };
@@ -88,6 +89,7 @@
 		5ED56689139DC30300031CDF /* ExampleAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExampleAppDelegate.h; sourceTree = "<group>"; };
 		5ED5668A139DC30300031CDF /* ExampleAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExampleAppDelegate.m; sourceTree = "<group>"; };
 		5ED5668D139DC30300031CDF /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		7B495F7A15C07ADE002DC694 /* AtoZ.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AtoZ.framework; path = "../../../../../disenchanted 750/DerivedData/AtoZ-hfqteqfcvjfinlajqwkydsqyzpiz/Build/Products/Debug/AtoZ.framework"; sourceTree = "<group>"; };
 		D01D9CE0146F54B300147234 /* TwUI.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TwUI.xcodeproj; path = ../TwUI.xcodeproj; sourceTree = "<group>"; };
 		D3CE671113C6646B00D47B2D /* ExampleSectionHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExampleSectionHeaderView.h; sourceTree = "<group>"; };
 		D3CE671213C6646B00D47B2D /* ExampleSectionHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExampleSectionHeaderView.m; sourceTree = "<group>"; };
@@ -101,6 +103,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B495F7B15C07ADE002DC694 /* AtoZ.framework in Frameworks */,
 				D01D9CF4146F54BC00147234 /* TwUI.framework in Frameworks */,
 				5C782FD713A556A900CF69EF /* QuartzCore.framework in Frameworks */,
 				5C782FD013A54FFF00CF69EF /* ApplicationServices.framework in Frameworks */,
@@ -114,6 +117,7 @@
 		5ED56668139DC30300031CDF = {
 			isa = PBXGroup;
 			children = (
+				7B495F7A15C07ADE002DC694 /* AtoZ.framework */,
 				5ED5667D139DC30300031CDF /* ConcordeExample */,
 				5ED56676139DC30300031CDF /* Frameworks */,
 				5ED56674139DC30300031CDF /* Products */,
@@ -224,7 +228,7 @@
 		5ED5666A139DC30300031CDF /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0440;
 			};
 			buildConfigurationList = 5ED5666D139DC30300031CDF /* Build configuration list for PBXProject "Example" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -352,7 +356,7 @@
 		5ED5668F139DC30300031CDF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -372,7 +376,7 @@
 		5ED56690139DC30300031CDF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PREPROCESSOR_DEFINITIONS = NS_BUILD_32_LIKE_64;
@@ -390,7 +394,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../../disenchanted 750/DerivedData/AtoZ-hfqteqfcvjfinlajqwkydsqyzpiz/Build/Products/Debug\"",
+				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -406,8 +415,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../../disenchanted 750/DerivedData/AtoZ-hfqteqfcvjfinlajqwkydsqyzpiz/Build/Products/Debug\"",
+				);
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ConcordeExample/Example-Prefix.pch";
