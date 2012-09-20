@@ -61,7 +61,6 @@ typedef enum {
     TUIViewContentModeScaleAspectFill,
 } TUIViewContentMode;
 
-@class TUIColor;
 @class TUINSView;
 @class TUINSWindow;
 @class TUIView;
@@ -148,7 +147,7 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView*);
 - (id)initWithFrame:(CGRect)frame;
 
 /**
- Default is YES. if set to NO, user events (touch, keys) are ignored and removed from the event queue.
+ Default is YES. if set to NO, user events (clicks, keys) are ignored and removed from the event queue.
  */
 @property (nonatomic,getter=isUserInteractionEnabled) BOOL userInteractionEnabled;
 
@@ -373,7 +372,7 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView*);
 /**
  default is nil.  Setting this with a color with <1.0 alpha will also set opaque=NO
  */
-@property (nonatomic,copy) TUIColor *backgroundColor;
+@property (nonatomic,copy) NSColor *backgroundColor;
 
 /**
  animatable. default is 1.0
@@ -436,18 +435,19 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView*);
  */
 + (void)setAnimationDelay:(NSTimeInterval)delay;
 
-+ (void)setAnimationStartDate:(NSDate *)startDate;                  // default = now ([NSDate date])
 + (void)setAnimationCurve:(TUIViewAnimationCurve)curve;              // default = UIViewAnimationCurveEaseInOut
 + (void)setAnimationRepeatCount:(float)repeatCount;                 // default = 0.0.  May be fractional
 + (void)setAnimationRepeatAutoreverses:(BOOL)repeatAutoreverses;    // default = NO. used if repeat count is non-zero
-+ (void)setAnimationBeginsFromCurrentState:(BOOL)fromCurrentState;  // default = NO. If YES, the current view position is always used for new animations -- allowing animations to "pile up" on each other. Otherwise, the last end state is used for the animation (the default).
 + (void)setAnimationIsAdditive:(BOOL)additive;
-
-+ (void)setAnimationTransition:(TUIViewAnimationTransition)transition forView:(TUIView *)view cache:(BOOL)cache;  // current limitation - only one per begin/commit block
 
 + (void)setAnimationsEnabled:(BOOL)enabled block:(void(^)(void))block;
 + (void)setAnimationsEnabled:(BOOL)enabled;                         // ignore any attribute changes while set.
 + (BOOL)areAnimationsEnabled;
+
+/**
+ Whether the current code is being executed from within an animation (block-based or not).
+ */
++ (BOOL)isInAnimationContext;
 
 /**
  animate the 'contents' property when set, defaults to NO

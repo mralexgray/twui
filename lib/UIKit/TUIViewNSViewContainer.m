@@ -20,11 +20,10 @@
 
 #import "TUIViewNSViewContainer.h"
 #import "CATransaction+TUIExtensions.h"
-#import "NSView+TUIExtensions.h"
 #import "TUINSView.h"
 #import "TUINSView+Private.h"
 #import "TUIViewNSViewContainer+Private.h"
-#import <QuartzCore/QuartzCore.h>
+#import <CoreServices/CoreServices.h>
 
 @interface TUIViewNSViewContainer () {
 	/**
@@ -34,7 +33,7 @@
 	NSUInteger _renderingContainedViewCount;
 }
 
-- (void)synchronizeNSViewGeometry;
+- (void)synchronizeNSViewAppearance;
 - (void)startRenderingContainedView;
 - (void)stopRenderingContainedView;
 @end
@@ -69,7 +68,7 @@
 		[nsView recalculateNSViewOrdering];
 
 		_rootView.nextResponder = self;
-		[self synchronizeNSViewGeometry];
+		[self synchronizeNSViewAppearance];
 	} else {
 		// remove the old view from the TUINSView's clipping path
 		[nsView recalculateNSViewClipping];
@@ -85,17 +84,17 @@
 
 - (void)setFrame:(CGRect)frame {
 	[super setFrame:frame];
-	[self synchronizeNSViewGeometry];
+	[self synchronizeNSViewAppearance];
 }
 
 - (void)setBounds:(CGRect)bounds {
 	[super setBounds:bounds];
-	[self synchronizeNSViewGeometry];
+	[self synchronizeNSViewAppearance];
 }
 
 - (void)setCenter:(CGPoint)center {
 	[super setCenter:center];
-	[self synchronizeNSViewGeometry];
+	[self synchronizeNSViewAppearance];
 }
 
 - (void)didAddSubview:(TUIView *)subview {
@@ -115,6 +114,8 @@
 		return nil;
 
 	self.layer.masksToBounds = NO;
+	self.clearsContextBeforeDrawing = NO;
+	self.opaque = NO;
 
 	// prevents the layer from displaying until we need to render our contained
 	// view
@@ -139,8 +140,22 @@
 
 #pragma mark Geometry
 
-- (void)synchronizeNSViewGeometry; {
+- (void)synchronizeNSViewAppearance; {
 	NSAssert1([NSThread isMainThread], @"%s should only be called from the main thread", __func__);
+
+	// update the view's hiddenness based on the TwUI hierarchy
+	BOOL shouldBeHidden = NO;
+	TUIView *view = self;
+	while (view != nil) {
+		if (view.hidden) {
+			shouldBeHidden = YES;
+			break;
+		}
+
+		view = view.superview;
+	}
+
+	self.rootView.hidden = shouldBeHidden;
 
 	if (!self.nsWindow) {
 		// can't do this without being in a window
@@ -163,13 +178,30 @@
 	}
 
 	CGContextRef context = [NSGraphicsContext currentContext].graphicsPort;
+	CGContextSaveGState(context);
+	CGContextClearRect(context, self.bounds);
+
+	SInt32 major, minor;
+	Gestalt(gestaltSystemVersionMajor, &major);
+	Gestalt(gestaltSystemVersionMinor, &minor);
+
+	// 10.8 seems to have changed whether -renderInContext: renders the NSView
+	// flipped or not.
+	BOOL needsToFlip = (major > 10 || (major == 10 && minor >= 8)) ? [self.rootView isFlipped] : ![self.rootView isFlipped];
+
+	if (needsToFlip) {
+		CGContextTranslateCTM(context, 0, self.bounds.size.height);
+		CGContextScaleCTM(context, 1, -1);
+	}
+
 	[self.rootView.layer renderInContext:context];
+	CGContextRestoreGState(context);
 }
 
 - (void)startRenderingContainedView; {
 	if (_renderingContainedViewCount++ == 0) {
 		[CATransaction tui_performWithDisabledActions:^{
-			[self synchronizeNSViewGeometry];
+			[self synchronizeNSViewAppearance];
 			[self.rootView displayIfNeeded];
 			[self.layer display];
 		}];
@@ -187,7 +219,7 @@
 #pragma mark View hierarchy
 
 - (void)ancestorDidLayout; {
-	[self synchronizeNSViewGeometry];
+	[self synchronizeNSViewAppearance];
 	[super ancestorDidLayout];
 }
 
@@ -233,7 +265,7 @@
 	#endif
 
 	[self.ancestorTUINSView recalculateNSViewOrdering];
-	[self synchronizeNSViewGeometry];
+	[self synchronizeNSViewAppearance];
 	[self.rootView viewHierarchyDidChange];
 }
 
@@ -252,7 +284,7 @@
 
 - (void)layoutSubviews {
 	[super layoutSubviews];
-	[self synchronizeNSViewGeometry];
+	[self synchronizeNSViewAppearance];
 }
 
 - (CGSize)sizeThatFits:(CGSize)constraint {

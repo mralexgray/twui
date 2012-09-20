@@ -40,9 +40,15 @@
 		[textField.cell setUsesSingleLineMode:YES];
 		[textField.cell setScrollable:YES];
 
+<<<<<<< HEAD:ExampleProject/ConcordeExample/ExampleTableViewCell.m
 //		self.textFieldContainer = [[TUIViewNSViewContainer alloc] initWithNSView:textField];
 //		self.textFieldContainer.backgroundColor = [TUIColor colorWithNSColor:RANDOMCOLOR]; //blueColor];
 //		[self addSubview:self.textFieldContainer];
+=======
+		self.textFieldContainer = [[TUIViewNSViewContainer alloc] initWithNSView:textField];
+		self.textFieldContainer.backgroundColor = [NSColor blueColor];
+		[self addSubview:self.textFieldContainer];
+>>>>>>> upstream/master:ExampleProject/Example/ExampleTableViewCell.m
 	}
 	return self;
 }

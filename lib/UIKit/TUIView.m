@@ -16,15 +16,12 @@
 
 #import "TUIView.h"
 #import <pthread.h>
+#import "NSColor+TUIExtensions.h"
 #import "TUICGAdditions.h"
-#import "TUIColor.h"
-#import "TUIImage.h"
 #import "TUILayoutManager.h"
 #import "TUINSView.h"
 #import "TUINSWindow.h"
 #import "TUITextRenderer.h"
-#import "TUIView+Private.h"
-#import "TUIView+TUIBridgedView.h"
 #import "TUIViewController.h"
 
 /*
@@ -340,10 +337,6 @@ static void TUISetCurrentContextScaleFactor(CGFloat s)
 
 - (void)displayLayer:(CALayer *)layer
 {
-	if (_viewFlags.delegateWillDisplayLayer) {
-		[_viewDelegate viewWillDisplayLayer:self];
-	}
-	
 	typedef void (*DrawRectIMP)(id,SEL,CGRect);
 	SEL drawRectSEL = @selector(drawRect:);
 	DrawRectIMP drawRectIMP = (DrawRectIMP)[self methodForSelector:drawRectSEL];
@@ -354,22 +347,27 @@ static void TUISetCurrentContextScaleFactor(CGFloat s)
 		return;
 	}
 
-	CGRect rectToDraw = self.bounds;
-	if (!CGRectEqualToRect(_context.dirtyRect, CGRectZero)) {
-		rectToDraw = _context.dirtyRect;
-		_context.dirtyRect = CGRectZero;
-	}
-
 	void (^drawBlock)(void) = ^{
+		if (_viewFlags.delegateWillDisplayLayer) {
+			[_viewDelegate viewWillDisplayLayer:self];
+		}
+
+		CGRect rectToDraw = self.bounds;
+		if (!CGRectEqualToRect(_context.dirtyRect, CGRectZero)) {
+			rectToDraw = _context.dirtyRect;
+			_context.dirtyRect = CGRectZero;
+		}
+
 		CGContextRef context = [self _CGContext];
 		TUIGraphicsPushContext(context);
-		if (_viewFlags.clearsContextBeforeDrawing) {
-			CGContextClearRect(context, rectToDraw);
-		}
 
 		CGFloat scale = [self.layer respondsToSelector:@selector(contentsScale)] ? self.layer.contentsScale : 1.0f;
 		TUISetCurrentContextScaleFactor(scale);
 		CGContextScaleCTM(context, scale, scale);
+
+		if (_viewFlags.clearsContextBeforeDrawing) {
+			CGContextClearRect(context, rectToDraw);
+		}
 
 		CGContextSetAllowsAntialiasing(context, true);
 		CGContextSetShouldAntialias(context, true);
@@ -392,8 +390,7 @@ static void TUISetCurrentContextScaleFactor(CGFloat s)
 		}
 		#endif
 
-		TUIImage *image = TUIGraphicsGetImageFromCurrentImageContext();
-		layer.contents = (id)image.CGImage;
+		layer.contents = TUIGraphicsGetImageFromCurrentImageContext();
 		CGContextScaleCTM(context, 1.0f / scale, 1.0f / scale);
 		TUIGraphicsPopContext();
 
@@ -408,8 +405,13 @@ static void TUISetCurrentContextScaleFactor(CGFloat s)
 		} else {
 			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), drawBlock);
 		}
-	} else {
+	} else if ([NSThread isMainThread] || dispatch_get_current_queue() == dispatch_get_main_queue()) {
 		drawBlock();
+	} else {
+		// On Mac OS X 10.6 (and possibly other versions), spinning a run loop in
+		// a background thread can result in -displayLayer: calls, so make sure we
+		// only invoke -drawRect: on the main thread.
+		dispatch_async(dispatch_get_main_queue(), drawBlock);
 	}
 }
 
@@ -1077,18 +1079,20 @@ static void TUISetCurrentContextScaleFactor(CGFloat s)
 - (void)setHidden:(BOOL)h
 {
 	self.layer.hidden = h;
+	[self.subviews makeObjectsPerformSelector:@selector(ancestorDidLayout)];
 }
 
-- (TUIColor *)backgroundColor
+- (NSColor *)backgroundColor
 {
-	return [TUIColor colorWithCGColor:self.layer.backgroundColor];
+	return [NSColor tui_colorWithCGColor:self.layer.backgroundColor];
 }
 
-- (void)setBackgroundColor:(TUIColor *)color
+- (void)setBackgroundColor:(NSColor *)color
 {
-	self.layer.backgroundColor = color.CGColor;
+	self.layer.backgroundColor = color.tui_CGColor;
 	if(color.alphaComponent < 1.0)
 		self.opaque = NO;
+
 	[self setNeedsDisplay];
 }
 
@@ -1103,8 +1107,6 @@ static void TUISetCurrentContextScaleFactor(CGFloat s)
 }
 
 @end
-
-#import "TUINSView.h"
 
 @implementation TUIView (TUIViewAppKit)
 

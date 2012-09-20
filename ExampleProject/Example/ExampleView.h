@@ -14,12 +14,16 @@
  limitations under the License.
  */
 
-#import "TUIView.h"
+#import "TUIKit.h"
+#import "ExampleTabBar.h"
 
-@interface TUIImageView : TUIView
-
-- (id)initWithImage:(NSImage *)image;
-
-@property(nonatomic, strong) NSImage *image;
-
+@interface ExampleView : TUIView <TUITableViewDelegate, TUITableViewDataSource, ExampleTabBarDelegate>
+{
+	TUITableView *_tableView;
+	ExampleTabBar *_tabBar;
+	
+	NSFont *exampleFont1;
+	NSFont *exampleFont2;
+}
+@property (nonatomic, retain) TUIViewController *popoC;
 @end

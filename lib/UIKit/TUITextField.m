@@ -16,7 +16,6 @@
 
 #import "TUITextField.h"
 #import "TUIButton.h"
-#import "TUIImage.h"
 #import "TUITextViewEditor.h"
 
 @interface TUITextFieldEditor : TUITextViewEditor
@@ -79,8 +78,8 @@ doClear:
 - (TUIButton *)clearButton
 {
 	TUIButton *b = [TUIButton button];
-	[b setImage:[TUIImage imageNamed:@"clear-button.png" cache:YES] forState:TUIControlStateNormal];
-	[b addTarget:self action:@selector(clear:) forControlEvents:TUIControlEventTouchUpInside];
+	[b setImage:[NSImage imageNamed:@"clear-button.png"] forState:TUIControlStateNormal];
+	[b addTarget:self action:@selector(clear:) forControlEvents:TUIControlEventMouseUpInside];
 	return b;
 }
 

@@ -9,7 +9,6 @@
 #import "TUINSWindow.h"
 #import "TUIView.h"
 #import "TUIViewNSViewContainer+Private.h"
-#import "CATransaction+TUIExtensions.h"
 #import <objc/runtime.h>
 
 @interface TUICAAction ()
@@ -152,7 +151,7 @@
 	[view stopRenderingContainedView];
 
 	if (!view.renderingContainedView) {
-		[view synchronizeNSViewGeometry];
+		[view synchronizeNSViewAppearance];
 		view.rootView.alphaValue = 1.0;
 	}
 
