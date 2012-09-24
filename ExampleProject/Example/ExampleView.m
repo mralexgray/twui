@@ -114,10 +114,22 @@
 		TUIViewNSViewContainer *textFieldContainer = [[TUIViewNSViewContainer alloc] initWithNSView:textField];
 		textFieldContainer.backgroundColor = [NSColor blueColor];
 		[self addSubview:textFieldContainer];
+		
+		TUIRefreshControl *refreshControl = [[TUIRefreshControl alloc] initInTableView:_tableView];
+		[refreshControl addTarget:self action:@selector(tableViewDidBeginRefreshing:) forControlEvents:TUIControlEventValueChanged];
+		[refreshControl beginRefreshing];
 	}
 	return self;
 }
 
+- (void)tableViewDidBeginRefreshing:(TUIRefreshControl *)refreshControl {
+    double delayInSeconds = 3.0;
+	
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [refreshControl endRefreshing];
+    });
+}
 
 - (void)tabBar:(ExampleTabBar *)tabBar didSelectTab:(NSInteger)index
 {

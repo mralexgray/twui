@@ -40,6 +40,7 @@
 #import "TUIPopover.h"
 #import "TUIProgressBar.h"
 #import "TUIResponder.h"
+#import "TUIRefreshControl.h"
 #import "TUIScrollView.h"
 #import "TUIScrollView+TUIBridgedScrollView.h"
 #import "TUIStretchableImage.h"
