@@ -1,6 +1,14 @@
 #import "TUIControl.h"
 #import "TUITableView.h"
 
+// The TUIRefreshControl is an update indicator control
+// that can either be manually or automatically
+// triggered by swipe or mouse events to display a small
+// refresh action indicator.
+//
+// Based on an open-source control by Sephiroth87
+// called ODRefreshControl. Available for iOS here:
+// https://github.com/Sephiroth87/ODRefreshControl
 @interface TUIRefreshControl : TUIControl
 
 // This property returns YES if the refresh
