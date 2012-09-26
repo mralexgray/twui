@@ -153,24 +153,28 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
 	if(![keyPath isEqualToString:@"contentOffset"])
 		return;
-	BOOL refreshTriggered = NO;
 	
+	BOOL refreshTriggered = NO;
 	CGFloat offset = self.tableView.pullOffset.y + self.tableView.bounceOffset.y;
 	CGFloat inset = self.bounds.origin.y - offset;
-	
-	CGFloat verticalShift = MAX(0, -((TUIRefreshMaxTopRadius + TUIRefreshMaxBottomRadius + TUIRefreshMaxTopPadding + TUIRefreshMaxBottomPadding) + offset));
-	CGFloat distance = MIN(TUIRefreshMaxDistance, fabs(verticalShift));
+	CGFloat scrollCeiling = MAX(TUIRefreshTableThreshhold, -offset + TUIRefreshTableThreshhold);
 	
 	if(self.refreshing) {
 		CGRect rect = self.activity.frame;
-		rect.origin.y = MAX(TUIRefreshTableThreshhold, -offset + TUIRefreshTableThreshhold);
+		rect.origin.y = scrollCeiling;
 		self.activity.frame = rect;
+		
+		[CATransaction setDisableActions:YES];
+		CGFloat shapeLayerActiveY = scrollCeiling - TUIRefreshMaxDistance;
+		self.shapeLayer.position = CGPointMake(self.shapeLayer.position.x, shapeLayerActiveY);
+		[CATransaction setDisableActions:NO];
 		
 		return;
 	}
 	
+	CGFloat verticalShift = MAX(0, -((TUIRefreshMaxTopRadius + TUIRefreshMaxBottomRadius + TUIRefreshMaxTopPadding + TUIRefreshMaxBottomPadding) + offset));
+	CGFloat distance = MIN(TUIRefreshMaxDistance, fabs(verticalShift));
 	CGFloat percentage = 1 - (distance / TUIRefreshMaxDistance);
-	CGFloat radius = lerp(TUIRefreshMinBottomRadius, TUIRefreshMaxBottomRadius, 0.2);
 	
 	CGFloat currentTopPadding = lerp(TUIRefreshMinTopPadding, TUIRefreshMaxTopPadding, percentage);
 	CGFloat currentTopRadius = lerp(TUIRefreshMinTopRadius, TUIRefreshMaxTopRadius, percentage);
@@ -236,23 +240,18 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 	
 	if(refreshTriggered) {
 		CGMutablePathRef toPath = CGPathCreateMutable();
-		CGPathAddArc(toPath, NULL, topOrigin.x, topOrigin.y, radius, 0, M_PI, YES);
-		CGPathAddCurveToPoint(toPath, NULL, topOrigin.x - radius, topOrigin.y,
-							  topOrigin.x - radius, topOrigin.y,
-							  topOrigin.x - radius, topOrigin.y);
-		CGPathAddArc(toPath, NULL, topOrigin.x, topOrigin.y, radius, M_PI, 0, YES);
-		CGPathAddCurveToPoint(toPath, NULL, topOrigin.x + radius, topOrigin.y,
-							  topOrigin.x + radius, topOrigin.y,
-							  topOrigin.x + radius, topOrigin.y);
+		CGPathAddEllipseInRect(toPath, NULL, CGRectMake(self.bounds.size.width / 2 - self.activity.bounds.size.width / 2,
+														scrollCeiling,
+														self.activity.bounds.size.width, self.activity.bounds.size.height));
 		CGPathCloseSubpath(toPath);
 		
 		CGMutablePathRef shotPath = CGPathCreateMutable();
 		CGPathMoveToPoint(shotPath, NULL, 0, 0);
-		CGPathAddLineToPoint(shotPath, NULL, 0, MAX(TUIRefreshTableThreshhold, -(offset / 2) + TUIRefreshTableThreshhold));
+		CGPathAddLineToPoint(shotPath, NULL, 0, scrollCeiling);
 		CGPathCloseSubpath(shotPath);
 		
 		CABasicAnimation *pathMorph = [CABasicAnimation animationWithKeyPath:@"path"];
-		pathMorph.duration = 3.0f;
+		pathMorph.duration = 0.15f;
 		pathMorph.fillMode = kCAFillModeForwards;
 		pathMorph.removedOnCompletion = NO;
 		pathMorph.toValue = (__bridge id)toPath;
@@ -284,10 +283,13 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 		preInset.top = -(self.bounds.origin.y - TUIRefreshMaxDistance);
 		self.tableView.contentInset = preInset;
 		
+		CGFloat shapeLayerActiveY = scrollCeiling - TUIRefreshMaxDistance;
+		self.shapeLayer.position = CGPointMake(self.shapeLayer.position.x, shapeLayerActiveY);
+		
 		[TUIView animateWithDuration:0.2f animations:^{
 			self.activity.alpha = 1.0f;
 			self.activity.frame = CGRectMake(self.bounds.size.width / 2 - self.activity.bounds.size.width / 2,
-											 MAX(TUIRefreshTableThreshhold, -offset + TUIRefreshTableThreshhold),
+											 scrollCeiling,
 											 self.activity.bounds.size.width, self.activity.bounds.size.height);
 			[self.activity startAnimating];
 			
