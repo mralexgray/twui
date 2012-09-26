@@ -107,8 +107,9 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 		[self.shapeLayer addAnimation:alphaAnimation forKey:nil];
 		[self.arrowLayer addAnimation:alphaAnimation forKey:nil];
 		
+		CGFloat offset = self.tableView.pullOffset.y + self.tableView.bounceOffset.y;
 		self.activity.frame = CGRectMake(self.bounds.size.width / 2 - self.activity.bounds.size.width / 2,
-										 MAX(TUIRefreshTableThreshhold, (-self.tableView.pullOffset.y)+TUIRefreshTableThreshhold),
+										 MAX(TUIRefreshTableThreshhold, -offset + TUIRefreshTableThreshhold),
 										 self.activity.bounds.size.width, self.activity.bounds.size.height);
 		
 		[TUIView animateWithDuration:0.2 animations:^{
@@ -152,6 +153,7 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
 	if(![keyPath isEqualToString:@"contentOffset"])
 		return;
+	BOOL refreshTriggered = NO;
 	
 	CGFloat offset = self.tableView.pullOffset.y + self.tableView.bounceOffset.y;
 	CGFloat inset = self.bounds.origin.y - offset;
@@ -159,14 +161,13 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 	CGFloat verticalShift = MAX(0, -((TUIRefreshMaxTopRadius + TUIRefreshMaxBottomRadius + TUIRefreshMaxTopPadding + TUIRefreshMaxBottomPadding) + offset));
 	CGFloat distance = MIN(TUIRefreshMaxDistance, fabs(verticalShift));
 	
-	if (self.refreshing) {
+	if(self.refreshing) {
 		CGRect rect = self.activity.frame;
-		rect.origin.y = MAX(TUIRefreshTableThreshhold, (-self.tableView.pullOffset.y)+TUIRefreshTableThreshhold);
+		rect.origin.y = MAX(TUIRefreshTableThreshhold, -offset + TUIRefreshTableThreshhold);
 		self.activity.frame = rect;
+		
 		return;
 	}
-	BOOL refreshTriggered = NO;
-	
 	
 	CGFloat percentage = 1 - (distance / TUIRefreshMaxDistance);
 	CGFloat radius = lerp(TUIRefreshMinBottomRadius, TUIRefreshMaxBottomRadius, 0.2);
@@ -234,7 +235,6 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 	self.arrowLayer.path = arrowPath;
 	
 	if(refreshTriggered) {
-		
 		CGMutablePathRef toPath = CGPathCreateMutable();
 		CGPathAddArc(toPath, NULL, topOrigin.x, topOrigin.y, radius, 0, M_PI, YES);
 		CGPathAddCurveToPoint(toPath, NULL, topOrigin.x - radius, topOrigin.y,
@@ -246,16 +246,16 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 							  topOrigin.x + radius, topOrigin.y);
 		CGPathCloseSubpath(toPath);
 		
+		CGMutablePathRef shotPath = CGPathCreateMutable();
+		CGPathMoveToPoint(shotPath, NULL, 0, 0);
+		CGPathAddLineToPoint(shotPath, NULL, 0, MAX(TUIRefreshTableThreshhold, -(offset / 2) + TUIRefreshTableThreshhold));
+		CGPathCloseSubpath(shotPath);
+		
 		CABasicAnimation *pathMorph = [CABasicAnimation animationWithKeyPath:@"path"];
-		pathMorph.duration = 0.15f;
+		pathMorph.duration = 3.0f;
 		pathMorph.fillMode = kCAFillModeForwards;
 		pathMorph.removedOnCompletion = NO;
 		pathMorph.toValue = (__bridge id)toPath;
-		
-		CGMutablePathRef shotPath = CGPathCreateMutable();
-		CGPathMoveToPoint(shotPath, NULL, 0, 0);
-		CGPathAddLineToPoint(shotPath, NULL, 0, MAX(TUIRefreshTableThreshhold, ((-self.tableView.pullOffset.y)/2) + TUIRefreshTableThreshhold));
-		CGPathCloseSubpath(shotPath);
 		
 		CAKeyframeAnimation *shootPathAnimation = [CAKeyframeAnimation animationWithKeyPath:@"position"];
 		shootPathAnimation.duration = 0.3f;
@@ -280,20 +280,17 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 		[self.arrowLayer addAnimation:alphaAnimation forKey:nil];
 		[self.shapeLayer addAnimation:shootPathAnimation forKey:nil];
 		
-		
 		TUIEdgeInsets preInset = self.tableView.contentInset;
 		preInset.top = -(self.bounds.origin.y - TUIRefreshMaxDistance);
 		self.tableView.contentInset = preInset;
 		
 		[TUIView animateWithDuration:0.2f animations:^{
 			self.activity.alpha = 1.0f;
-			[self.activity startAnimating];
-			
-		} completion:^(BOOL finished) {
 			self.activity.frame = CGRectMake(self.bounds.size.width / 2 - self.activity.bounds.size.width / 2,
-											 MAX(TUIRefreshTableThreshhold, (-self.tableView.pullOffset.y)+TUIRefreshTableThreshhold),
+											 MAX(TUIRefreshTableThreshhold, -offset + TUIRefreshTableThreshhold),
 											 self.activity.bounds.size.width, self.activity.bounds.size.height);
 			[self.activity startAnimating];
+			
 		}];
 		
 		self.refreshing = YES;
