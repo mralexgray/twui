@@ -116,8 +116,8 @@
 		[self addSubview:textFieldContainer];
 		
 		TUIRefreshControl *refreshControl = [[TUIRefreshControl alloc] initInTableView:_tableView];
-		[refreshControl addTarget:self action:@selector(tableViewDidBeginRefreshing:) forControlEvents:TUIControlEventValueChanged];
-		[refreshControl beginRefreshing];
+		[refreshControl addTarget:self action:@selector(tableViewDidBeginRefreshing:)
+				 forControlEvents:TUIControlEventValueChanged];
 	}
 	return self;
 }

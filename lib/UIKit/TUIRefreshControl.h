@@ -14,7 +14,7 @@
 // This property returns YES if the refresh
 // control is currently refreshing, by either
 // manual or automatic control.
-@property (nonatomic, assign, readonly) BOOL refreshing;
+@property (nonatomic, assign, readonly, getter = isRefreshing) BOOL refreshing;
 
 // Set a custom tint color for the refresh
 // control. By default, it's a dull blue.

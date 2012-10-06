@@ -4,6 +4,7 @@
 #import "NSColor+TUIExtensions.h"
 
 static CGFloat const TUIRefreshTotalHeight = 350;
+static CGFloat const TUIRefreshOffsetThreshhold = 20;
 static CGFloat const TUIRefreshMinTopPadding = 9;
 static CGFloat const TUIRefreshMaxTopPadding = 5;
 static CGFloat const TUIRefreshMinTopRadius = 12.5;
@@ -17,7 +18,6 @@ static CGFloat const TUIRefreshMaxArrowSize = 3;
 static CGFloat const TUIRefreshMinArrowRadius = 5;
 static CGFloat const TUIRefreshMaxArrowRadius = 7;
 static CGFloat const TUIRefreshMaxDistance = 53;
-static CGFloat const TUIRefreshTableThreshhold = 20;
 
 static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 	return a + (b - a) * p;
@@ -25,7 +25,7 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 
 @interface TUIRefreshControl ()
 
-@property (nonatomic, assign, readwrite) BOOL refreshing;
+@property (nonatomic, assign, readwrite, getter = isRefreshing) BOOL refreshing;
 
 @property (nonatomic, assign) TUITableView *tableView;
 @property (nonatomic, strong) TUIActivityIndicatorView *activity;
@@ -109,7 +109,7 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 		
 		CGFloat offset = self.tableView.pullOffset.y + self.tableView.bounceOffset.y;
 		self.activity.frame = CGRectMake(self.bounds.size.width / 2 - self.activity.bounds.size.width / 2,
-										 MAX(TUIRefreshTableThreshhold, -offset + TUIRefreshTableThreshhold),
+										 MAX(TUIRefreshOffsetThreshhold, -offset + TUIRefreshOffsetThreshhold),
 										 self.activity.bounds.size.width, self.activity.bounds.size.height);
 		
 		[TUIView animateWithDuration:0.2 animations:^{
@@ -157,17 +157,17 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 	BOOL refreshTriggered = NO;
 	CGFloat offset = self.tableView.pullOffset.y + self.tableView.bounceOffset.y;
 	CGFloat inset = self.bounds.origin.y - offset;
-	CGFloat scrollCeiling = MAX(TUIRefreshTableThreshhold, -offset + TUIRefreshTableThreshhold);
+	CGFloat scrollCeiling = MAX(TUIRefreshOffsetThreshhold, -offset + TUIRefreshOffsetThreshhold);
 	
 	if(self.refreshing) {
-		CGRect rect = self.activity.frame;
-		rect.origin.y = scrollCeiling;
-		self.activity.frame = rect;
-		
 		[CATransaction setDisableActions:YES];
 		CGFloat shapeLayerActiveY = scrollCeiling - TUIRefreshMaxDistance;
 		self.shapeLayer.position = CGPointMake(self.shapeLayer.position.x, shapeLayerActiveY);
 		[CATransaction setDisableActions:NO];
+		
+		CGRect rect = self.activity.frame;
+		rect.origin.y = scrollCeiling;
+		self.activity.frame = rect;
 		
 		return;
 	}
@@ -198,8 +198,8 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 		}
 	}
 	
-	CGFloat topY = MAX(TUIRefreshTableThreshhold, topOrigin.y);
-	CGFloat bottomY = MAX(TUIRefreshTableThreshhold, bottomOrigin.y);
+	CGFloat topY = MAX(TUIRefreshOffsetThreshhold, topOrigin.y);
+	CGFloat bottomY = MAX(TUIRefreshOffsetThreshhold, bottomOrigin.y);
 	
 	CGMutablePathRef path = CGPathCreateMutable();
 	CGPathAddArc(path, NULL, topOrigin.x, topY, currentTopRadius, 0, M_PI, NO);
@@ -239,27 +239,17 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 	self.arrowLayer.path = arrowPath;
 	
 	if(refreshTriggered) {
-		CGMutablePathRef toPath = CGPathCreateMutable();
-		CGPathAddEllipseInRect(toPath, NULL, CGRectMake(self.bounds.size.width / 2 - self.activity.bounds.size.width / 2,
-														scrollCeiling,
-														self.activity.bounds.size.width, self.activity.bounds.size.height));
-		CGPathCloseSubpath(toPath);
+		self.activity.frame = (CGRect){CGPathGetBoundingBox(arrowPath).origin, self.activity.bounds.size};
 		
-		CGMutablePathRef shotPath = CGPathCreateMutable();
-		CGPathMoveToPoint(shotPath, NULL, 0, 0);
-		CGPathAddLineToPoint(shotPath, NULL, 0, scrollCeiling);
-		CGPathCloseSubpath(shotPath);
+		CGMutablePathRef toPath = CGPathCreateMutable();
+		CGPathAddEllipseInRect(toPath, NULL, CGPathGetBoundingBox(arrowPath));
+		CGPathCloseSubpath(toPath);
 		
 		CABasicAnimation *pathMorph = [CABasicAnimation animationWithKeyPath:@"path"];
 		pathMorph.duration = 0.15f;
 		pathMorph.fillMode = kCAFillModeForwards;
 		pathMorph.removedOnCompletion = NO;
 		pathMorph.toValue = (__bridge id)toPath;
-		
-		CAKeyframeAnimation *shootPathAnimation = [CAKeyframeAnimation animationWithKeyPath:@"position"];
-		shootPathAnimation.duration = 0.3f;
-		shootPathAnimation.path = shotPath;
-		shootPathAnimation.calculationMode = kCAAnimationPaced;
 		
 		CABasicAnimation *shapeAlphaAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
 		shapeAlphaAnimation.duration = 0.1f;
@@ -274,32 +264,33 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 		alphaAnimation.fillMode = kCAFillModeForwards;
 		alphaAnimation.removedOnCompletion = NO;
 		
+		CGFloat shapeLayerActiveY = scrollCeiling - TUIRefreshMaxDistance;
+		self.shapeLayer.position = CGPointMake(self.shapeLayer.position.x, shapeLayerActiveY);
+		
+		[TUIView setAnimationsEnabled:NO block:^{
+			self.activity.frame = CGRectMake(self.bounds.size.width / 2 - self.activity.bounds.size.width / 2,
+											 scrollCeiling,
+											 self.activity.bounds.size.width, self.activity.bounds.size.height);
+		}];
+		
+		[TUIView animateWithDuration:0.2f animations:^{
+			self.activity.alpha = 1.0f;
+			[self.activity startAnimating];
+			
+		}];
+		
 		[self.shapeLayer addAnimation:pathMorph forKey:nil];
 		[self.shapeLayer addAnimation:shapeAlphaAnimation forKey:nil];
 		[self.arrowLayer addAnimation:alphaAnimation forKey:nil];
-		[self.shapeLayer addAnimation:shootPathAnimation forKey:nil];
 		
 		TUIEdgeInsets preInset = self.tableView.contentInset;
 		preInset.top = -(self.bounds.origin.y - TUIRefreshMaxDistance);
 		self.tableView.contentInset = preInset;
 		
-		CGFloat shapeLayerActiveY = scrollCeiling - TUIRefreshMaxDistance;
-		self.shapeLayer.position = CGPointMake(self.shapeLayer.position.x, shapeLayerActiveY);
-		
-		[TUIView animateWithDuration:0.2f animations:^{
-			self.activity.alpha = 1.0f;
-			self.activity.frame = CGRectMake(self.bounds.size.width / 2 - self.activity.bounds.size.width / 2,
-											 scrollCeiling,
-											 self.activity.bounds.size.width, self.activity.bounds.size.height);
-			[self.activity startAnimating];
-			
-		}];
-		
 		self.refreshing = YES;
 		[self sendActionsForControlEvents:TUIControlEventValueChanged];
 		
 		CGPathRelease(toPath);
-		CGPathRelease(shotPath);
 	}
 	
 	CGPathRelease(path);
