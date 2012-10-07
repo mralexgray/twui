@@ -234,6 +234,7 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 	CGPathAddLineToPoint(arrowPath, NULL, topOrigin.x,
 						 topY + arrowBigRadius - currentArrowSize-3);
 	CGPathAddArc(arrowPath, NULL, topOrigin.x, topY, arrowSmallRadius, 0, -3 *  M_PI_2, YES);
+	CGPathCloseSubpath(arrowPath);
 	
 	self.shapeLayer.path = path;
 	self.arrowLayer.path = arrowPath;
