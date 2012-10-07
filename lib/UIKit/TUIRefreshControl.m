@@ -239,8 +239,6 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 	self.arrowLayer.path = arrowPath;
 	
 	if(refreshTriggered) {
-		self.activity.frame = (CGRect){CGPathGetBoundingBox(arrowPath).origin, self.activity.bounds.size};
-		
 		CGMutablePathRef toPath = CGPathCreateMutable();
 		CGPathAddEllipseInRect(toPath, NULL, CGPathGetBoundingBox(arrowPath));
 		CGPathCloseSubpath(toPath);
