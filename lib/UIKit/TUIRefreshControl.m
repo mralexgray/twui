@@ -239,9 +239,13 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 	self.arrowLayer.path = arrowPath;
 	
 	if(refreshTriggered) {
-		CGMutablePathRef toPath = CGPathCreateMutable();
-		CGPathAddEllipseInRect(toPath, NULL, CGPathGetBoundingBox(arrowPath));
-		CGPathCloseSubpath(toPath);
+        CGFloat radius = lerp(TUIRefreshMinBottomRadius, TUIRefreshMaxBottomRadius, 0.2);
+        CGMutablePathRef toPath = CGPathCreateMutable();
+        CGPathAddArc(toPath, NULL, topOrigin.x, topOrigin.y, radius, 0, M_PI, NO);
+        CGPathAddCurveToPoint(toPath, NULL, topOrigin.x - radius, topOrigin.y, topOrigin.x - radius, topOrigin.y, topOrigin.x - radius, topOrigin.y);
+        CGPathAddArc(toPath, NULL, topOrigin.x, topOrigin.y, radius, M_PI, 0, NO);
+        CGPathAddCurveToPoint(toPath, NULL, topOrigin.x + radius, topOrigin.y, topOrigin.x + radius, topOrigin.y, topOrigin.x + radius, topOrigin.y);
+        CGPathCloseSubpath(toPath);
 		
 		CABasicAnimation *pathMorph = [CABasicAnimation animationWithKeyPath:@"path"];
 		pathMorph.duration = 0.15f;
