@@ -22,8 +22,8 @@
     if((self = [super initWithFrame:frame])) {
         self.backgroundColor = [NSColor colorWithCalibratedWhite:0.96 alpha:1.0];
 		
-		TUIButton *button1 = [TUIButton buttonWithType:TUIButtonTypeCustom];
-		button1.frame = CGRectMake(0, 0, 64, 24);
+		TUIButton *button1 = [TUIButton buttonWithType:TUIButtonTypeStandard];
+		button1.frame = CGRectMake(10, 10, 64, 18);
 		button1.titleLabel.font = [NSFont systemFontOfSize:12.0f];
 		button1.titleLabel.alignment = TUITextAlignmentCenter;
 		button1.titleLabel.renderer.verticalAlignment = TUITextVerticalAlignmentMiddle;

@@ -14,11 +14,6 @@
  limitations under the License.
  */
 
-/*
- TUIButton adopts some baggage from UIButton, probably a mistake
- this class is likely to change (be simplified) radically.
- */
-
 #import "TUIControl.h"
 #import "TUIGeometry.h"
 
@@ -30,7 +25,6 @@ typedef enum {
     TUIButtonTypeBeveled,
     TUIButtonTypeTextured,
     TUIButtonTypeStandard,
-    TUIButtonTypeClean,
     TUIButtonTypeSquare,
     TUIButtonTypeLight,
     TUIButtonTypeMinimal,
@@ -62,6 +56,7 @@ typedef enum {
 @property (nonatomic, strong) NSMenu *popUpMenu;
 
 + (id)buttonWithType:(TUIButtonType)buttonType;
+- (id)initWithFrame:(CGRect)frame type:(TUIButtonType)type;
 
 - (CGRect)backgroundRectForBounds:(CGRect)bounds;
 - (CGRect)contentRectForBounds:(CGRect)bounds;

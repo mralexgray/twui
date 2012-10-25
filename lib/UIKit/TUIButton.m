@@ -22,6 +22,7 @@
 #import "TUINSView.h"
 #import "TUIStretchableImage.h"
 #import "TUITextRenderer.h"
+#import "TUIAttributedString.h"
 
 @interface TUIButtonContent : NSObject
 
@@ -61,7 +62,23 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if((self = [super initWithFrame:frame])) {
-		_buttonFlags.buttonType = TUIButtonTypeCustom;
+		_buttonFlags.buttonType = TUIButtonTypeStandard;
+		
+		self.backgroundColor = [NSColor clearColor];
+		self.opaque = NO;
+		
+		self.contentLookup = [[NSMutableDictionary alloc] init];
+		
+		self.needsDisplayWhenWindowsKeyednessChanges = YES;
+		self.dimsInBackground = YES;
+		self.reversesTitleShadowWhenHighlighted = NO;
+	}
+	return self;
+}
+
+- (id)initWithFrame:(CGRect)frame type:(TUIButtonType)type {
+	if((self = [super initWithFrame:frame])) {
+		_buttonFlags.buttonType = type;
 		
 		self.backgroundColor = [NSColor clearColor];
 		self.opaque = NO;
@@ -175,22 +192,42 @@
 }
 
 - (void)drawBackground:(CGRect)rect {
-	NSImage *backgroundImage = self.currentBackgroundImage;
-	
-	if(backgroundImage)
-		[backgroundImage drawInRect:[self backgroundRectForBounds:self.bounds]
-						   fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0];
-	else if(self.backgroundColor != nil) {
-		[self.backgroundColor setFill];
-		CGContextFillRect(TUIGraphicsGetCurrentContext(), self.bounds);
+	if(self.buttonType == TUIButtonTypeCustom) {
+		NSImage *backgroundImage = self.currentBackgroundImage;
+		if(backgroundImage) {
+			[backgroundImage drawInRect:[self backgroundRectForBounds:self.bounds]
+							   fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0];
+		} else {
+			[self.backgroundColor setFill];
+			CGContextFillRect(TUIGraphicsGetCurrentContext(), self.bounds);
+		}
+	} else if(self.buttonType == TUIButtonTypeStandard) {
+		CGFloat level = self.state == TUIControlStateHighlighted ? 0.93 : 0.99;
+		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, 0.5, 0.5)
+															 xRadius:3.5f yRadius:3.5f];
+		NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[NSColor colorWithCalibratedWhite:0.93 alpha:1.0]
+															 endingColor:[NSColor colorWithCalibratedWhite:level alpha:1.0]];
+		
+		[gradient drawInBezierPath:path angle:90.0f];
+		[[NSColor grayColor] setStroke];
+		[path stroke];
+		
+		if(self.state == TUIControlStateHighlighted) {
+			NSColor *shadowColor = [[NSColor shadowColor] colorWithAlphaComponent:0.5];
+			NSShadow *shadow = [NSShadow shadowWithRadius:2.0f offset:CGSizeMake(0, -1) color:shadowColor];
+			
+			[NSGraphicsContext saveGraphicsState]; {
+				[path setClip];
+				[shadow set];
+				[path stroke];
+			} [NSGraphicsContext restoreGraphicsState];
+		}
 	}
 }
 
 - (void)drawRect:(CGRect)rect {
 	BOOL key = self.nsView.isWindowKey;
-	BOOL down = self.state == TUIControlStateHighlighted;
-	
-	CGFloat alpha = (self.buttonType == TUIButtonTypeCustom ? 1.0 : (down ? 0.7 : 1.0));
+	CGFloat alpha = 1.0f;
 	if(_buttonFlags.dimsInBackground)
 		alpha = key ? alpha : 0.5;
 	
