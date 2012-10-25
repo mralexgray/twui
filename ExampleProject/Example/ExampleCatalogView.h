@@ -14,16 +14,8 @@
  limitations under the License.
  */
 
-#import <Cocoa/Cocoa.h>
 #import "TUIKit.h"
 
-@interface ExampleAppDelegate : NSObject <NSApplicationDelegate> {
-	NSWindow *tableViewWindow;
-	NSWindow *scrollViewWindow;
-	NSWindow *catalogWindow;
-}
-
-- (IBAction)showTableViewExampleWindow:(id)sender;
-- (IBAction)showScrollViewExampleWindow:(id)sender;
+@interface ExampleCatalogView : TUIView
 
 @end

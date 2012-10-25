@@ -17,6 +17,7 @@
 #import "ExampleAppDelegate.h"
 #import "ExampleView.h"
 #import "ExampleScrollView.h"
+#import "ExampleCatalogView.h"
 
 @implementation ExampleAppDelegate
 
@@ -51,22 +52,40 @@
 	ExampleScrollView *scrollExample = [[ExampleScrollView alloc] initWithFrame:b];
 	tuiScrollViewContainer.rootView = scrollExample;
 	
+	/** Catalog View */
+	catalogWindow = [[NSWindow alloc] initWithContentRect:b styleMask:NSTitledWindowMask | NSClosableWindowMask | NSResizableWindowMask backing:NSBackingStoreBuffered defer:YES];
+	[catalogWindow setReleasedWhenClosed:FALSE];
+	[catalogWindow setMinSize:NSMakeSize(300, 250)];
+	[catalogWindow setFrameTopLeftPoint:[tableViewWindow cascadeTopLeftFromPoint:CGPointMake(tableViewWindow.frame.origin.x, tableViewWindow.frame.origin.y + tableViewWindow.frame.size.height)]];
+	
+	/* TUINSView is the bridge between the standard AppKit NSView-based heirarchy and the TUIView-based heirarchy */
+	TUINSView *tuiCatalogContainer = [[TUINSView alloc] initWithFrame:b];
+	[catalogWindow setContentView:tuiCatalogContainer];
+	
+	ExampleCatalogView *catalogExample = [[ExampleCatalogView alloc] initWithFrame:b];
+	tuiCatalogContainer.rootView = catalogExample;
+	
 	[self showTableViewExampleWindow:nil];
+	[self showCatalogViewExampleWindow:nil];
     
 }
 
 /**
  * @brief Show the table view example
  */
--(IBAction)showTableViewExampleWindow:(id)sender {
+- (IBAction)showTableViewExampleWindow:(id)sender {
 	[tableViewWindow makeKeyAndOrderFront:sender];
 }
 
 /**
  * @brief Show the scroll view example
  */
--(IBAction)showScrollViewExampleWindow:(id)sender {
+- (IBAction)showScrollViewExampleWindow:(id)sender {
 	[scrollViewWindow makeKeyAndOrderFront:sender];
+}
+
+- (IBAction)showCatalogViewExampleWindow:(id)sender {
+	[catalogWindow makeKeyAndOrderFront:sender];
 }
 
 @end

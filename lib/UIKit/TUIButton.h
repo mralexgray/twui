@@ -26,43 +26,42 @@
 @class TUIImageView;
 
 typedef enum {
-    TUIButtonTypeCustom = 0,
+    TUIButtonTypeCustom,
+    TUIButtonTypeBeveled,
+    TUIButtonTypeTextured,
+    TUIButtonTypeStandard,
+    TUIButtonTypeClean,
+    TUIButtonTypeSquare,
+    TUIButtonTypeLight,
+    TUIButtonTypeMinimal,
+    TUIButtonTypeInline,
+    TUIButtonTypeIcon,
 } TUIButtonType;
 
 @interface TUIButton : TUIControl
-{
-	NSMutableDictionary		*_contentLookup;
-	TUIEdgeInsets           _titleEdgeInsets;
-    TUIEdgeInsets           _imageEdgeInsets;
 
-	TUIImageView           *_imageView;
-	TUILabel               *_titleView;
-	
-	NSMenu *popUpMenu;
-	
-    struct {
-		unsigned int dimsInBackground:1;
-        unsigned int buttonType:8;
-		unsigned int firstDraw:1;
-		unsigned int reversesTitleShadowWhenHighlighted:1;
-    } _buttonFlags;
-}
+@property (nonatomic, readonly) TUIButtonType buttonType;
 
-+ (id)buttonWithType:(TUIButtonType)buttonType;
-+ (id)button; // custom
+@property (nonatomic, assign) TUIEdgeInsets contentEdgeInsets;
+@property (nonatomic, assign) TUIEdgeInsets titleEdgeInsets;
+@property (nonatomic, assign) TUIEdgeInsets imageEdgeInsets;
 
-@property(nonatomic,assign)        TUIEdgeInsets    titleEdgeInsets;
-@property(nonatomic,assign)        TUIEdgeInsets    imageEdgeInsets;
-@property(nonatomic,assign) BOOL dimsInBackground;
+@property (nonatomic, assign) BOOL dimsInBackground;
+@property (nonatomic, assign) BOOL drawsGradientIconBackground;
+@property (nonatomic, assign) BOOL lightButtonWhenHighlighted;
+@property (nonatomic, assign) BOOL adjustsImageWhenHighlighted;
+@property (nonatomic, assign) BOOL adjustsImageWhenDisabled;
+@property (nonatomic, assign) BOOL reversesTitleShadowWhenHighlighted;
 
-@property(nonatomic,readonly) TUIButtonType buttonType;
+@property (nonatomic, strong) NSColor *tintColor;
 
+@property (nonatomic, strong, readonly) TUILabel *titleLabel;
+@property (nonatomic, strong, readonly) TUIImageView *imageView;
+
+@property (nonatomic, strong) NSSound *sound;
 @property (nonatomic, strong) NSMenu *popUpMenu;
 
-@property(nonatomic,readonly,strong) TUILabel     *titleLabel;
-@property(nonatomic,readonly,strong) TUIImageView *imageView;
-
-@property (nonatomic, assign) BOOL reversesTitleShadowWhenHighlighted;
++ (id)buttonWithType:(TUIButtonType)buttonType;
 
 - (CGRect)backgroundRectForBounds:(CGRect)bounds;
 - (CGRect)contentRectForBounds:(CGRect)bounds;
@@ -72,6 +71,12 @@ typedef enum {
 @end
 
 @interface TUIButton (Content)
+
+@property (nonatomic, strong, readonly) NSString *currentTitle;
+@property (nonatomic, strong, readonly) NSColor *currentTitleColor;
+@property (nonatomic, strong, readonly) NSColor *currentTitleShadowColor;
+@property (nonatomic, strong, readonly) NSImage *currentImage;
+@property (nonatomic, strong, readonly) NSImage *currentBackgroundImage;
 
 - (void)setTitle:(NSString *)title forState:(TUIControlState)state;
 - (void)setTitleColor:(NSColor *)color forState:(TUIControlState)state;
@@ -85,9 +90,4 @@ typedef enum {
 - (NSImage *)imageForState:(TUIControlState)state;
 - (NSImage *)backgroundImageForState:(TUIControlState)state;
 
-@property(nonatomic, readonly, strong) NSString *currentTitle;
-@property(nonatomic, readonly, strong) NSColor *currentTitleColor;
-@property(nonatomic, readonly, strong) NSColor *currentTitleShadowColor;
-@property(nonatomic, readonly, strong) NSImage *currentImage;
-@property(nonatomic, readonly, strong) NSImage *currentBackgroundImage;
 @end

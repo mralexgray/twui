@@ -23,239 +23,240 @@
 #import "TUIStretchableImage.h"
 #import "TUITextRenderer.h"
 
-@interface TUIButton ()
+@interface TUIButtonContent : NSObject
 
-- (void)_update;
+@property (nonatomic, strong) NSString *title;
+@property (nonatomic, strong) NSColor *titleColor;
+@property (nonatomic, strong) NSColor *shadowColor;
+@property (nonatomic, strong) NSImage *image;
+@property (nonatomic, strong) NSImage *backgroundImage;
+
+@end
+
+@interface TUIButton () {
+    struct {
+        unsigned int buttonType:8;
+		
+		unsigned int dimsInBackground:1;
+		unsigned int drawsGradientIconBackground:1;
+		unsigned int lightButtonWhenHighlighted:1;
+		unsigned int adjustsImageWhenHighlighted:1;
+		unsigned int adjustsImageWhenDisabled:1;
+		unsigned int reversesTitleShadowWhenHighlighted:1;
+    } _buttonFlags;
+}
+
+@property (nonatomic, strong) NSMutableDictionary *contentLookup;
+
+@property (nonatomic, strong, readwrite) TUILabel *titleLabel;
+@property (nonatomic, strong, readwrite) TUIImageView *imageView;
 
 @end
 
 @implementation TUIButton
 
-@synthesize popUpMenu;
++ (id)buttonWithType:(TUIButtonType)buttonType {
+	return [[self.class alloc] initWithFrame:CGRectZero];
+}
 
-- (id)initWithFrame:(CGRect)frame
-{
-	if((self = [super initWithFrame:frame]))
-	{
-		_contentLookup = [[NSMutableDictionary alloc] init];
-		self.opaque = NO; // won't matter unless image is set
+- (id)initWithFrame:(CGRect)frame {
+	if((self = [super initWithFrame:frame])) {
 		_buttonFlags.buttonType = TUIButtonTypeCustom;
-		_buttonFlags.dimsInBackground = 1;
-		_buttonFlags.firstDraw = 1;
+		
 		self.backgroundColor = [NSColor clearColor];
+		self.opaque = NO;
+		
+		self.contentLookup = [[NSMutableDictionary alloc] init];
+		
 		self.needsDisplayWhenWindowsKeyednessChanges = YES;
+		self.dimsInBackground = YES;
 		self.reversesTitleShadowWhenHighlighted = NO;
 	}
 	return self;
 }
 
-
-+ (id)button
-{
-	return [self buttonWithType:TUIButtonTypeCustom];
-}
-
-+ (id)buttonWithType:(TUIButtonType)buttonType
-{
-	TUIButton *b = [[self alloc] initWithFrame:CGRectZero];
-	return b;
-}
-
-- (BOOL)acceptsFirstResponder
-{
+- (BOOL)acceptsFirstResponder {
 	return NO;
 }
 
-- (void)setImageEdgeInsets:(TUIEdgeInsets)i
-{
-	_imageEdgeInsets = i;
-}
-
-- (TUIEdgeInsets)imageEdgeInsets
-{
-	return _imageEdgeInsets;
-}
-
-- (void)setTitleEdgeInsets:(TUIEdgeInsets)i
-{
-	_titleEdgeInsets = i;
-	if (_imageView != nil) {
-		_imageView.frame = TUIEdgeInsetsInsetRect(self.bounds, self.imageEdgeInsets);
-	}
-}
-
-- (TUIEdgeInsets)titleEdgeInsets
-{
-	return _titleEdgeInsets;
-}
-
-- (TUIButtonType)buttonType
-{
+- (TUIButtonType)buttonType {
 	return _buttonFlags.buttonType;
 }
 
-- (TUILabel *)titleLabel
-{
-	if(!_titleView) {
-		_titleView = [[TUILabel alloc] initWithFrame:CGRectZero];
-		_titleView.userInteractionEnabled = NO;
-		_titleView.backgroundColor = [NSColor clearColor];
-		_titleView.hidden = YES; // we'll be drawing it ourselves
-		[self addSubview:_titleView];
+- (TUILabel *)titleLabel {
+	if(!_titleLabel) {
+		_titleLabel = [[TUILabel alloc] initWithFrame:CGRectZero];
+		_titleLabel.userInteractionEnabled = NO;
+		_titleLabel.backgroundColor = [NSColor clearColor];
+		
+		// We'll draw the title ourselves.
+		_titleLabel.hidden = YES;
+		[self addSubview:_titleLabel];
 	}
-	return _titleView;
+	return _titleLabel;
 }
 
-- (TUIImageView *)imageView
-{
+- (TUIImageView *)imageView {
 	if(!_imageView) {
 		_imageView = [[TUIImageView alloc] initWithFrame:TUIEdgeInsetsInsetRect(self.bounds, self.imageEdgeInsets)];
 		_imageView.backgroundColor = [NSColor clearColor];
+		
 		[self addSubview:_imageView];
 	}
 	return _imageView;
 }
 
-- (BOOL)dimsInBackground
-{
+- (BOOL)dimsInBackground {
 	return _buttonFlags.dimsInBackground;
 }
 
-- (void)setDimsInBackground:(BOOL)b
-{
-	_buttonFlags.dimsInBackground = b;
+- (void)setDimsInBackground:(BOOL)dimsInBackground {
+	_buttonFlags.dimsInBackground = dimsInBackground;
 }
 
-- (CGRect)backgroundRectForBounds:(CGRect)bounds
-{
+- (BOOL)drawsGradientIconBackground {
+	return _buttonFlags.drawsGradientIconBackground;
+}
+
+- (void)setDrawsGradientIconBackground:(BOOL)drawsGradientIconBackground {
+	_buttonFlags.drawsGradientIconBackground = drawsGradientIconBackground;
+}
+
+- (BOOL)lightButtonWhenHighlighted {
+	return _buttonFlags.lightButtonWhenHighlighted;
+}
+
+- (void)setLightButtonWhenHighlighted:(BOOL)lightButtonWhenHighlighted {
+	_buttonFlags.lightButtonWhenHighlighted = lightButtonWhenHighlighted;
+}
+
+- (BOOL)adjustsImageWhenHighlighted {
+	return _buttonFlags.adjustsImageWhenHighlighted;
+}
+
+- (void)setAdjustsImageWhenHighlighted:(BOOL)adjustsImageWhenHighlighted {
+	_buttonFlags.adjustsImageWhenHighlighted = adjustsImageWhenHighlighted;
+}
+
+- (BOOL)adjustsImageWhenDisabled {
+	return _buttonFlags.adjustsImageWhenDisabled;
+}
+
+- (void)setAdjustsImageWhenDisabled:(BOOL)adjustsImageWhenDisabled {
+	_buttonFlags.adjustsImageWhenDisabled = adjustsImageWhenDisabled;
+}
+
+- (BOOL)reversesTitleShadowWhenHighlighted {
+	return _buttonFlags.reversesTitleShadowWhenHighlighted;
+}
+
+- (void)setReversesTitleShadowWhenHighlighted:(BOOL)reversesTitleShadowWhenHighlighted {
+	_buttonFlags.reversesTitleShadowWhenHighlighted = reversesTitleShadowWhenHighlighted;
+}
+
+- (CGRect)backgroundRectForBounds:(CGRect)bounds {
 	return bounds;
 }
 
-- (CGRect)contentRectForBounds:(CGRect)bounds
-{
+- (CGRect)contentRectForBounds:(CGRect)bounds {
 	return bounds;
 }
 
-- (CGRect)titleRectForContentRect:(CGRect)contentRect
-{
+- (CGRect)titleRectForContentRect:(CGRect)contentRect {
 	return contentRect;
 }
 
-- (CGRect)imageRectForContentRect:(CGRect)contentRect
-{
+- (CGRect)imageRectForContentRect:(CGRect)contentRect {
 	return contentRect;
-}
-
-static CGRect ButtonRectRoundOrigin(CGRect f)
-{
-	f.origin.x = roundf(f.origin.x);
-	f.origin.y = roundf(f.origin.y);
-	return f;
-}
-
-static CGRect ButtonRectCenteredInRect(CGRect a, CGRect b)
-{
-	CGRect r;
-	r.size = a.size;
-	r.origin.x = b.origin.x + (b.size.width - a.size.width) * 0.5;
-	r.origin.y = b.origin.y + (b.size.height - a.size.height) * 0.5;
-	return r;
 }
 
 - (CGSize)sizeThatFits:(CGSize)size {
 	return self.currentImage.size;
 }
 
-
-- (void)drawRect:(CGRect)r
-{
-	if(_buttonFlags.firstDraw) {
-		[self _update];
-		_buttonFlags.firstDraw = 0;
-	}
+- (void)drawBackground:(CGRect)rect {
+	NSImage *backgroundImage = self.currentBackgroundImage;
 	
-	CGRect bounds = self.bounds;
-
-	BOOL key = [self.nsView isWindowKey];
-	BOOL down = self.state == TUIControlStateHighlighted;
-	CGFloat alpha = (self.buttonType == TUIButtonTypeCustom ? 1.0 : down?0.7:1.0);
-	if(_buttonFlags.dimsInBackground)
-		alpha = key?alpha:0.5;
-	
-	if(self.backgroundColor != nil) {
+	if(backgroundImage)
+		[backgroundImage drawInRect:[self backgroundRectForBounds:self.bounds]
+						   fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0];
+	else if(self.backgroundColor != nil) {
 		[self.backgroundColor setFill];
 		CGContextFillRect(TUIGraphicsGetCurrentContext(), self.bounds);
 	}
+}
+
+- (void)drawRect:(CGRect)rect {
+	BOOL key = self.nsView.isWindowKey;
+	BOOL down = self.state == TUIControlStateHighlighted;
 	
-	NSImage *backgroundImage = self.currentBackgroundImage;
+	CGFloat alpha = (self.buttonType == TUIButtonTypeCustom ? 1.0 : (down ? 0.7 : 1.0));
+	if(_buttonFlags.dimsInBackground)
+		alpha = key ? alpha : 0.5;
+	
+	[self drawBackground:rect];
+	
 	NSImage *image = self.currentImage;
-	
-	[backgroundImage drawInRect:[self backgroundRectForBounds:bounds] fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0];
-	
 	if(image) {
-		CGRect imageRect;
-		if([image isKindOfClass:[TUIStretchableImage class]]) {
-			// stretchable
-			imageRect = self.bounds;
-		} else {
-			// normal centered + insets
+		CGRect imageRect = self.bounds;
+		if(![image isKindOfClass:[TUIStretchableImage class]]) {
+			
+			// Not a stretchable image, so center it.
 			imageRect.origin = CGPointZero;
-			imageRect.size = [image size];
+			imageRect.size = image.size;
+			
 			CGRect b = self.bounds;
 			b.origin.x += _imageEdgeInsets.left;
 			b.origin.y += _imageEdgeInsets.bottom;
 			b.size.width -= _imageEdgeInsets.left + _imageEdgeInsets.right;
 			b.size.height -= _imageEdgeInsets.bottom + _imageEdgeInsets.top;
-			imageRect = ButtonRectRoundOrigin(ButtonRectCenteredInRect(imageRect, b));
+			imageRect = ABRectRoundOrigin(ABRectCenteredInRect(imageRect, b));
 		}
 
 		[image drawInRect:imageRect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:alpha];
 	}
 	
 	NSString *title = self.currentTitle;
-	if(title != nil) {
+	if(title != nil)
 		self.titleLabel.text = title;
-	}
 	
 	NSColor *color = self.currentTitleColor;
-	if(color != nil) {
+	if(color != nil)
 		self.titleLabel.textColor = color;
-	}
 	
+	// The renderer's shadow color may have been manually set,
+	// in which case we don't want to reset it to nothing.
 	NSColor *shadowColor = self.currentTitleShadowColor;
-	// they may have manually set the renderer's shadow color, in which case we 
-	// don't want to reset it to nothing
-	if(shadowColor != nil) {
+	if(shadowColor != nil)
 		self.titleLabel.renderer.shadowColor = shadowColor;
-	}
 	
 	CGContextRef ctx = TUIGraphicsGetCurrentContext();
-	CGContextSaveGState(ctx);
-	CGContextTranslateCTM(ctx, _titleEdgeInsets.left, _titleEdgeInsets.bottom);
-	if(!key)
-		CGContextSetAlpha(ctx, 0.5);
-	CGRect titleFrame = self.bounds;
-	titleFrame.size.width -= (_titleEdgeInsets.left + _titleEdgeInsets.right);
-	titleFrame.size.height -= (_titleEdgeInsets.top + _titleEdgeInsets.bottom);
-	self.titleLabel.frame = titleFrame;
-	[self.titleLabel drawRect:self.titleLabel.bounds];
-	CGContextRestoreGState(ctx);
+	CGContextSaveGState(ctx); {
+		CGContextTranslateCTM(ctx, _titleEdgeInsets.left, _titleEdgeInsets.bottom);
+		CGContextSetAlpha(ctx, alpha);
+		
+		CGRect titleFrame = self.bounds;
+		titleFrame.size.width -= (_titleEdgeInsets.left + _titleEdgeInsets.right);
+		titleFrame.size.height -= (_titleEdgeInsets.top + _titleEdgeInsets.bottom);
+		
+		self.titleLabel.frame = titleFrame;
+		[self.titleLabel drawRect:self.titleLabel.bounds];
+	} CGContextRestoreGState(ctx);
 }
 
-- (void)mouseDown:(NSEvent *)event
-{
+- (void)mouseDown:(NSEvent *)event {
 	[super mouseDown:event];
-
-	if(popUpMenu) { // happens even if clickCount is big
-		NSMenu *menu = popUpMenu;
+	
+	// BUG: Happens even for large clickCount.
+	if(self.popUpMenu) {
+		NSMenu *menu = self.popUpMenu;
 		NSPoint p = [self frameInNSView].origin;
 		p.x += 6;
 		p.y -= 2;
 		[menu popUpMenuPositioningItem:nil atLocation:p inView:self.nsView];
-		/*
-		 after this happens, we never get a mouseUp: in the TUINSView.  this screws up _trackingView
-		 for now, fake it with a fake mouseUp:
-		 */
+		
+		// After this happens, we never get a mouseUp: in the TUINSView.
+		// This screws up _trackingView. For now, fake it with a fake mouseUp:.
 		[self.nsView performSelector:@selector(mouseUp:) withObject:event afterDelay:0.0];
 		
 		_controlFlags.tracking = 0;
@@ -265,32 +266,137 @@ static CGRect ButtonRectCenteredInRect(CGRect a, CGRect b)
 	}
 }
 
-- (void)_update {
-	
-}
-
 - (void)_stateDidChange {
 	[super _stateDidChange];
-	
-	[self _update];
 	
 	[self setNeedsDisplay];
 }
 
 - (void)setHighlighted:(BOOL)highlighted {
 	if(self.highlighted != highlighted && self.reversesTitleShadowWhenHighlighted) {
-		_titleView.renderer.shadowOffset = CGSizeMake(_titleView.renderer.shadowOffset.width, -_titleView.renderer.shadowOffset.height);
+		_titleLabel.renderer.shadowOffset = CGSizeMake(_titleLabel.renderer.shadowOffset.width,
+													   -_titleLabel.renderer.shadowOffset.height);
 	}
 	
 	[super setHighlighted:highlighted];
 }
 
-- (BOOL)reversesTitleShadowWhenHighlighted {
-	return _buttonFlags.reversesTitleShadowWhenHighlighted;
+@end
+
+@implementation TUIButtonContent
+@end
+
+@implementation TUIButton (Content)
+
+- (TUIButtonContent *)_contentForState:(TUIControlState)state {
+	id key = @(state);
+	TUIButtonContent *c = [_contentLookup objectForKey:key];
+	
+	// Try matching without the NotKey state.
+	if(c == nil && (state & TUIControlStateNotKey))
+		c = [_contentLookup objectForKey:@(state & ~TUIControlStateNotKey)];
+	
+	if(c == nil) {
+		c = [[TUIButtonContent alloc] init];
+		[_contentLookup setObject:c forKey:key];
+	}
+	
+	return c;
 }
 
-- (void)setReversesTitleShadowWhenHighlighted:(BOOL)reversesTitleShadowWhenHighlighted {
-	_buttonFlags.reversesTitleShadowWhenHighlighted = reversesTitleShadowWhenHighlighted;
+- (void)setTitle:(NSString *)title forState:(TUIControlState)state {
+	[self _stateWillChange];
+	[[self _contentForState:state] setTitle:title];
+	[self setNeedsDisplay];
+	[self _stateDidChange];
+}
+
+- (void)setTitleColor:(NSColor *)color forState:(TUIControlState)state {
+	[self _stateWillChange];
+	[[self _contentForState:state] setTitleColor:color];
+	[self setNeedsDisplay];
+	[self _stateDidChange];
+}
+
+- (void)setTitleShadowColor:(NSColor *)color forState:(TUIControlState)state {
+	[self _stateWillChange];
+	[[self _contentForState:state] setShadowColor:color];
+	[self setNeedsDisplay];
+	[self _stateDidChange];
+}
+
+- (void)setImage:(NSImage *)i forState:(TUIControlState)state {
+	[self _stateWillChange];
+	[[self _contentForState:state] setImage:i];
+	[self setNeedsDisplay];
+	[self _stateDidChange];
+}
+
+- (void)setBackgroundImage:(NSImage *)i forState:(TUIControlState)state {
+	[self _stateWillChange];
+	[[self _contentForState:state] setBackgroundImage:i];
+	[self setNeedsDisplay];
+	[self _stateDidChange];
+}
+
+- (NSString *)titleForState:(TUIControlState)state {
+	return [[self _contentForState:state] title];
+}
+
+- (NSColor *)titleColorForState:(TUIControlState)state {
+	return [[self _contentForState:state] titleColor];
+}
+
+- (NSColor *)titleShadowColorForState:(TUIControlState)state {
+	return [[self _contentForState:state] shadowColor];
+}
+
+- (NSImage *)imageForState:(TUIControlState)state {
+	return [[self _contentForState:state] image];
+}
+
+- (NSImage *)backgroundImageForState:(TUIControlState)state {
+	return [[self _contentForState:state] backgroundImage];
+}
+
+- (NSString *)currentTitle {
+	NSString *title = [self titleForState:self.state];
+	if(title == nil)
+		title = [self titleForState:TUIControlStateNormal];
+	
+	return title;
+}
+
+- (NSColor *)currentTitleColor {
+	NSColor *color = [self titleColorForState:self.state];
+	if(color == nil)
+		color = [self titleColorForState:TUIControlStateNormal];
+	
+	return color;
+}
+
+- (NSColor *)currentTitleShadowColor {
+	NSColor *color = [self titleShadowColorForState:self.state];
+	if(color == nil)
+		color = [self titleShadowColorForState:TUIControlStateNormal];
+	
+	return color;
+}
+
+- (NSImage *)currentImage {
+	NSImage *image = [self imageForState:self.state];
+	if(image == nil)
+		image = [self imageForState:TUIControlStateNormal];
+	
+	return image;
+}
+
+- (NSImage *)currentBackgroundImage {
+	NSImage *image = [self backgroundImageForState:self.state];
+	if(image == nil)
+		image = [self backgroundImageForState:TUIControlStateNormal];
+	
+	return image;
 }
 
 @end
