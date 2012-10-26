@@ -21,14 +21,29 @@
 @class TUIImageView;
 
 typedef enum {
+	
+	// Done
     TUIButtonTypeCustom,
-    TUIButtonTypeBeveled,
-    TUIButtonTypeTextured,
+	
+	// Done
     TUIButtonTypeStandard,
-    TUIButtonTypeSquare,
-    TUIButtonTypeLight,
+	
+	// Done
+    TUIButtonTypeBeveled,
+	
+	// !!!
+    TUIButtonTypeEmbossed,
+	
+	// !!!
+    TUIButtonTypeGradient,
+	
+	// !!!
     TUIButtonTypeMinimal,
+	
+	// !!!
     TUIButtonTypeInline,
+	
+	// !!!
     TUIButtonTypeIcon,
 } TUIButtonType;
 

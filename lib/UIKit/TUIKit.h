@@ -18,6 +18,7 @@
 
 #import "CAAnimation+TUIExtensions.h"
 #import "CoreText+Additions.h"
+#import "NSBezierPath+TUIExtensions.h"
 #import "NSClipView+TUIExtensions.h"
 #import "NSColor+TUIExtensions.h"
 #import "NSImage+TUIExtensions.h"

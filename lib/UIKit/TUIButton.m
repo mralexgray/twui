@@ -16,6 +16,8 @@
 
 #import "TUIButton.h"
 #import "TUICGAdditions.h"
+#import "NSBezierPath+TUIExtensions.h"
+#import "NSImage+TUIExtensions.h"
 #import "TUIControl+Private.h"
 #import "TUIImageView.h"
 #import "TUILabel.h"
@@ -62,7 +64,7 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if((self = [super initWithFrame:frame])) {
-		_buttonFlags.buttonType = TUIButtonTypeStandard;
+		_buttonFlags.buttonType = TUIButtonTypeBeveled;
 		
 		self.backgroundColor = [NSColor clearColor];
 		self.opaque = NO;
@@ -222,6 +224,36 @@
 				[path stroke];
 			} [NSGraphicsContext restoreGraphicsState];
 		}
+	} else if(self.buttonType == TUIButtonTypeBeveled) {
+		NSBezierPath *path = [NSBezierPath bezierPathWithRect:self.bounds];
+		NSGradient *bevel = [[NSGradient alloc] initWithColorsAndLocations:
+							 [NSColor colorWithCalibratedWhite:0.95 alpha:0.5], 0.0,
+							 [NSColor colorWithCalibratedWhite:0.90 alpha:0.5], 0.5,
+							 [NSColor colorWithCalibratedWhite:0.85 alpha:0.5], 0.5,
+							 [NSColor colorWithCalibratedWhite:0.84 alpha:0.5], 1.0, nil];
+		
+		[self.backgroundColor set];
+		[path fill];
+		
+		[NSGraphicsContext saveGraphicsState];
+		[[NSShadow shadowWithRadius:1.0
+							 offset:NSMakeSize(0, -1.0)
+							  color:[NSColor colorWithCalibratedWhite:.863 alpha:.75]] set];
+		[path fill];
+		[NSGraphicsContext restoreGraphicsState];
+		
+		[bevel drawInBezierPath:path angle:-90.0];
+		if(self.state == TUIControlStateHighlighted) {
+			[[NSColor colorWithCalibratedWhite:0.0 alpha:0.1] set];
+			[path fill];
+		}
+		
+		[[NSColor colorWithCalibratedWhite:0.569 alpha:1.0] setStroke];
+		[path strokeInside];
+		
+		[path fillWithInnerShadow:[NSShadow shadowWithRadius:4.0
+													  offset:NSMakeSize(0.0, -1.0)
+													   color:[NSColor colorWithCalibratedWhite:0.0 alpha:.52]]];
 	}
 }
 
