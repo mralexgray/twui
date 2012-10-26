@@ -21,42 +21,24 @@
 @class TUIImageView;
 
 typedef enum {
-	
-	// Done
 	TUIButtonTypeCustom,
-	
-	// Done
 	TUIButtonTypeStandard,
-	
-	// Done
 	TUIButtonTypeBeveled,
-	
-	// Done
 	TUIButtonTypeEmbossed,
-	
-	// Done
 	TUIButtonTypeGradient,
-	
-	// !!!
 	TUIButtonTypeMinimal,
-	
-	// !!!
 	TUIButtonTypeInline,
-	
-	// !!!
-	TUIButtonTypeIcon,
 } TUIButtonType;
 
 @interface TUIButton : TUIControl
 
-@property (nonatomic, readonly) TUIButtonType buttonType;
+@property (nonatomic, assign, readonly) TUIButtonType buttonType;
 
 @property (nonatomic, assign) TUIEdgeInsets contentEdgeInsets;
 @property (nonatomic, assign) TUIEdgeInsets titleEdgeInsets;
 @property (nonatomic, assign) TUIEdgeInsets imageEdgeInsets;
 
 @property (nonatomic, assign) BOOL dimsInBackground;
-@property (nonatomic, assign) BOOL drawsGradientIconBackground;
 @property (nonatomic, assign) BOOL lightButtonWhenHighlighted;
 @property (nonatomic, assign) BOOL adjustsImageWhenHighlighted;
 @property (nonatomic, assign) BOOL adjustsImageWhenDisabled;

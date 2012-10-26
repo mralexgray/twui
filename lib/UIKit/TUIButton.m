@@ -41,7 +41,6 @@
         unsigned int buttonType:8;
 		
 		unsigned int dimsInBackground:1;
-		unsigned int drawsGradientIconBackground:1;
 		unsigned int lightButtonWhenHighlighted:1;
 		unsigned int adjustsImageWhenHighlighted:1;
 		unsigned int adjustsImageWhenDisabled:1;
@@ -59,12 +58,15 @@
 @implementation TUIButton
 
 + (id)buttonWithType:(TUIButtonType)buttonType {
-	return [[self.class alloc] initWithFrame:CGRectZero];
+	TUIButton *b = [[self.class alloc] initWithFrame:CGRectZero];
+	b->_buttonFlags.buttonType = buttonType;
+	
+	return b;
 }
 
 - (id)initWithFrame:(CGRect)frame {
 	if((self = [super initWithFrame:frame])) {
-		_buttonFlags.buttonType = TUIButtonTypeInline;
+		_buttonFlags.buttonType = TUIButtonTypeStandard;
 		
 		self.backgroundColor = [NSColor clearColor];
 		self.opaque = NO;
@@ -115,14 +117,6 @@
 
 - (void)setDimsInBackground:(BOOL)dimsInBackground {
 	_buttonFlags.dimsInBackground = dimsInBackground;
-}
-
-- (BOOL)drawsGradientIconBackground {
-	return _buttonFlags.drawsGradientIconBackground;
-}
-
-- (void)setDrawsGradientIconBackground:(BOOL)drawsGradientIconBackground {
-	_buttonFlags.drawsGradientIconBackground = drawsGradientIconBackground;
 }
 
 - (BOOL)lightButtonWhenHighlighted {
@@ -402,7 +396,10 @@
 }
 
 - (void)setHighlighted:(BOOL)highlighted {
-	if(self.highlighted != highlighted && self.reversesTitleShadowWhenHighlighted) {
+	if(self.highlighted == highlighted)
+		return;
+	
+	if(self.reversesTitleShadowWhenHighlighted) {
 		_titleLabel.renderer.shadowOffset = CGSizeMake(_titleLabel.renderer.shadowOffset.width,
 													   -_titleLabel.renderer.shadowOffset.height);
 	}

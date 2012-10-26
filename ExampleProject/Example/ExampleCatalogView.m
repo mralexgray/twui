@@ -22,6 +22,8 @@
     if((self = [super initWithFrame:frame])) {
         self.backgroundColor = [NSColor colorWithCalibratedWhite:0.23 alpha:1.0];
 		
+		
+		
 		TUIButton *button1 = [TUIButton buttonWithType:TUIButtonTypeStandard];
 		button1.tintColor = [NSColor colorWithCalibratedRed:0.17 green:0.69 blue:0.84 alpha:1.0];
 		button1.frame = CGRectMake(10, 10, 256, 128);
