@@ -20,15 +20,20 @@
 
 - (id)initWithFrame:(CGRect)frame {
     if((self = [super initWithFrame:frame])) {
-        self.backgroundColor = [NSColor colorWithCalibratedWhite:0.96 alpha:1.0];
+        self.backgroundColor = [NSColor colorWithCalibratedWhite:0.23 alpha:1.0];
 		
 		TUIButton *button1 = [TUIButton buttonWithType:TUIButtonTypeStandard];
+		button1.tintColor = [NSColor colorWithCalibratedRed:0.17 green:0.69 blue:0.84 alpha:1.0];
 		button1.frame = CGRectMake(10, 10, 256, 128);
-		button1.titleLabel.font = [NSFont systemFontOfSize:12.0f];
+		button1.titleLabel.font = [NSFont systemFontOfSize:24.0f];
 		button1.titleLabel.alignment = TUITextAlignmentCenter;
 		button1.titleLabel.renderer.verticalAlignment = TUITextVerticalAlignmentMiddle;
-		[button1 setTitle:@"Login" forState:TUIControlStateNormal];
-		[button1 setTitleColor:[NSColor darkGrayColor] forState:TUIControlStateNormal];
+		button1.titleLabel.renderer.shadowBlur = 1.0f;
+		button1.titleLabel.renderer.shadowColor = [[NSColor blackColor] colorWithAlphaComponent:0.5];
+		button1.titleLabel.renderer.shadowOffset = CGSizeMake(0, -1);
+		button1.reversesTitleShadowWhenHighlighted = YES;
+		[button1 setTitle:@"Button 1" forState:TUIControlStateNormal];
+		[button1 setTitleColor:[NSColor whiteColor] forState:TUIControlStateNormal];
 		[self addSubview:button1];
     }
     return self;

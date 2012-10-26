@@ -23,28 +23,28 @@
 typedef enum {
 	
 	// Done
-    TUIButtonTypeCustom,
+	TUIButtonTypeCustom,
 	
 	// Done
-    TUIButtonTypeStandard,
+	TUIButtonTypeStandard,
 	
 	// Done
-    TUIButtonTypeBeveled,
+	TUIButtonTypeBeveled,
+	
+	// Done
+	TUIButtonTypeEmbossed,
+	
+	// Done
+	TUIButtonTypeGradient,
 	
 	// !!!
-    TUIButtonTypeEmbossed,
+	TUIButtonTypeMinimal,
 	
 	// !!!
-    TUIButtonTypeGradient,
+	TUIButtonTypeInline,
 	
 	// !!!
-    TUIButtonTypeMinimal,
-	
-	// !!!
-    TUIButtonTypeInline,
-	
-	// !!!
-    TUIButtonTypeIcon,
+	TUIButtonTypeIcon,
 } TUIButtonType;
 
 @interface TUIButton : TUIControl
@@ -71,7 +71,6 @@ typedef enum {
 @property (nonatomic, strong) NSMenu *popUpMenu;
 
 + (id)buttonWithType:(TUIButtonType)buttonType;
-- (id)initWithFrame:(CGRect)frame type:(TUIButtonType)type;
 
 - (CGRect)backgroundRectForBounds:(CGRect)bounds;
 - (CGRect)contentRectForBounds:(CGRect)bounds;
