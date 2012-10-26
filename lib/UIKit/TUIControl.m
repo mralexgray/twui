@@ -59,6 +59,7 @@
 	TUIControlState actual = TUIControlStateNormal;
 	
 	if(_controlFlags.disabled)			actual |= TUIControlStateDisabled;
+	if(_controlFlags.hover)				actual |= TUIControlStateHover;
 	if(_controlFlags.selected)			actual |= TUIControlStateSelected;
 	if(_controlFlags.tracking)			actual |= TUIControlStateHighlighted;
 	if(_controlFlags.highlighted)		actual |= TUIControlStateHighlighted;
@@ -123,6 +124,18 @@
 - (BOOL)acceptsFirstMouse:(NSEvent *)event
 {
 	return self.acceptsFirstMouse;
+}
+
+- (void)mouseEntered:(NSEvent *)theEvent {
+	_controlFlags.hover = 1;
+	[self sendActionsForControlEvents:TUIControlEventMouseHoverBegan];
+	[self setNeedsDisplay];
+}
+
+- (void)mouseExited:(NSEvent *)theEvent {
+	_controlFlags.hover = 0;
+	[self sendActionsForControlEvents:TUIControlEventMouseHoverEnded];
+	[self setNeedsDisplay];
 }
 
 - (void)mouseDown:(NSEvent *)event {

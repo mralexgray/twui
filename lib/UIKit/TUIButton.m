@@ -64,7 +64,7 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if((self = [super initWithFrame:frame])) {
-		_buttonFlags.buttonType = TUIButtonTypeEmbossed;
+		_buttonFlags.buttonType = TUIButtonTypeInline;
 		
 		self.backgroundColor = [NSColor clearColor];
 		self.opaque = NO;
@@ -188,7 +188,7 @@
 			CGContextFillRect(TUIGraphicsGetCurrentContext(), self.bounds);
 		}
 	} else if(self.buttonType == TUIButtonTypeStandard) {
-		CGFloat level = self.state == TUIControlStateHighlighted ? 0.93 : 0.99;
+		CGFloat level = self.state & TUIControlStateHighlighted ? 0.93 : 0.99;
 		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, 0.5, 0.5)
 															 xRadius:3.5f yRadius:3.5f];
 		NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[NSColor colorWithCalibratedWhite:0.93 alpha:1.0]
@@ -200,7 +200,7 @@
 		[[NSColor grayColor] setStroke];
 		[path stroke];
 		
-		if(self.state == TUIControlStateHighlighted) {
+		if(self.state & TUIControlStateHighlighted) {
 			NSColor *shadowColor = [[NSColor shadowColor] colorWithAlphaComponent:0.5];
 			NSShadow *shadow = [NSShadow shadowWithRadius:2.0f offset:CGSizeMake(0, -1) color:shadowColor];
 			
@@ -229,12 +229,12 @@
 		[NSGraphicsContext restoreGraphicsState];
 		
 		[bevel drawInBezierPath:path angle:-90.0];
-		if(self.state == TUIControlStateHighlighted) {
+		if(self.state & TUIControlStateHighlighted) {
 			[[NSColor colorWithCalibratedWhite:0.0 alpha:0.1] set];
 			[path fill];
 		}
 		
-		[[NSColor colorWithCalibratedWhite:0.569 alpha:1.0] setStroke];
+		[[NSColor colorWithCalibratedWhite:0.57 alpha:1.0] setStroke];
 		[path strokeInside];
 		
 		[path fillWithInnerShadow:[NSShadow shadowWithRadius:4.0
@@ -251,6 +251,11 @@
 			[path fill];
 		} [NSGraphicsContext restoreGraphicsState];
 		
+		if(self.state & TUIControlStateHighlighted) {
+			[[NSColor colorWithCalibratedWhite:0.0 alpha:0.1] set];
+			[path fill];
+		}
+		
 		[NSGraphicsContext saveGraphicsState]; {
 			[path fillWithInnerShadow:[NSShadow shadowWithRadius:2.0 offset:CGSizeMake(0, -1)
 														   color:[NSColor colorWithCalibratedWhite:1.0 alpha:0.5]]];
@@ -263,21 +268,43 @@
 		NSGradient *normal = [[NSGradient alloc] initWithStartingColor:[NSColor colorWithCalibratedWhite:0.67 alpha:1.0]
 														   endingColor:[NSColor colorWithCalibratedWhite:1.00 alpha:1.0]];
 		
-		
 		[NSGraphicsContext saveGraphicsState]; {
 			[[NSShadow shadowWithRadius:1.0 offset:CGSizeMake(0, -1)
 								  color:[NSColor colorWithCalibratedWhite:.863 alpha:.75]] set];
 			[path fill];
 		} [NSGraphicsContext restoreGraphicsState];
 		
-		[(self.state == TUIControlStateHighlighted) ? pressed : normal drawInBezierPath:path angle:90];
+		[(self.state & TUIControlStateHighlighted) ? pressed : normal drawInBezierPath:path angle:90];
 		[[NSColor colorWithCalibratedWhite:0.25 alpha:1.0] setStroke];
 		[path strokeInside];
 		
-		if(self.state == TUIControlStateHighlighted) {
+		if(self.state & TUIControlStateHighlighted) {
 			[path fillWithInnerShadow:[NSShadow shadowWithRadius:3.0 offset:NSZeroSize color:[NSColor blackColor]]];
 			[path fillWithInnerShadow:[NSShadow shadowWithRadius:8.0 offset:NSMakeSize(0.0, -2.0)
 														   color:[NSColor colorWithCalibratedWhite:0.0 alpha:.52]]];
+		}
+	} else if(self.buttonType == TUIButtonTypeMinimal) {
+		CGFloat radius = self.bounds.size.height / 2;
+		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:self.bounds xRadius:radius yRadius:radius];
+		NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[NSColor colorWithCalibratedWhite:0.95 alpha:1.0]
+															 endingColor:[NSColor colorWithCalibratedWhite:0.85 alpha:1.0]];
+		
+		[gradient drawInBezierPath:path angle:(self.state & TUIControlStateHighlighted) ? 90.0f : 270.0f];
+		[[NSColor grayColor] setStroke];
+		[path stroke];
+	} else if(self.buttonType == TUIButtonTypeInline) {
+		CGFloat radius = self.bounds.size.height / 2;
+		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:self.bounds xRadius:radius yRadius:radius];
+		
+		if(self.state & TUIControlStateHighlighted || self.state & TUIControlStateSelected) {
+			[[NSColor colorWithCalibratedWhite:0.15 alpha:0.85] set];
+			[path fill];
+			
+			if(self.state & TUIControlStateSelected)
+				[path fillWithInnerShadow:[NSShadow shadowWithRadius:3.0 offset:NSZeroSize color:[NSColor blackColor]]];
+		} else if(self.state & TUIControlStateHover) {
+			[[NSColor colorWithCalibratedWhite:0.15 alpha:0.5] set];
+			[path fill];
 		}
 	}
 }
@@ -358,6 +385,14 @@
 			[self redraw];
 		}];
 	}
+}
+
+- (void)mouseUp:(NSEvent *)event {
+	[super mouseUp:event];
+	
+	// Quick hack to allow inline buttons to be selected.
+	if(self.buttonType == TUIButtonTypeInline)
+		self.selected = !self.selected;
 }
 
 - (void)_stateDidChange {

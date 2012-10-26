@@ -30,7 +30,8 @@ enum {
 	TUIControlEventMouseUpOutside		= 1 <<  7,
 	TUIControlEventMouseCancel			= 1 <<  8,
 	
-	TUIControlEventMouseHover			= 1 <<  9,
+	TUIControlEventMouseHoverBegan		= 1 <<  9,
+	TUIControlEventMouseHoverEnded		= 1 <<  9,
 	TUIControlEventValueChanged			= 1 << 12,
 	
 	/*
@@ -50,13 +51,14 @@ enum {
 typedef NSUInteger TUIControlEvents;
 
 enum {
-  TUIControlStateNormal	   = 0,					   
-  TUIControlStateHighlighted  = 1 << 0,
-  TUIControlStateDisabled	 = 1 << 1,
-  TUIControlStateSelected	 = 1 << 2,
-  TUIControlStateNotKey	   = 1 << 11,
-  TUIControlStateApplication  = 0x00FF0000,
-  TUIControlStateReserved	 = 0xFF000000
+	TUIControlStateNormal			= 0,					   
+	TUIControlStateHighlighted		= 1 << 0,
+	TUIControlStateDisabled			= 1 << 1,
+	TUIControlStateSelected			= 1 << 2,
+	TUIControlStateHover			= 1 << 3,
+	TUIControlStateNotKey			= 1 << 11,
+	TUIControlStateApplication		= 0x00FF0000,
+	TUIControlStateReserved			= 0xFF000000
 };
 typedef NSUInteger TUIControlState;
 
@@ -69,6 +71,7 @@ typedef NSUInteger TUIControlState;
 		unsigned int acceptsFirstMouse:1;
 		unsigned int tracking:1;
 		unsigned int highlighted:1;
+		unsigned int hover:1;
 	} _controlFlags;
 }
 
