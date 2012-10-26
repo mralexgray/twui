@@ -40,7 +40,7 @@ enum {
 	TUIControlEventEditingChanged		= 1 << 17,
 	TUIControlEventEditingDidEnd		= 1 << 18,
 	 */
-	TUIControlEventEditingDidEndOnExit = 1 << 19,
+	TUIControlEventEditingDidEndOnExit	= 1 << 19,
 	
 	TUIControlEventAllMouseEvents		= 0x00000FFF,
 	TUIControlEventAllEditingEvents		= 0x000F0000,

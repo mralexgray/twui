@@ -58,12 +58,19 @@
 	// state that is based on other properties.
 	TUIControlState actual = TUIControlStateNormal;
 	
-	if(_controlFlags.disabled)			actual |= TUIControlStateDisabled;
-	if(_controlFlags.hover)				actual |= TUIControlStateHover;
-	if(_controlFlags.selected)			actual |= TUIControlStateSelected;
-	if(_controlFlags.tracking)			actual |= TUIControlStateHighlighted;
-	if(_controlFlags.highlighted)		actual |= TUIControlStateHighlighted;
-	if(![self.nsView isWindowKey])		actual |= TUIControlStateNotKey;
+	if(_controlFlags.disabled)
+		actual |= TUIControlStateDisabled;
+	if(![self.nsView isWindowKey])
+		actual |= TUIControlStateNotKey;
+	
+	if(!_controlFlags.selected) {
+		if(_controlFlags.hover)
+			actual |= TUIControlStateHover;
+		
+		if(_controlFlags.tracking || _controlFlags.highlighted)
+			actual |= TUIControlStateHighlighted;
+	} else
+		actual |= TUIControlStateSelected;
 	
 	return actual;
 }
@@ -143,6 +150,10 @@
 		return;
 	[super mouseDown:event];
 	
+	_controlFlags.hover = 0;
+	[self sendActionsForControlEvents:TUIControlEventMouseHoverEnded];
+	[self setNeedsDisplay];
+	
 	BOOL track = [self beginTrackingWithEvent:event];
 	if(track && !_controlFlags.tracking) {
 		[self _stateWillChange];
@@ -153,6 +164,7 @@
 		_controlFlags.tracking = 0;
 		[self _stateDidChange];
 	}
+	[self setNeedsDisplay];
 	
 	if(_controlFlags.tracking) {
 		TUIControlEvents currentEvents = (([event clickCount] >= 2) ?
@@ -160,7 +172,6 @@
 										  TUIControlEventMouseDown);
 		
 		[self sendActionsForControlEvents:currentEvents];
-		[self setNeedsDisplay];
 	}
 }
 
@@ -180,6 +191,7 @@
 			_controlFlags.tracking = 0;
 			[self _stateDidChange];
 		}
+		[self setNeedsDisplay];
 		
 		if(_controlFlags.tracking) {
 			TUIControlEvents currentEvents = (([self eventInside:event])?
@@ -187,7 +199,6 @@
 											  TUIControlEventMouseDragOutside);
 			
 			[self sendActionsForControlEvents:currentEvents];
-			[self setNeedsDisplay];
 		}
 	}
 	
@@ -198,6 +209,12 @@
 		return;
 	[super mouseUp:event];
 	
+	if([self eventInside:event]) {
+		_controlFlags.hover = 1;
+		[self sendActionsForControlEvents:TUIControlEventMouseHoverBegan];
+		[self setNeedsDisplay];
+	}
+	
 	if(_controlFlags.tracking) {
 		[self endTrackingWithEvent:event];
 		
@@ -206,11 +223,11 @@
 										  TUIControlEventMouseUpOutside);
 		
 		[self sendActionsForControlEvents:currentEvents];
-		[self setNeedsDisplay];
 		
 		[self _stateWillChange];
 		_controlFlags.tracking = 0;
 		[self _stateDidChange];
+		[self setNeedsDisplay];
 	}
 }
 

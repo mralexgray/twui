@@ -38,13 +38,14 @@
 
 @interface TUIButton () {
     struct {
-        unsigned int buttonType:8;
+        unsigned buttonType:8;
+		unsigned wasHighlighted:1;
 		
-		unsigned int dimsInBackground:1;
-		unsigned int lightButtonWhenHighlighted:1;
-		unsigned int adjustsImageWhenHighlighted:1;
-		unsigned int adjustsImageWhenDisabled:1;
-		unsigned int reversesTitleShadowWhenHighlighted:1;
+		unsigned dimsInBackground:1;
+		unsigned lightButtonWhenHighlighted:1;
+		unsigned adjustsImageWhenHighlighted:1;
+		unsigned adjustsImageWhenDisabled:1;
+		unsigned reversesTitleShadowWhenHighlighted:1;
     } _buttonFlags;
 }
 
@@ -69,6 +70,7 @@
 		_buttonFlags.buttonType = TUIButtonTypeStandard;
 		
 		self.backgroundColor = [NSColor clearColor];
+		self.tintColor = [NSColor whiteColor];
 		self.opaque = NO;
 		
 		self.contentLookup = [[NSMutableDictionary alloc] init];
@@ -256,7 +258,8 @@
 		} [NSGraphicsContext restoreGraphicsState];
 		
 	} else if(self.buttonType == TUIButtonTypeGradient) {
-		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, 0, 1) xRadius:3.5f yRadius:3.5f];
+		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, 0, 1)
+															 xRadius:3.5f yRadius:3.5f];
 		NSGradient *pressed = [[NSGradient alloc] initWithStartingColor:[NSColor colorWithCalibratedWhite:0.50 alpha:1.0]
 															endingColor:[NSColor colorWithCalibratedWhite:0.38 alpha:1.0]];
 		NSGradient *normal = [[NSGradient alloc] initWithStartingColor:[NSColor colorWithCalibratedWhite:0.67 alpha:1.0]
@@ -264,7 +267,7 @@
 		
 		[NSGraphicsContext saveGraphicsState]; {
 			[[NSShadow shadowWithRadius:1.0 offset:CGSizeMake(0, -1)
-								  color:[NSColor colorWithCalibratedWhite:.863 alpha:.75]] set];
+								  color:[NSColor colorWithCalibratedWhite:.86 alpha:0.75]] set];
 			[path fill];
 		} [NSGraphicsContext restoreGraphicsState];
 		
@@ -279,7 +282,8 @@
 		}
 	} else if(self.buttonType == TUIButtonTypeMinimal) {
 		CGFloat radius = self.bounds.size.height / 2;
-		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:self.bounds xRadius:radius yRadius:radius];
+		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, 0.5f, 0.5f)
+															 xRadius:radius yRadius:radius];
 		NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[NSColor colorWithCalibratedWhite:0.95 alpha:1.0]
 															 endingColor:[NSColor colorWithCalibratedWhite:0.85 alpha:1.0]];
 		
@@ -385,26 +389,23 @@
 	[super mouseUp:event];
 	
 	// Quick hack to allow inline buttons to be selected.
-	if(self.buttonType == TUIButtonTypeInline)
+	if(self.buttonType == TUIButtonTypeInline && [self eventInside:event])
 		self.selected = !self.selected;
 }
 
-- (void)_stateDidChange {
-	[super _stateDidChange];
-	
-	[self setNeedsDisplay];
+- (void)_stateWillChange {
+	if(self.state & TUIControlStateHighlighted)
+		_buttonFlags.wasHighlighted = 1;
 }
 
-- (void)setHighlighted:(BOOL)highlighted {
-	if(self.highlighted == highlighted)
-		return;
-	
-	if(self.reversesTitleShadowWhenHighlighted) {
-		_titleLabel.renderer.shadowOffset = CGSizeMake(_titleLabel.renderer.shadowOffset.width,
-													   -_titleLabel.renderer.shadowOffset.height);
+- (void)_stateDidChange {
+	BOOL isHighlighted = (self.state & TUIControlStateHighlighted);
+	if((isHighlighted != _buttonFlags.wasHighlighted) && self.reversesTitleShadowWhenHighlighted) {
+		CGSize shadow = _titleLabel.renderer.shadowOffset;
+		shadow.height *= -1;
+		shadow.width *= -1;
+		_titleLabel.renderer.shadowOffset = shadow;
 	}
-	
-	[super setHighlighted:highlighted];
 }
 
 @end
@@ -433,36 +434,36 @@
 - (void)setTitle:(NSString *)title forState:(TUIControlState)state {
 	[self _stateWillChange];
 	[[self _contentForState:state] setTitle:title];
-	[self setNeedsDisplay];
 	[self _stateDidChange];
+	[self setNeedsDisplay];
 }
 
 - (void)setTitleColor:(NSColor *)color forState:(TUIControlState)state {
 	[self _stateWillChange];
 	[[self _contentForState:state] setTitleColor:color];
-	[self setNeedsDisplay];
 	[self _stateDidChange];
+	[self setNeedsDisplay];
 }
 
 - (void)setTitleShadowColor:(NSColor *)color forState:(TUIControlState)state {
 	[self _stateWillChange];
 	[[self _contentForState:state] setShadowColor:color];
-	[self setNeedsDisplay];
 	[self _stateDidChange];
+	[self setNeedsDisplay];
 }
 
 - (void)setImage:(NSImage *)i forState:(TUIControlState)state {
 	[self _stateWillChange];
 	[[self _contentForState:state] setImage:i];
-	[self setNeedsDisplay];
 	[self _stateDidChange];
+	[self setNeedsDisplay];
 }
 
 - (void)setBackgroundImage:(NSImage *)i forState:(TUIControlState)state {
 	[self _stateWillChange];
 	[[self _contentForState:state] setBackgroundImage:i];
-	[self setNeedsDisplay];
 	[self _stateDidChange];
+	[self setNeedsDisplay];
 }
 
 - (NSString *)titleForState:(TUIControlState)state {

@@ -10,14 +10,7 @@
 
 @implementation TUIControl (Private)
 
-- (void)_stateWillChange
-{
-	
-}
-
-- (void)_stateDidChange
-{
-	
-}
+- (void)_stateWillChange {}
+- (void)_stateDidChange {}
 
 @end
