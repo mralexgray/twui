@@ -19,7 +19,7 @@
 
 @interface ExampleView : TUIView <ExampleTabBarDelegate>
 
-@property (nonatomic, retain) ExampleTabBar *tabBar;
-@property (nonatomic, retain) TUINavigationController *navigationController;
+@property (nonatomic, strong) ExampleTabBar *tabBar;
+@property (nonatomic, strong) TUINavigationController *navigationController;
 
 @end
