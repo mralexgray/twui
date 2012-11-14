@@ -44,6 +44,4 @@
 @property (nonatomic, unsafe_unretained) TUIViewController *parentViewController; // If this view controller is inside a navigation controller or tab bar controller, or has been presented modally by another view controller, return it.
 @property (nonatomic, unsafe_unretained) TUINavigationController *navigationController;
 
-- (TUIView *)setupStandardView; // don't use this
-
 @end

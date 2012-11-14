@@ -93,13 +93,4 @@
 	return _view.initialFirstResponder;
 }
 
-- (TUIView *)setupStandardView
-{
-	TUIView *v = [[TUIView alloc] initWithFrame:CGRectMake(0, 0, 500, 500)];
-	v.backgroundColor = [NSColor colorWithCalibratedWhite:0.96 alpha:1.0];
-	self.view = v;
-	
-	return v;
-}
-
 @end
