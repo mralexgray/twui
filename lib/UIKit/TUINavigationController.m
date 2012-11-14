@@ -15,7 +15,7 @@
 
 @end
 
-static CGFloat const TUINavigationControllerAnimationDuration = 0.5f;
+static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
 
 @implementation TUINavigationController
 
