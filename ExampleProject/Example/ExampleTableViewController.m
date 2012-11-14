@@ -68,14 +68,14 @@
 
 - (TUIView *)tableView:(TUITableView *)tableView headerViewForSection:(NSInteger)section
 {
-	ExampleSectionHeaderView *view = [[ExampleSectionHeaderView alloc] initWithFrame:CGRectMake(0, 0, 100, 32)];
+	ExampleSectionHeaderView *header = [[ExampleSectionHeaderView alloc] initWithFrame:CGRectMake(0, 0, 100, 32)];
 	TUIAttributedString *title = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"Example Section %d", (int)section]];
 	title.color = [NSColor blackColor];
 	title.font = exampleFont2;
-	view.labelRenderer.attributedString = title;
+	header.labelRenderer.attributedString = title;
 	
 	// Dragging a title can drag the window too.
-	[view setMoveWindowByDragging:YES];
+	[header setMoveWindowByDragging:YES];
 	
 	// Add an activity indicator to the header view with a 24x24 size.
 	// Since we know the height of the header won't change we can pre-
@@ -99,10 +99,10 @@
 	indicator.layer.shadowRadius = 1.0f;
 	
 	// We then add it as a subview and tell it to start animating.
-	[view addSubview:indicator];
+	[header	addSubview:indicator];
 	[indicator startAnimating];
 	
-	return view;
+	return header;
 }
 
 - (TUITableViewCell *)tableView:(TUITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
