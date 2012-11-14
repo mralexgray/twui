@@ -111,7 +111,7 @@
 	NSLog(@"selected tab %ld", index);
 	if(index == [[tabBar tabViews] count] - 1){
 	  NSLog(@"popping nav controller...");
-	  [self.navigationController popViewControlerAnimated:YES];
+	  [self.navigationController popViewControllerAnimated:YES];
 	}
 }
 
