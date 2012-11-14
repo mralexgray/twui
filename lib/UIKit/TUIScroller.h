@@ -28,6 +28,5 @@
 @property (nonatomic, readonly, getter = isExpanded) BOOL expanded;
 
 - (void)flash;
-- (void)stop;
 
 @end
