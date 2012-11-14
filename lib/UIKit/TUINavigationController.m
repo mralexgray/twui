@@ -68,7 +68,7 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
 }
 
 - (void)setViewControllers:(NSArray *)viewControllers animated:(BOOL)animated completion:(void (^)(BOOL finished))completion {	
-	CGFloat duration = animated ? TUINavigationControllerAnimationDuration : 0;
+	CGFloat duration = (animated ? TUINavigationControllerAnimationDuration : 0);
 
 	TUIViewController *viewController = [viewControllers lastObject];
 	BOOL containedAlready = ([_stack containsObject:viewController]);
@@ -76,7 +76,7 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
 	[CATransaction begin];
 	//Push if it's not in the stack, pop back if it is
 	[self.view addSubview:viewController.view];
-	viewController.view.frame = containedAlready ? TUINavigationOffscreenLeftFrame(self.view.bounds) : TUINavigationOffscreenRightFrame(self.view.bounds);
+	viewController.view.frame = (containedAlready ? TUINavigationOffscreenLeftFrame(self.view.bounds) : TUINavigationOffscreenRightFrame(self.view.bounds));
 	[CATransaction flush];
 	[CATransaction commit];
 
@@ -92,7 +92,7 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
 	}
 	
 	[TUIView animateWithDuration:duration animations:^{
-		last.view.frame = containedAlready ? TUINavigationOffscreenRightFrame(self.view.bounds) : TUINavigationOffscreenLeftFrame(self.view.bounds);
+		last.view.frame = (containedAlready ? TUINavigationOffscreenRightFrame(self.view.bounds) : TUINavigationOffscreenLeftFrame(self.view.bounds));
 		viewController.view.frame = self.view.bounds;
 	} completion:^(BOOL finished) {
 		[last.view removeFromSuperview];
@@ -121,7 +121,7 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
 	[_stack addObject:viewController];
 	viewController.navigationController = self;
 
-	CGFloat duration = animated ? TUINavigationControllerAnimationDuration : 0;
+	CGFloat duration = (animated ? TUINavigationControllerAnimationDuration : 0);
 		
 	[last viewWillDisappear:animated];
 	
@@ -163,7 +163,7 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
 	return [self popViewControllerAnimated:animated completion:nil];
 }
 
-- (TUIViewController *)popViewControllerAnimated:(BOOL)animated completion:(void (^)(BOOL finished))completion {
+//- (TUIViewController *)popViewControllerAnimated:(BOOL)animated completion:(void (^)(BOOL finished))completion {
 	if ([_stack count] <= 1) {
 		NSLog(@"Not enough view controllers on stack to pop");
 		return nil;
@@ -207,7 +207,7 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
 	[self.view addSubview:viewController.view];
 	viewController.view.frame = TUINavigationOffscreenLeftFrame(self.view.bounds);
 	
-	CGFloat duration = animated ? TUINavigationControllerAnimationDuration : 0;
+	CGFloat duration = (animated ? TUINavigationControllerAnimationDuration : 0);
 
 	[last viewWillDisappear:animated];
 	
