@@ -169,7 +169,7 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.5f;
 		return nil;
 	}
 	TUIViewController *popped = [_stack lastObject];
-	[self popToViewController:[_stack objectAtIndex:([_stack count] - 2)] animated:animated completion:completion];
+	[self popToViewController:_stack[([_stack count] - 2)] animated:animated completion:completion];
 	return popped;
 }
 
@@ -178,10 +178,10 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.5f;
 }
 
 - (NSArray *)popToRootViewControllerAnimated:(BOOL)animated completion:(void (^)(BOOL finished))completion {
-	if ([[self topViewController] isEqual:[_stack objectAtIndex:0]] == YES) {
+	if ([[self topViewController] isEqual:_stack[0]] == YES) {
 		return @[];
 	}
-	return [self popToViewController:[_stack objectAtIndex:0] animated:animated completion:completion];
+	return [self popToViewController:_stack[0] animated:animated completion:completion];
 }
 
 - (NSArray *)popToViewController:(TUIViewController *)viewController animated:(BOOL)animated {
