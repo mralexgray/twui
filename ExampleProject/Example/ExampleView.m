@@ -19,23 +19,12 @@
 
 #define TAB_HEIGHT 60
 
-@interface ExampleView () {
-	NSFont *exampleFont1;
-	NSFont *exampleFont2;
-}
-
-@end
-
 @implementation ExampleView
 
 - (id)initWithFrame:(CGRect)frame
 {
 	if((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [NSColor colorWithCalibratedWhite:0.9 alpha:1.0];
-		
-		// if you're using a font a lot, it's best to allocate it once and re-use it
-		exampleFont1 = [NSFont fontWithName:@"HelveticaNeue" size:15];
-		exampleFont2 = [NSFont fontWithName:@"HelveticaNeue-Bold" size:15];
 		
 		CGRect b = self.bounds;
 		b.origin.y += TAB_HEIGHT;
@@ -44,13 +33,10 @@
 		ExampleTableViewController *tableViewController = [[ExampleTableViewController alloc] initWithNibName:nil bundle:nil];
 		_navigationController = [[TUINavigationController alloc] initWithRootViewController:tableViewController];
 		[self addSubview:_navigationController.view];
-		_navigationController.view.layout = ^(TUIView *v) { // 'v' in this case will point to the same object as 'tabs'
-			TUIView *superview = v.superview; // note we're using the passed-in 'v' argument, rather than referencing 'tabs' in the block, this avoids a retain cycle without jumping through hoops
-			CGRect rect = superview.bounds; // take the superview bounds
-			rect.size.height -= TAB_HEIGHT;
-			rect.origin.y += TAB_HEIGHT;
-			return rect;
-		};
+		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeWidth relativeTo:@"superview" attribute:TUILayoutConstraintAttributeWidth]];
+		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeHeight relativeTo:@"superview" attribute:TUILayoutConstraintAttributeHeight offset:-TAB_HEIGHT]];
+		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeMinX relativeTo:@"superview" attribute:TUILayoutConstraintAttributeMinX]];
+		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeMinY relativeTo:@"superview" attribute:TUILayoutConstraintAttributeMinY offset:TAB_HEIGHT]];
 		
 		/*
 		 Note by default scroll views (and therefore table views) don't
