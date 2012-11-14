@@ -33,8 +33,8 @@
 - (void)pushViewController:(TUIViewController *)viewController animated:(BOOL)animated;
 - (void)pushViewController:(TUIViewController *)viewController animated:(BOOL)animated completion:(void (^)(BOOL finished))completion;
 
-- (TUIViewController *)popViewControlerAnimated:(BOOL)animated;
-- (TUIViewController *)popViewControlerAnimated:(BOOL)animated completion:(void (^)(BOOL finished))completion;
+- (TUIViewController *)popViewControllerAnimated:(BOOL)animated;
+- (TUIViewController *)popViewControllerAnimated:(BOOL)animated completion:(void (^)(BOOL finished))completion;
 
 - (NSArray *)popToRootViewControllerAnimated:(BOOL)animated;
 - (NSArray *)popToRootViewControllerAnimated:(BOOL)animated completion:(void (^)(BOOL finished))completion;

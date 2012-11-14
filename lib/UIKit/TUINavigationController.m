@@ -159,11 +159,11 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
 	}];
 }
 
-- (TUIViewController *)popViewControlerAnimated:(BOOL)animated {
-	return [self popViewControlerAnimated:animated completion:nil];
+- (TUIViewController *)popViewControllerAnimated:(BOOL)animated {
+	return [self popViewControllerAnimated:animated completion:nil];
 }
 
-- (TUIViewController *)popViewControlerAnimated:(BOOL)animated completion:(void (^)(BOOL finished))completion {
+- (TUIViewController *)popViewControllerAnimated:(BOOL)animated completion:(void (^)(BOOL finished))completion {
 	if ([_stack count] <= 1) {
 		NSLog(@"Not enough view controllers on stack to pop");
 		return nil;
