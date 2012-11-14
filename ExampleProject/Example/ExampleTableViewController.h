@@ -10,6 +10,6 @@
 
 @interface ExampleTableViewController : TUIViewController <TUITableViewDelegate, TUITableViewDataSource>
 
-@property (nonatomic, retain) TUITableView *tableView;
+@property (nonatomic, strong) TUITableView *tableView;
 
 @end
