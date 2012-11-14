@@ -22,10 +22,8 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
 	if (self) {
-
 		exampleFont1 = [NSFont fontWithName:@"HelveticaNeue" size:15];
 		exampleFont2 = [NSFont fontWithName:@"HelveticaNeue-Bold" size:15];
-
 	}
 	return self;
 }
