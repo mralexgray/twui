@@ -10,23 +10,7 @@
 #import "ExampleSectionHeaderView.h"
 #import "ExampleTableViewCell.h"
 
-@interface ExampleTableViewController () {
-	NSFont *exampleFont1;
-	NSFont *exampleFont2;
-}
-
-@end
-
 @implementation ExampleTableViewController
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-	self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-	if (self) {
-		exampleFont1 = [NSFont fontWithName:@"HelveticaNeue" size:15];
-		exampleFont2 = [NSFont fontWithName:@"HelveticaNeue-Bold" size:15];
-	}
-	return self;
-}
 
 - (void)loadView {
 	self.view = [[TUIView alloc] initWithFrame:CGRectMake(0, 0, 300, 300)];
@@ -44,7 +28,7 @@
 	TUILabel *footerLabel = [[TUILabel alloc] initWithFrame:CGRectMake(0, 0, _tableView.frame.size.width, 44)];
 	footerLabel.alignment = TUITextAlignmentCenter;
 	footerLabel.backgroundColor = [NSColor clearColor];
-	footerLabel.font = exampleFont2;
+	footerLabel.font = [NSFont fontWithName:@"HelveticaNeue-Bold" size:15];
 	footerLabel.text = @"Example Footer View";
 	_tableView.footerView = footerLabel;
 	
@@ -67,7 +51,7 @@
 	ExampleSectionHeaderView *header = [[ExampleSectionHeaderView alloc] initWithFrame:CGRectMake(0, 0, 100, 32)];
 	TUIAttributedString *title = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"Example Section %d", (int)section]];
 	title.color = [NSColor blackColor];
-	title.font = exampleFont2;
+	title.font = [NSFont fontWithName:@"HelveticaNeue-Bold" size:15];
 	header.labelRenderer.attributedString = title;
 	
 	// Dragging a title can drag the window too.
@@ -106,8 +90,8 @@
 	
 	TUIAttributedString *s = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"example cell %d", (int)indexPath.row]];
 	s.color = [NSColor blackColor];
-	s.font = exampleFont1;
-	[s setFont:exampleFont2 inRange:NSMakeRange(8, 4)]; // make the word "cell" bold
+	s.font = [NSFont fontWithName:@"HelveticaNeue" size:15];;
+	[s setFont:[NSFont fontWithName:@"HelveticaNeue-Bold" size:15] inRange:NSMakeRange(8, 4)]; // make the word "cell" bold
 	cell.attributedString = s;
 	
 	return cell;
