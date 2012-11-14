@@ -17,22 +17,22 @@
 }
 
 - (void)viewDidLoad {
-	_tableView = [[TUITableView alloc] initWithFrame:self.view.frame];
-	_tableView.alwaysBounceVertical = YES;
-	_tableView.dataSource = self;
-	_tableView.delegate = self;
-	[_tableView reloadData];
-	_tableView.maintainContentOffsetAfterReload = YES;
-	_tableView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
+	self.tableView = [[TUITableView alloc] initWithFrame:self.view.frame];
+	self.tableView.alwaysBounceVertical = YES;
+	self.tableView.dataSource = self;
+	self.tableView.delegate = self;
+	[self.tableView reloadData];
+	self.tableView.maintainContentOffsetAfterReload = YES;
+	self.tableView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
 	
 	TUILabel *footerLabel = [[TUILabel alloc] initWithFrame:CGRectMake(0, 0, _tableView.frame.size.width, 44)];
 	footerLabel.alignment = TUITextAlignmentCenter;
 	footerLabel.backgroundColor = [NSColor clearColor];
 	footerLabel.font = [NSFont fontWithName:@"HelveticaNeue-Bold" size:15];
 	footerLabel.text = @"Example Footer View";
-	_tableView.footerView = footerLabel;
+	self.tableView.footerView = footerLabel;
 	
-	[self.view addSubview:_tableView];
+	[self.view addSubview:self.tableView];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(TUITableView *)tableView {
