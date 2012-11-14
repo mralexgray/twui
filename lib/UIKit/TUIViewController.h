@@ -17,12 +17,14 @@
 #import "TUIResponder.h"
 
 @class TUINavigationItem;
+@class TUINavigationController;
 @class TUIView;
 
 @interface TUIViewController : TUIResponder <NSCopying>
 {
 	TUIView           *_view;
 	__unsafe_unretained TUIViewController *_parentViewController; // Nonretained
+	__unsafe_unretained TUINavigationController *_navigationController; // Nonretained
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil;
@@ -41,7 +43,8 @@
 
 - (void)didReceiveMemoryWarning;
 
-@property(nonatomic,weak) TUIViewController *parentViewController; // If this view controller is inside a navigation controller or tab bar controller, or has been presented modally by another view controller, return it.
+@property (nonatomic, weak) TUIViewController *parentViewController; // If this view controller is inside a navigation controller or tab bar controller, or has been presented modally by another view controller, return it.
+@property (nonatomic, weak) TUINavigationController *navigationController;
 
 - (TUIView *)setupStandardView; // don't use this
 

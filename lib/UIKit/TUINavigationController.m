@@ -24,6 +24,7 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.5f;
 	if (self) {
 		_stack = [@[] mutableCopy];
 		[_stack addObject:viewController];
+		viewController.navigationController = self;
 		self.view.clipsToBounds = YES;
 	}
 	return self;
@@ -81,8 +82,14 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.5f;
 
 	TUIViewController *last = [self topViewController];
 
+	for (TUIViewController *controller in _stack) {
+		controller.navigationController = nil;
+	}
 	[_stack removeAllObjects];
 	[_stack addObjectsFromArray:viewControllers];
+	for (TUIViewController *controller in viewControllers) {
+		controller.navigationController = self;
+	}
 	
 	[TUIView animateWithDuration:duration animations:^{
 		last.view.frame = containedAlready ? TUINavigationOffscreenRightFrame(self.view.bounds) : TUINavigationOffscreenLeftFrame(self.view.bounds);
@@ -112,6 +119,8 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.5f;
 
 	TUIViewController *last = [self topViewController];
 	[_stack addObject:viewController];
+	viewController.navigationController = self;
+
 	CGFloat duration = animated ? TUINavigationControllerAnimationDuration : 0;
 		
 	[last viewWillDisappear:animated];
@@ -190,6 +199,7 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.5f;
 	NSMutableArray *popped = [@[] mutableCopy];
 	while ([viewController isEqual:[_stack lastObject]] == NO) {
 		[popped addObject:[_stack lastObject]];
+		[(TUIViewController *)[_stack lastObject] setNavigationController:nil];
 		[_stack removeLastObject];
 	}
 	

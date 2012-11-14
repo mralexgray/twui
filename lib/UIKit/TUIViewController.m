@@ -98,6 +98,16 @@
 	_parentViewController = v;
 }
 
+- (TUINavigationController *)navigationController
+{
+	return _navigationController;
+}
+
+- (void)setNavigationController:(TUINavigationController *)v
+{
+	_navigationController = v;
+}
+
 - (TUIResponder *)initialFirstResponder
 {
 	return _view.initialFirstResponder;
