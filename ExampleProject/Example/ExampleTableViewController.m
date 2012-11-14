@@ -51,23 +51,19 @@
 	[self.view addSubview:_tableView];
 }
 
-- (NSInteger)numberOfSectionsInTableView:(TUITableView *)tableView
-{
+- (NSInteger)numberOfSectionsInTableView:(TUITableView *)tableView {
 	return 8;
 }
 
-- (NSInteger)tableView:(TUITableView *)table numberOfRowsInSection:(NSInteger)section
-{
+- (NSInteger)tableView:(TUITableView *)table numberOfRowsInSection:(NSInteger)section {
 	return 25;
 }
 
-- (CGFloat)tableView:(TUITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (CGFloat)tableView:(TUITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	return 50.0;
 }
 
-- (TUIView *)tableView:(TUITableView *)tableView headerViewForSection:(NSInteger)section
-{
+- (TUIView *)tableView:(TUITableView *)tableView headerViewForSection:(NSInteger)section {
 	ExampleSectionHeaderView *header = [[ExampleSectionHeaderView alloc] initWithFrame:CGRectMake(0, 0, 100, 32)];
 	TUIAttributedString *title = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"Example Section %d", (int)section]];
 	title.color = [NSColor blackColor];
@@ -105,8 +101,7 @@
 	return header;
 }
 
-- (TUITableViewCell *)tableView:(TUITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (TUITableViewCell *)tableView:(TUITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	ExampleTableViewCell *cell = reusableTableCellOfClass(tableView, ExampleTableViewCell);
 	
 	TUIAttributedString *s = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"example cell %d", (int)indexPath.row]];
@@ -118,8 +113,7 @@
 	return cell;
 }
 
-- (void)tableView:(TUITableView *)tableView didClickRowAtIndexPath:(NSIndexPath *)indexPath withEvent:(NSEvent *)event
-{
+- (void)tableView:(TUITableView *)tableView didClickRowAtIndexPath:(NSIndexPath *)indexPath withEvent:(NSEvent *)event {
 	if([event clickCount] == 1) {
 		// do something cool
 		ExampleTableViewController *pushed = [[ExampleTableViewController alloc] initWithNibName:nil bundle:nil];
