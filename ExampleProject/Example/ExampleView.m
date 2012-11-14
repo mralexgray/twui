@@ -15,10 +15,16 @@
  */
 
 #import "ExampleView.h"
-#import "ExampleTableViewCell.h"
-#import "ExampleSectionHeaderView.h"
+#import "ExampleTableViewController.h"
 
 #define TAB_HEIGHT 60
+
+@interface ExampleView () {
+	NSFont *exampleFont1;
+	NSFont *exampleFont2;
+}
+
+@end
 
 @implementation ExampleView
 
@@ -35,27 +41,22 @@
 		b.origin.y += TAB_HEIGHT;
 		b.size.height -= TAB_HEIGHT;
 		
+		ExampleTableViewController *tableViewController = [[ExampleTableViewController alloc] initWithNibName:nil bundle:nil];
+		_navigationController = [[TUINavigationController alloc] initWithRootViewController:tableViewController];
+		[self addSubview:_navigationController.view];
+		_navigationController.view.layout = ^(TUIView *v) { // 'v' in this case will point to the same object as 'tabs'
+			TUIView *superview = v.superview; // note we're using the passed-in 'v' argument, rather than referencing 'tabs' in the block, this avoids a retain cycle without jumping through hoops
+			CGRect rect = superview.bounds; // take the superview bounds
+			rect.size.height -= TAB_HEIGHT;
+			rect.origin.y += TAB_HEIGHT;
+			return rect;
+		};
+		
 		/*
 		 Note by default scroll views (and therefore table views) don't
 		 have clipsToBounds enabled.  Set only if needed.  In this case
 		 we don't, so it could potentially save us some rendering costs.
 		 */
-		_tableView = [[TUITableView alloc] initWithFrame:b];
-		_tableView.alwaysBounceVertical = YES;
-		_tableView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
-		_tableView.dataSource = self;
-		_tableView.delegate = self;
-		_tableView.maintainContentOffsetAfterReload = YES;
-		
-		TUILabel *footerLabel = [[TUILabel alloc] initWithFrame:CGRectMake(0, 0, _tableView.frame.size.width, 44)];
-		footerLabel.alignment = TUITextAlignmentCenter;
-		footerLabel.backgroundColor = [NSColor clearColor];
-		footerLabel.font = exampleFont2;
-		footerLabel.text = @"Example Footer View";
-		_tableView.footerView = footerLabel;
-		
-		[self addSubview:_tableView];
-		
 		_tabBar = [[ExampleTabBar alloc] initWithNumberOfTabs:5];
 		_tabBar.delegate = self;
 		// It'd be easier to just use .autoresizingmask, but for demonstration we'll use ^layout.
@@ -123,114 +124,9 @@
 {
 	NSLog(@"selected tab %ld", index);
 	if(index == [[tabBar tabViews] count] - 1){
-	  NSLog(@"Reload table data...");
-	  [_tableView reloadData];
+	  NSLog(@"popping nav controller...");
+	  [self.navigationController popViewControlerAnimated:YES];
 	}
-}
-
-- (NSInteger)numberOfSectionsInTableView:(TUITableView *)tableView
-{
-	return 8;
-}
-
-- (NSInteger)tableView:(TUITableView *)table numberOfRowsInSection:(NSInteger)section
-{
-	return 25;
-}
-
-- (CGFloat)tableView:(TUITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-	return 50.0;
-}
-
-- (TUIView *)tableView:(TUITableView *)tableView headerViewForSection:(NSInteger)section
-{
-	ExampleSectionHeaderView *view = [[ExampleSectionHeaderView alloc] initWithFrame:CGRectMake(0, 0, 100, 32)];
-	TUIAttributedString *title = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"Example Section %d", (int)section]];
-	title.color = [NSColor blackColor];
-	title.font = exampleFont2;
-	view.labelRenderer.attributedString = title;
-	
-	// Dragging a title can drag the window too.
-	[view setMoveWindowByDragging:YES];
-	
-	// Add an activity indicator to the header view with a 24x24 size.
-	// Since we know the height of the header won't change we can pre-
-	// pad it to 4. However, since the table view's width can change,
-	// we'll create a layout constraint to keep the activity indicator
-	// anchored 16px left of the right side of the header view.
-	TUIActivityIndicatorView *indicator = [[TUIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 4, 24, 24)
-																   activityIndicatorStyle:TUIActivityIndicatorViewStyleGray];
-	[indicator addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeMaxX
-															 relativeTo:@"superview"
-															  attribute:TUILayoutConstraintAttributeMaxX
-																 offset:-16.0f]];
-	
-	// Add a simple embossing shadow to the white activity indicator.
-	// This way, we can see it better on a bright background. Using
-	// the standard layer property keeps the shadow stable through
-	// animations.
-	indicator.layer.shadowColor = [NSColor whiteColor].tui_CGColor;
-	indicator.layer.shadowOffset = CGSizeMake(0, -1);
-	indicator.layer.shadowOpacity = 1.0f;
-	indicator.layer.shadowRadius = 1.0f;
-	
-	// We then add it as a subview and tell it to start animating.
-	[view addSubview:indicator];
-	[indicator startAnimating];
-	
-	return view;
-}
-
-- (TUITableViewCell *)tableView:(TUITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-	ExampleTableViewCell *cell = reusableTableCellOfClass(tableView, ExampleTableViewCell);
-	
-	TUIAttributedString *s = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"example cell %d", (int)indexPath.row]];
-	s.color = [NSColor blackColor];
-	s.font = exampleFont1;
-	[s setFont:exampleFont2 inRange:NSMakeRange(8, 4)]; // make the word "cell" bold
-	cell.attributedString = s;
-	
-	return cell;
-}
-
-- (void)tableView:(TUITableView *)tableView didClickRowAtIndexPath:(NSIndexPath *)indexPath withEvent:(NSEvent *)event
-{
-	if([event clickCount] == 1) {
-		// do something cool
-	}
-	
-	if(event.type == NSRightMouseUp){
-		// show context menu
-	}
-}
-- (BOOL)tableView:(TUITableView *)tableView shouldSelectRowAtIndexPath:(NSIndexPath *)indexPath forEvent:(NSEvent *)event{
-	switch (event.type) {
-		case NSRightMouseDown:
-			return NO;
-	}
-
-	return YES;
-}
-
--(BOOL)tableView:(TUITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-  // return TRUE to enable row reordering by dragging; don't implement this method or return
-  // FALSE to disable
-  return TRUE;
-}
-
--(void)tableView:(TUITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
-  // update the model to reflect the changed index paths; since this example isn't backed by
-  // a "real" model, after dropping a cell the table will revert to it's previous state
-  NSLog(@"Move dragged row: %@ => %@", fromIndexPath, toIndexPath);
-}
-
--(NSIndexPath *)tableView:(TUITableView *)tableView targetIndexPathForMoveFromRowAtIndexPath:(NSIndexPath *)fromPath toProposedIndexPath:(NSIndexPath *)proposedPath {
-  // optionally revise the drag-to-reorder drop target index path by returning a different index path
-  // than proposedPath.  if proposedPath is suitable, return that.  if this method is not implemented,
-  // proposedPath is used by default.
-  return proposedPath;
 }
 
 @end
