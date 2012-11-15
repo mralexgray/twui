@@ -462,7 +462,7 @@ CGFloat const TUIPopoverBackgroundViewArrowWidth = 35.0;
 //originScreenRect is in the screen coordinate space
 - (id)initWithFrame:(CGRect)frame popoverEdge:(CGRectEdge)popoverEdge originScreenRect:(CGRect)originScreenRect {
 	self = [super initWithFrame:frame];
-	if (self == nil)
+	if (self == nil) 
 		return nil;
 	
 	_popoverEdge = popoverEdge;
@@ -472,7 +472,7 @@ CGFloat const TUIPopoverBackgroundViewArrowWidth = 35.0;
 	
 	self.drawRect = ^ (TUIView *view, CGRect rect)
 	{
-		TUIPopoverBackgroundView *strongSelf = (id)view;
+		TUIPopoverBackgroundView *strongSelf = (TUIPopoverBackgroundView *)view;
 		CGContextRef context = TUIGraphicsGetCurrentContext();
 		CGPathRef outerBorder = [strongSelf newPopoverPathForEdge:strongSelf.popoverEdge inFrame:strongSelf.bounds];
 		CGContextSetStrokeColorWithColor(context, strongSelf.strokeColor.tui_CGColor);
