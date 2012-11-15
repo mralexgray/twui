@@ -210,54 +210,53 @@ NSTimeInterval const TUIPopoverDefaultFadeoutDuration = 0.3;
 			
 			return proposedRect;
 		};
-        
-        NSUInteger attemptCount = 0;
-        while (!checkPopoverSizeForScreenWithPopoverEdge(popoverEdge)) {
-            if (attemptCount > 4) {
+		
+		NSUInteger attemptCount = 0;
+		while (!checkPopoverSizeForScreenWithPopoverEdge(popoverEdge)) {
+			if (attemptCount > 4) {
 				popoverEdge = preferredEdge;
 				return fitRectToScreen(popoverRectForEdge(popoverEdge));
 				break;
 			}
-            
-            popoverEdge = nextEdgeForEdge(popoverEdge);
-            attemptCount ++;
-        }
+			popoverEdge = nextEdgeForEdge(popoverEdge);
+			attemptCount ++;
+		}
 		
-        return (CGRect)popoverRectForEdge(popoverEdge);
-    };
-    
-    CGRect popoverScreenRect = popoverRect();
-    TUIPopoverBackgroundView *backgroundView = [self.backgroundViewClass backgroundViewForContentSize:contentViewSize popoverEdge:popoverEdge originScreenRect:screenPositioningRect];
-    
-    CGRect contentViewFrame = [self.backgroundViewClass contentViewFrameForBackgroundFrame:backgroundView.bounds popoverEdge:popoverEdge];
-    self.contentViewController.view.frame = contentViewFrame;
-    [backgroundView addSubview:self.contentViewController.view];
-    self.popoverWindow = [[TUINSWindow alloc] initWithContentRect:popoverScreenRect];
-    [self.popoverWindow setReleasedWhenClosed:NO];
-    TUIPopoverWindowContentView *contentView = [[TUIPopoverWindowContentView alloc] initWithFrame:backgroundView.bounds];
+		return (CGRect)popoverRectForEdge(popoverEdge);
+	};
+	
+	CGRect popoverScreenRect = popoverRect();
+	TUIPopoverBackgroundView *backgroundView = [self.backgroundViewClass backgroundViewForContentSize:contentViewSize popoverEdge:popoverEdge originScreenRect:screenPositioningRect];
+	
+	CGRect contentViewFrame = [self.backgroundViewClass contentViewFrameForBackgroundFrame:backgroundView.bounds popoverEdge:popoverEdge];
+	self.contentViewController.view.frame = contentViewFrame;
+	[backgroundView addSubview:self.contentViewController.view];
+	self.popoverWindow = [[TUINSWindow alloc] initWithContentRect:popoverScreenRect];
+	[self.popoverWindow setReleasedWhenClosed:NO];
+	TUIPopoverWindowContentView *contentView = [[TUIPopoverWindowContentView alloc] initWithFrame:backgroundView.bounds];
 	contentView.arrowEdge = [backgroundView arrowEdgeForPopoverEdge:popoverEdge];
-    contentView.nsView.rootView = backgroundView;
-    [self.popoverWindow setOpaque:NO];
-    [self.popoverWindow setBackgroundColor:[NSColor clearColor]];
-    self.popoverWindow.contentView = contentView;
-    self.popoverWindow.alphaValue = 0.0;
-    [positioningView.nsWindow addChildWindow:self.popoverWindow ordered:NSWindowAbove];
+	contentView.nsView.rootView = backgroundView;
+	[self.popoverWindow setOpaque:NO];
+	[self.popoverWindow setBackgroundColor:[NSColor clearColor]];
+	self.popoverWindow.contentView = contentView;
+	self.popoverWindow.alphaValue = 0.0;
+	[positioningView.nsWindow addChildWindow:self.popoverWindow ordered:NSWindowAbove];
 	[self.popoverWindow makeKeyAndOrderFront:self];
 	[backgroundView updateMaskLayer];
-    
-    CABasicAnimation *fadeInAnimation = [CABasicAnimation animationWithKeyPath:@"alphaValue"];
-    fadeInAnimation.duration = 0.3;
-    fadeInAnimation.tui_completionBlock = ^ {
-        self.animating = NO;
-        [self.contentViewController viewDidAppear:YES];
-        
-        if (self.didShowBlock)
-            self.didShowBlock(self);
-    };
-    
-    self.popoverWindow.animations = [NSDictionary dictionaryWithObject:fadeInAnimation forKey:@"alphaValue"];
-    self.animating = YES;
-    [self.popoverWindow.animator setAlphaValue:1.0];
+
+	CABasicAnimation *fadeInAnimation = [CABasicAnimation animationWithKeyPath:@"alphaValue"];
+	fadeInAnimation.duration = 0.3;
+	fadeInAnimation.tui_completionBlock = ^ {
+		self.animating = NO;
+		[self.contentViewController viewDidAppear:YES];
+	
+		if (self.didShowBlock)
+			self.didShowBlock(self);
+	};
+	
+	self.popoverWindow.animations = [NSDictionary dictionaryWithObject:fadeInAnimation forKey:@"alphaValue"];
+	self.animating = YES;
+	[self.popoverWindow.animator setAlphaValue:1.0];
 }
 
 #pragma mark -
@@ -476,27 +475,27 @@ CGFloat const TUIPopoverBackgroundViewArrowWidth = 35.0;
 	self = [super initWithFrame:frame];
 	if (self == nil)
 		return nil;
-    
+	
 	_popoverEdge = popoverEdge;
 	_screenOriginRect = originScreenRect;
 	_strokeColor = [NSColor blackColor];
 	_fillColor = [NSColor whiteColor];
 	
-    self.drawRect = ^ (TUIView *view, CGRect rect)
-    {
+	self.drawRect = ^ (TUIView *view, CGRect rect)
+	{
 		TUIPopoverBackgroundView *strongSelf = (id)view;
-        CGContextRef context = TUIGraphicsGetCurrentContext();
-        CGPathRef outerBorder = [strongSelf newPopoverPathForEdge:strongSelf.popoverEdge inFrame:strongSelf.bounds];
-        CGContextSetStrokeColorWithColor(context, strongSelf.strokeColor.tui_CGColor);
-        CGContextAddPath(context, outerBorder);
-        CGContextStrokePath(context);
-        
-        CGContextSetFillColorWithColor(context, strongSelf.fillColor.tui_CGColor);
-        CGContextAddPath(context, outerBorder);
-        CGContextFillPath(context);
+		CGContextRef context = TUIGraphicsGetCurrentContext();
+		CGPathRef outerBorder = [strongSelf newPopoverPathForEdge:strongSelf.popoverEdge inFrame:strongSelf.bounds];
+		CGContextSetStrokeColorWithColor(context, strongSelf.strokeColor.tui_CGColor);
+		CGContextAddPath(context, outerBorder);
+		CGContextStrokePath(context);
+		
+		CGContextSetFillColorWithColor(context, strongSelf.fillColor.tui_CGColor);
+		CGContextAddPath(context, outerBorder);
+		CGContextFillPath(context);
 		
 		CGPathRelease(outerBorder);
-    };
+	};
 	
 	return self;
 }
