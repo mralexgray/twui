@@ -14,8 +14,11 @@ that one isn't already logged.
 
 ## Contributing Code
 
-Fork this repository, make it awesomer (preferably in a branch named for the
-topic), send a pull request!
+We will happily accept pull requests that meet one of the following criteria:
+
+ 1. It fixes some functionality that is already in TwUI. This might be a bug, or something not working as expected.
+ 2. It's something so basic or important that TwUI really should have it.
+ 3. It has to integrate with TwUI internals, and so can't easily be done outside of the framework. This one is the most ambiguous, because interesting things may match this criterion, but still be way out of scope. In some cases, a fork might be more appropriate. Use your best judgment.
 
 All code contributions should match our [coding
 conventions](https://github.com/github/objective-c-conventions).
