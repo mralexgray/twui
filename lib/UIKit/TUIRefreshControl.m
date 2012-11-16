@@ -3,27 +3,32 @@
 #import "TUICGAdditions.h"
 #import "NSColor+TUIExtensions.h"
 
-static CGFloat const TUIRefreshTotalHeight = 350;
-static CGFloat const TUIRefreshOffsetThreshhold = 20;
-static CGFloat const TUIRefreshMinTopPadding = 9;
-static CGFloat const TUIRefreshMaxTopPadding = 5;
-static CGFloat const TUIRefreshMinTopRadius = 12.5;
-static CGFloat const TUIRefreshMaxTopRadius = 16;
-static CGFloat const TUIRefreshMinBottomRadius = 3;
-static CGFloat const TUIRefreshMaxBottomRadius = 16;
-static CGFloat const TUIRefreshMinBottomPadding = 4;
-static CGFloat const TUIRefreshMaxBottomPadding = 6;
-static CGFloat const TUIRefreshMinArrowSize = 2;
-static CGFloat const TUIRefreshMaxArrowSize = 3;
-static CGFloat const TUIRefreshMinArrowRadius = 5;
-static CGFloat const TUIRefreshMaxArrowRadius = 7;
-static CGFloat const TUIRefreshMaxDistance = 53;
+static CGFloat const TUIRefreshTotalHeight = 350.0f;
+static CGFloat const TUIRefreshOffsetThreshhold = 20.0f;
+static CGFloat const TUIRefreshMinTopPadding = 9.0f;
+static CGFloat const TUIRefreshMaxTopPadding = 5.0f;
+static CGFloat const TUIRefreshMinTopRadius = 12.5f;
+static CGFloat const TUIRefreshMaxTopRadius = 16.0f;
+static CGFloat const TUIRefreshMinBottomRadius = 3.0f;
+static CGFloat const TUIRefreshMaxBottomRadius = 16.0f;
+static CGFloat const TUIRefreshMinBottomPadding = 4.0f;
+static CGFloat const TUIRefreshMaxBottomPadding = 6.0f;
+static CGFloat const TUIRefreshMinArrowSize = 2.0f;
+static CGFloat const TUIRefreshMaxArrowSize = 3.0f;
+static CGFloat const TUIRefreshMinArrowRadius = 5.0f;
+static CGFloat const TUIRefreshMaxArrowRadius = 7.0f;
+static CGFloat const TUIRefreshMaxDistance = 53.0f;
 
 static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 	return a + (b - a) * p;
 }
 
-@interface TUIRefreshControl ()
+@interface TUIRefreshControl () {
+	struct {
+		unsigned int intentionalRefresh:1;
+		unsigned int drawingRefresh:1;
+	} _refreshControlFlags;
+}
 
 @property (nonatomic, assign, readwrite, getter = isRefreshing) BOOL refreshing;
 
@@ -43,6 +48,7 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 		
 		self.tableView = tableView;
 		[self.tableView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
+		[self.tableView addObserver:self forKeyPath:@"dragging" options:NSKeyValueObservingOptionNew context:nil];
 		[self.tableView setPullDownView:self];
 		
 		self.activity = [[TUIActivityIndicatorView alloc] initWithActivityIndicatorStyle:TUIActivityIndicatorViewStyleGray];
@@ -75,6 +81,7 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 
 - (void)dealloc {
 	[self.tableView removeObserver:self forKeyPath:@"contentOffset"];
+	[self.tableView removeObserver:self forKeyPath:@"dragging"];
 	self.tableView = nil;
 }
 
@@ -83,6 +90,7 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 	
 	if(!newSuperview) {
 		[self.tableView removeObserver:self forKeyPath:@"contentOffset"];
+		[self.tableView removeObserver:self forKeyPath:@"dragging"];
 		self.tableView = nil;
 	}
 }
@@ -94,7 +102,7 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 
 - (void)setTintColor:(NSColor *)tintColor {
 	_tintColor = tintColor;
-	self.shapeLayer.fillColor = [_tintColor tui_CGColor];
+	self.shapeLayer.fillColor = _tintColor.tui_CGColor;
 }
 
 - (void)beginRefreshing {
@@ -146,12 +154,17 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 			self.shapeLayer.path = nil;
 			self.shapeLayer.shadowPath = nil;
 			self.arrowLayer.path = nil;
+			
+			_refreshControlFlags.intentionalRefresh = NO;
+			_refreshControlFlags.drawingRefresh = NO;
 		}];
 	}
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-	if(![keyPath isEqualToString:@"contentOffset"])
+	if([keyPath isEqualToString:@"dragging"] && !self.refreshing) {
+		_refreshControlFlags.intentionalRefresh = self.tableView.dragging;
+	} else if(![keyPath isEqualToString:@"contentOffset"])
 		return;
 	
 	BOOL refreshTriggered = NO;
@@ -169,8 +182,10 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 		rect.origin.y = scrollCeiling;
 		self.activity.frame = rect;
 		
+		_refreshControlFlags.intentionalRefresh = NO;
 		return;
-	}
+	} else if(!_refreshControlFlags.drawingRefresh && !_refreshControlFlags.intentionalRefresh)
+		return;
 	
 	CGFloat verticalShift = MAX(0, -((TUIRefreshMaxTopRadius + TUIRefreshMaxBottomRadius + TUIRefreshMaxTopPadding + TUIRefreshMaxBottomPadding) + offset));
 	CGFloat distance = MIN(TUIRefreshMaxDistance, fabs(verticalShift));
@@ -190,6 +205,8 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 									inset - currentTopPadding - currentTopRadius);
 	CGPoint bottomOrigin = topOrigin;
 	if(distance != 0) {
+		_refreshControlFlags.drawingRefresh = YES;
+		
 		bottomOrigin = CGPointMake(roundf(self.bounds.size.width / 2),
 								   inset + offset + currentBottomPadding + currentBottomRadius);
 		if(percentage == 0) {
@@ -291,6 +308,7 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 		self.tableView.contentInset = preInset;
 		
 		self.refreshing = YES;
+		_refreshControlFlags.drawingRefresh = NO;
 		[self sendActionsForControlEvents:TUIControlEventValueChanged];
 		
 		CGPathRelease(toPath);

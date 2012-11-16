@@ -101,22 +101,8 @@
 				[s ab_drawInRect:CGRectOffset(imageRect, imageRect.size.width, -15)];
 			};
 		}
-		
-		TUIRefreshControl *refreshControl = [[TUIRefreshControl alloc] initInTableView:_tableView];
-		refreshControl.tintColor = [NSColor grayColor];
-		[refreshControl addTarget:self action:@selector(tableViewDidBeginRefreshing:)
-				 forControlEvents:TUIControlEventValueChanged];
 	}
 	return self;
-}
-
-- (void)tableViewDidBeginRefreshing:(TUIRefreshControl *)refreshControl {
-    double delayInSeconds = 3.0;
-	
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-        [refreshControl endRefreshing];
-    });
 }
 
 - (void)tabBar:(ExampleTabBar *)tabBar didSelectTab:(NSInteger)index
