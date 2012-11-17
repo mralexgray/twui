@@ -50,10 +50,18 @@
 			[button setTitle:@"Selected" forState:TUIControlStateSelected];
 			[button setTitleColor:[NSColor blackColor] forState:TUIControlStateNormal];
 			
+			NSMenu *menu = [[NSMenu alloc] initWithTitle:@"Demo"];
+			[menu addItem:[[NSMenuItem alloc] initWithTitle:@"Action" action:@selector(demo:) keyEquivalent:@""]];
+			button.menu = menu;
+			
 			[self addSubview:button];
 		}
     }
     return self;
+}
+
+- (void)demo:(id)sender {
+	NSLog(@"demo!");
 }
 
 @end

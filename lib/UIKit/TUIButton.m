@@ -18,7 +18,6 @@
 #import "TUICGAdditions.h"
 #import "NSBezierPath+TUIExtensions.h"
 #import "NSImage+TUIExtensions.h"
-#import "TUIControl+Private.h"
 #import "TUIImageView.h"
 #import "TUILabel.h"
 #import "TUINSView.h"
@@ -74,6 +73,7 @@
 		self.needsDisplayWhenWindowsKeyednessChanges = YES;
 		self.tintColor = [NSColor colorWithCalibratedWhite:0.95f alpha:1.0f];
 		self.backgroundColor = [NSColor clearColor];
+		self.tintFactor = 0.10f;
 		self.opaque = NO;
 		
 		_buttonFlags.reversesTitleShadowWhenHighlighted = NO;
@@ -193,8 +193,8 @@
 	} else if(self.buttonType == TUIButtonTypeStandard) {
 		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, 1.0f, 1.0f)
 															 xRadius:3.5f yRadius:3.5f];
-		NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[self.tintColor shadowWithLevel:0.15f]
-															 endingColor:[self.tintColor highlightWithLevel:0.15f]];
+		NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[self.tintColor shadowWithLevel:self.tintFactor]
+															 endingColor:[self.tintColor highlightWithLevel:self.tintFactor]];
 		
 		[NSGraphicsContext saveGraphicsState]; {
 			[[NSShadow shadowWithRadius:1.0f offset:CGSizeMake(0, -1)
@@ -206,9 +206,8 @@
 		[[NSColor colorWithCalibratedWhite:0.25f alpha:1.0f] setStroke];
 		[path strokeInside];
 		
-		if(secondaryState) {
+		if(secondaryState)
 			[path fillWithInnerShadow:[NSShadow shadowWithRadius:5.0f offset:NSZeroSize color:[NSColor blackColor]]];
-		}
 		
 	} else if(self.buttonType == TUIButtonTypeFlat) {
 		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, 2.0, 2.0)
@@ -235,8 +234,8 @@
 		CGFloat radius = self.bounds.size.height / 2;
 		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, 0.5f, 0.5f)
 															 xRadius:radius yRadius:radius];
-		NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[self.tintColor highlightWithLevel:0.15f]
-															 endingColor:[self.tintColor shadowWithLevel:0.15f]];
+		NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[self.tintColor highlightWithLevel:self.tintFactor]
+															 endingColor:[self.tintColor shadowWithLevel:self.tintFactor]];
 		
 		[gradient drawInBezierPath:path angle:(secondaryState ? 90.0f : 270.0f)];
 		[[NSColor grayColor] setStroke];
@@ -328,11 +327,12 @@
 
 #pragma mark - Menu and Selected State
 
-// BUG: Happens even for large clickCount.
+// FIXME: Happens even for large clickCount.
 - (void)mouseDown:(NSEvent *)event {
 	[super mouseDown:event];
 	
 	if(self.menu) {
+		self.selected = YES;
 		[self.menu popUpMenuPositioningItem:nil atLocation:(CGPoint) {
 			.x = self.frameInNSView.origin.x + 6,
 			.y = self.frameInNSView.origin.y - 2
@@ -341,9 +341,7 @@
 		// After this happens, we never get a mouseUp: in the TUINSView.
 		// This screws up _trackingView. For now, fake it with a fake mouseUp:.
 		[self.nsView performSelector:@selector(mouseUp:) withObject:event afterDelay:0.0];
-		
-		self.tracking = NO;
-		[TUIView animateWithDuration:0.2 animations:^{
+		[TUIView animateWithDuration:0.25f animations:^{
 			[self redraw];
 		}];
 	}
@@ -360,13 +358,13 @@
 
 #pragma mark - Highlight Reversing
 
-- (void)_stateWillChange {
+- (void)stateWillChange {
 	_buttonFlags.wasHighlighted = (self.state & TUIControlStateHighlighted);
 }
 
-- (void)_stateDidChange {
+- (void)stateDidChange {
 	BOOL reverseShadow = (self.state & TUIControlStateHighlighted) != _buttonFlags.wasHighlighted;
-
+	
 	if(reverseShadow && self.reversesTitleShadowWhenHighlighted) {
 		CGSize shadow = _titleLabel.renderer.shadowOffset;
 		_titleLabel.renderer.shadowOffset = (CGSize) {
@@ -402,38 +400,33 @@
 }
 
 - (void)setTitle:(NSString *)title forState:(TUIControlState)state {
-	[self _stateWillChange];
-	[[self _contentForState:state] setTitle:title];
-	[self _stateDidChange];
-	[self setNeedsDisplay];
+	[self applyStateChangeAnimated:self.animateStateChange block:^{
+		[[self _contentForState:state] setTitle:title];
+	}];
 }
 
 - (void)setTitleColor:(NSColor *)color forState:(TUIControlState)state {
-	[self _stateWillChange];
-	[[self _contentForState:state] setTitleColor:color];
-	[self _stateDidChange];
-	[self setNeedsDisplay];
+	[self applyStateChangeAnimated:self.animateStateChange block:^{
+		[[self _contentForState:state] setTitleColor:color];
+	}];
 }
 
 - (void)setTitleShadowColor:(NSColor *)color forState:(TUIControlState)state {
-	[self _stateWillChange];
-	[[self _contentForState:state] setShadowColor:color];
-	[self _stateDidChange];
-	[self setNeedsDisplay];
+	[self applyStateChangeAnimated:self.animateStateChange block:^{
+		[[self _contentForState:state] setShadowColor:color];
+	}];
 }
 
 - (void)setImage:(NSImage *)i forState:(TUIControlState)state {
-	[self _stateWillChange];
-	[[self _contentForState:state] setImage:i];
-	[self _stateDidChange];
-	[self setNeedsDisplay];
+	[self applyStateChangeAnimated:self.animateStateChange block:^{
+		[[self _contentForState:state] setImage:i];
+	}];
 }
 
 - (void)setBackgroundImage:(NSImage *)i forState:(TUIControlState)state {
-	[self _stateWillChange];
-	[[self _contentForState:state] setBackgroundImage:i];
-	[self _stateDidChange];
-	[self setNeedsDisplay];
+	[self applyStateChangeAnimated:self.animateStateChange block:^{
+		[[self _contentForState:state] setBackgroundImage:i];
+	}];
 }
 
 - (NSString *)titleForState:(TUIControlState)state {

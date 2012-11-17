@@ -45,6 +45,7 @@ typedef enum {
 @property (nonatomic, assign) BOOL adjustsImageWhenHighlighted;
 @property (nonatomic, assign) BOOL adjustsImageWhenDisabled;
 @property (nonatomic, assign) BOOL reversesTitleShadowWhenHighlighted;
+@property (nonatomic, assign, getter = isSelectable) BOOL selectable;
 
 @property (nonatomic, strong, readonly) TUILabel *titleLabel;
 @property (nonatomic, strong, readonly) TUIImageView *imageView;
@@ -52,8 +53,9 @@ typedef enum {
 // Setting this overrides .selectable property as YES.
 @property (nonatomic, strong) NSMenu *menu;
 @property (nonatomic, strong) NSSound *sound;
+
 @property (nonatomic, strong) NSColor *tintColor;
-@property (nonatomic, assign, getter = isSelectable) BOOL selectable;
+@property (nonatomic, assign) CGFloat tintFactor;
 
 + (instancetype)buttonWithType:(TUIButtonType)buttonType;
 

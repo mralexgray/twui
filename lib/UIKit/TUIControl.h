@@ -64,15 +64,24 @@ typedef NSUInteger TUIControlState;
 
 @interface TUIControl : TUIView
 
-
 @property(nonatomic, readonly) TUIControlState state;
 @property (nonatomic, assign) BOOL acceptsFirstMouse;
+@property (nonatomic, assign) BOOL animateStateChange;
 
 @property (nonatomic, readonly, getter = isTracking) BOOL tracking;
 @property (nonatomic, assign, getter = isEnabled) BOOL enabled;
 @property (nonatomic, assign, getter = isSelected) BOOL selected;
 @property (nonatomic, assign, getter = isHighlighted) BOOL highlighted;
 @property (nonatomic, assign, getter = isContinuous) BOOL continuous;
+
+// These methods should be used to react to a state change.
+// The default method implementation does nothing, but if you
+// are subclassing a subclass of TUIControl, such as TUIButton,
+// you must call the superclass implementation of the method.
+- (void)stateWillChange;
+- (void)stateDidChange;
+
+- (void)applyStateChangeAnimated:(BOOL)animated block:(void (^)(void))block;
 
 // When control tracking begins, usually by mouse down or
 // swipe start, this method is called to validate the event.
