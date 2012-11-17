@@ -17,12 +17,11 @@
 #import <Foundation/Foundation.h>
 
 typedef struct TUIEdgeInsets {
-	CGFloat top, left, bottom, right;  // specify amount to inset (positive) for each of the edges. values can be negative to 'outset'
+	CGFloat top, left, bottom, right;
 } TUIEdgeInsets;
 
 static inline TUIEdgeInsets TUIEdgeInsetsMake(CGFloat top, CGFloat left, CGFloat bottom, CGFloat right) {
-	TUIEdgeInsets insets = {top, left, bottom, right};
-	return insets;
+	return (TUIEdgeInsets){top, left, bottom, right};
 }
 
 static inline CGRect TUIEdgeInsetsInsetRect(CGRect rect, TUIEdgeInsets insets) {
@@ -39,17 +38,37 @@ static inline BOOL TUIEdgeInsetsEqualToEdgeInsets(TUIEdgeInsets insets1, TUIEdge
 
 extern const TUIEdgeInsets TUIEdgeInsetsZero;
 
+enum {
+    TUIRectCornerTopLeft     = 1 << 0,
+    TUIRectCornerTopRight    = 1 << 1,
+    TUIRectCornerBottomLeft  = 1 << 2,
+    TUIRectCornerBottomRight = 1 << 3,
+    TUIRectCornerAllCorners  = ~0
+};
+typedef NSUInteger TUIRectCorner;
+
 /**
  * @brief Constrain a point to a rectangular region
- * 
+ *
  * If the provided @p point lies outside the @p rect, it is adjusted to the
  * nearest point that lies inside the @p rect.
- * 
+ *
  * @param point a point
  * @param rect the constraining rect
  * @return constrained point
  */
 static inline CGPoint CGPointConstrainToRect(CGPoint point, CGRect rect) {
-  return CGPointMake(MAX(rect.origin.x, MIN((rect.origin.x + rect.size.width), point.x)), MAX(rect.origin.y, MIN((rect.origin.y + rect.size.height), point.y)));
+	return CGPointMake(MAX(rect.origin.x, MIN((rect.origin.x + rect.size.width), point.x)), MAX(rect.origin.y, MIN((rect.origin.y + rect.size.height), point.y)));
 }
 
+extern NSString* NSStringFromCGPoint(CGPoint point);
+extern NSString* NSStringFromCGRect(CGRect rect);
+extern NSString* NSStringFromCGSize(CGSize size);
+extern NSString* NSStringFromCGAffineTransform(CGAffineTransform transform);
+extern NSString* NSStringFromTUIEdgeInsets(TUIEdgeInsets insets);
+
+extern CGPoint CGPointFromNSString(NSString *string);
+extern CGRect CGRectFromNSString(NSString *string);
+extern CGSize CGSizeFromNSString(NSString *string);
+extern CGAffineTransform CGAffineTransformFromNSString(NSString *string);
+extern TUIEdgeInsets TUIEdgeInsetsFromNSString(NSString *string);

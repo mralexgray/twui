@@ -15,6 +15,7 @@
  */
 
 #import <Foundation/Foundation.h>
+#import "NSShadow+TUIExtensions.h"
 
 extern NSString * const TUIAttributedStringBackgroundColorAttributeName;
 extern NSString * const TUIAttributedStringBackgroundFillStyleName;
@@ -79,12 +80,6 @@ typedef enum {
 - (void)setShadow:(NSShadow *)shadow inRange:(NSRange)range;
 - (void)setKerning:(CGFloat)f inRange:(NSRange)range;
 - (void)setLineHeight:(CGFloat)f inRange:(NSRange)range;
-
-@end
-
-@interface NSShadow (TUIAdditions)
-
-+ (NSShadow *)shadowWithRadius:(CGFloat)radius offset:(CGSize)offset color:(NSColor *)color;
 
 @end
 
