@@ -63,26 +63,16 @@ enum {
 typedef NSUInteger TUIControlState;
 
 @interface TUIControl : TUIView
-{
-  NSMutableArray*   _targetActions;
-	struct {
-		unsigned int disabled:1;
-		unsigned int selected:1;
-		unsigned int acceptsFirstMouse:1;
-		unsigned int tracking:1;
-		unsigned int highlighted:1;
-		unsigned int hover:1;
-	} _controlFlags;
-}
 
-@property(nonatomic,getter=isEnabled) BOOL enabled;
 
-@property(nonatomic,readonly) TUIControlState state;
-@property(nonatomic,readonly,getter=isTracking) BOOL tracking;
-@property(nonatomic,assign) BOOL selected;
-@property (nonatomic, assign) BOOL highlighted;
-
+@property(nonatomic, readonly) TUIControlState state;
 @property (nonatomic, assign) BOOL acceptsFirstMouse;
+
+@property (nonatomic, readonly, getter = isTracking) BOOL tracking;
+@property (nonatomic, assign, getter = isEnabled) BOOL enabled;
+@property (nonatomic, assign, getter = isSelected) BOOL selected;
+@property (nonatomic, assign, getter = isHighlighted) BOOL highlighted;
+@property (nonatomic, assign, getter = isContinuous) BOOL continuous;
 
 // When control tracking begins, usually by mouse down or
 // swipe start, this method is called to validate the event.

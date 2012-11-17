@@ -21,12 +21,15 @@
 @class TUIImageView;
 
 typedef enum {
+	// Does not respond to .tintColor.
 	TUIButtonTypeCustom,
+	
 	TUIButtonTypeStandard,
-	TUIButtonTypeBeveled,
-	TUIButtonTypeEmbossed,
-	TUIButtonTypeGradient,
+	TUIButtonTypeFlat,
 	TUIButtonTypeMinimal,
+	
+	// Does not respond to .tintColor.
+	// Overrides .selectable property as YES.
 	TUIButtonTypeInline,
 } TUIButtonType;
 
@@ -39,20 +42,20 @@ typedef enum {
 @property (nonatomic, assign) TUIEdgeInsets imageEdgeInsets;
 
 @property (nonatomic, assign) BOOL dimsInBackground;
-@property (nonatomic, assign) BOOL lightButtonWhenHighlighted;
 @property (nonatomic, assign) BOOL adjustsImageWhenHighlighted;
 @property (nonatomic, assign) BOOL adjustsImageWhenDisabled;
 @property (nonatomic, assign) BOOL reversesTitleShadowWhenHighlighted;
 
-@property (nonatomic, strong) NSColor *tintColor;
-
 @property (nonatomic, strong, readonly) TUILabel *titleLabel;
 @property (nonatomic, strong, readonly) TUIImageView *imageView;
 
+// Setting this overrides .selectable property as YES.
+@property (nonatomic, strong) NSMenu *menu;
 @property (nonatomic, strong) NSSound *sound;
-@property (nonatomic, strong) NSMenu *popUpMenu;
+@property (nonatomic, strong) NSColor *tintColor;
+@property (nonatomic, assign, getter = isSelectable) BOOL selectable;
 
-+ (id)buttonWithType:(TUIButtonType)buttonType;
++ (instancetype)buttonWithType:(TUIButtonType)buttonType;
 
 - (CGRect)backgroundRectForBounds:(CGRect)bounds;
 - (CGRect)contentRectForBounds:(CGRect)bounds;

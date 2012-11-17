@@ -14,16 +14,11 @@
  limitations under the License.
  */
 
-#import "TUIControl.h"
+#import "TUIControl+Private.h"
 
 @interface TUIControlTargetAction : NSObject
-{
-	id __unsafe_unretained target; // nil goes up the responder chain
-	SEL action;
-	void (^block)(void);
-	TUIControlEvents controlEvents;
-}
 
+// nil goes up the responder chain
 @property (nonatomic, unsafe_unretained) id target;
 @property (nonatomic, assign) SEL action;
 @property (nonatomic, copy) void(^block)(void);
@@ -32,24 +27,9 @@
 @end
 
 @implementation TUIControlTargetAction
-
-@synthesize target;
-@synthesize action;
-@synthesize block;
-@synthesize controlEvents;
-
-
 @end
 
-
 @implementation TUIControl (TargetAction)
-
-- (NSMutableArray *)_targetActions
-{
-	if(!_targetActions)
-		_targetActions = [[NSMutableArray alloc] init];
-	return _targetActions;
-}
 
 // add target/action for particular event. you can call this multiple times and you can specify multiple target/actions for a particular event.
 // passing in nil as the target goes up the responder chain. The action may optionally include the sender and the event in that order
@@ -61,7 +41,7 @@
 		t.target = target;
 		t.action = action;
 		t.controlEvents = controlEvents;
-		[[self _targetActions] addObject:t];
+		[self.targetActions addObject:t];
 	}
 }
 
@@ -71,7 +51,7 @@
 		TUIControlTargetAction *t = [[TUIControlTargetAction alloc] init];
 		t.block = block;
 		t.controlEvents = controlEvents;
-		[[self _targetActions] addObject:t];
+		[self.targetActions addObject:t];
 	}
 }
 
@@ -80,7 +60,7 @@
 {
 	NSMutableArray *targetActionsToRemove = [NSMutableArray array];
 	
-	for(TUIControlTargetAction *t in [self _targetActions]) {
+	for(TUIControlTargetAction *t in self.targetActions) {
 		
 		BOOL actionMatches = action == t.action;
 		BOOL targetMatches = [target isEqual:t.target];
@@ -93,13 +73,13 @@
 		}
 	}
 	
-	[[self _targetActions] removeObjectsInArray:targetActionsToRemove];
+	[self.targetActions removeObjectsInArray:targetActionsToRemove];
 }
 
 - (NSSet *)allTargets                                                                     // set may include NSNull to indicate at least one nil target
 {
 	NSMutableSet *targets = [NSMutableSet set];
-	for(TUIControlTargetAction *t in [self _targetActions]) {
+	for(TUIControlTargetAction *t in self.targetActions) {
 		id target = t.target;
 		[targets addObject:target?target:[NSNull null]];
 	}
@@ -109,7 +89,7 @@
 - (TUIControlEvents)allControlEvents                                                       // list of all events that have at least one action
 {
 	TUIControlEvents e = 0;
-	for(TUIControlTargetAction *t in [self _targetActions]) {
+	for(TUIControlTargetAction *t in self.targetActions) {
 		e |= t.controlEvents;
 	}
 	return e;
@@ -118,7 +98,7 @@
 - (NSArray *)actionsForTarget:(id)target forControlEvent:(TUIControlEvents)controlEvent    // single event. returns NSArray of NSString selector names. returns nil if none
 {
 	NSMutableArray *actions = [NSMutableArray array];
-	for(TUIControlTargetAction *t in [self _targetActions]) {
+	for(TUIControlTargetAction *t in self.targetActions) {
 		if([target isEqual:t.target] && controlEvent == t.controlEvents) {
 			[actions addObject:NSStringFromSelector(t.action)];
 		}
@@ -137,7 +117,7 @@
 
 - (void)sendActionsForControlEvents:(TUIControlEvents)controlEvents                        // send all actions associated with events
 {
-	for(TUIControlTargetAction *t in [self _targetActions]) {
+	for(TUIControlTargetAction *t in self.targetActions) {
 		if(t.controlEvents == controlEvents) {
 			if(t.target && t.action) {
 				[self sendAction:t.action to:t.target forEvent:nil];

@@ -20,7 +20,7 @@
 
 - (id)initWithFrame:(CGRect)frame {
     if((self = [super initWithFrame:frame])) {
-        self.backgroundColor = [NSColor colorWithCalibratedWhite:0.95 alpha:1.0];
+        self.backgroundColor = [NSColor colorWithCalibratedWhite:0.85 alpha:1.0];
 		
 		for(int i = TUIButtonTypeCustom; i <= TUIButtonTypeInline; i++) {
 			
@@ -34,26 +34,22 @@
 			
 			button.titleLabel.font = [NSFont systemFontOfSize:24.0f];
 			button.frame = CGRectIntegral(CGRectInset(buttonRect, 10.0f, 10.0f));
-			if(i == TUIButtonTypeEmbossed)
+			if(i == TUIButtonTypeFlat)
 				button.tintColor = [NSColor colorWithCalibratedRed:0.17 green:0.69 blue:0.84 alpha:1.0];
 			button.reversesTitleShadowWhenHighlighted = YES;
 			
 			button.titleLabel.alignment = TUITextAlignmentCenter;
 			button.titleLabel.renderer.verticalAlignment = TUITextVerticalAlignmentMiddle;
 			button.titleLabel.renderer.shadowBlur = 1.0f;
-			button.titleLabel.renderer.shadowColor = [[NSColor blackColor] colorWithAlphaComponent:0.5];
+			button.titleLabel.renderer.shadowColor = [[NSColor whiteColor] colorWithAlphaComponent:0.5];
 			button.titleLabel.renderer.shadowOffset = CGSizeMake(0, -1);
 			
 			[button setTitle:@"Normal" forState:TUIControlStateNormal];
 			[button setTitle:@"Hover" forState:TUIControlStateHover];
 			[button setTitle:@"Highlighted" forState:TUIControlStateHighlighted];
 			[button setTitle:@"Selected" forState:TUIControlStateSelected];
-			[button setTitleColor:[NSColor whiteColor] forState:TUIControlStateNormal];
+			[button setTitleColor:[NSColor blackColor] forState:TUIControlStateNormal];
 			
-			[button addActionForControlEvents:TUIControlEventMouseUpInside block:^{
-				self.backgroundColor = (i % 2) ? [NSColor colorWithCalibratedWhite:0.15 alpha:1.0] :
-												 [NSColor colorWithCalibratedWhite:0.95 alpha:1.0];
-			}];
 			[self addSubview:button];
 		}
     }

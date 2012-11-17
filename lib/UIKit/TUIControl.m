@@ -21,39 +21,20 @@
 
 @implementation TUIControl
 
-- (id)initWithFrame:(CGRect)rect
-{
-	self = [super initWithFrame:rect];
-	if(self == nil) {
-		return nil;
+- (id)initWithFrame:(CGRect)rect {
+	if((self = [super initWithFrame:rect])) {
+		self.targetActions = [NSMutableArray array];
+		self.accessibilityTraits |= TUIAccessibilityTraitButton;
 	}
-	
-	self.accessibilityTraits |= TUIAccessibilityTraitButton;
 	
 	return self;
 }
 
-
-- (BOOL)isEnabled
-{
-	return !_controlFlags.disabled;
+- (BOOL)acceptsFirstMouse:(NSEvent *)event {
+	return self.acceptsFirstMouse;
 }
 
-- (void)setEnabled:(BOOL)e
-{
-	[self _stateWillChange];
-	_controlFlags.disabled = !e;
-	[self _stateDidChange];
-	[self setNeedsDisplay];
-}
-
-- (BOOL)isTracking
-{
-	return _controlFlags.tracking;
-}
-
-- (TUIControlState)state
-{
+- (TUIControlState)state {
 	// Start with the normal state, then OR in an implicit
 	// state that is based on other properties.
 	TUIControlState actual = TUIControlStateNormal;
@@ -75,39 +56,45 @@
 	return actual;
 }
 
-/**
- * @brief Determine if this control is in a selected state
- * 
- * Not all controls have a selected state and the meaning of "selected" is left
- * to individual control implementations to define.
- * 
- * @return selected or not
- * 
- * @note This is a convenience interface to the #state property.
- * @see #state
- */
--(BOOL)selected {
+- (BOOL)acceptsFirstMouse {
+	return _controlFlags.acceptsFirstMouse;
+}
+
+- (void)setAcceptsFirstMouse:(BOOL)s {
+	_controlFlags.acceptsFirstMouse = s;
+}
+
+- (BOOL)isEnabled {
+	return !_controlFlags.disabled;
+}
+
+- (void)setEnabled:(BOOL)e {
+	[self _stateWillChange];
+	_controlFlags.disabled = !e;
+	[self _stateDidChange];
+	[self setNeedsDisplay];
+}
+
+- (BOOL)isTracking {
+	return _controlFlags.tracking;
+}
+
+- (void)setTracking:(BOOL)t {
+	_controlFlags.tracking = t;
+}
+
+- (BOOL)isSelected {
   return _controlFlags.selected;
 }
 
-/**
- * @brief Specify whether this control is in a selected state
- * 
- * Not all controls have a selected state and the meaning of "selected" is left
- * to individual control implementations to define.
- * 
- * @param selected selected or not
- * 
- * @see #state
- */
--(void)setSelected:(BOOL)selected {
+- (void)setSelected:(BOOL)selected {
 	[self _stateWillChange];
 	_controlFlags.selected = selected;
 	[self _stateDidChange];
 	[self setNeedsDisplay];
 }
 
-- (BOOL)highlighted {
+- (BOOL)isHighlighted {
 	return _controlFlags.highlighted;
 }
 
@@ -116,21 +103,6 @@
 	_controlFlags.highlighted = highlighted;
 	[self _stateDidChange];
 	[self setNeedsDisplay];
-}
-
-- (BOOL)acceptsFirstMouse
-{
-	return _controlFlags.acceptsFirstMouse;
-}
-
-- (void)setAcceptsFirstMouse:(BOOL)s
-{
-	_controlFlags.acceptsFirstMouse = s;
-}
-
-- (BOOL)acceptsFirstMouse:(NSEvent *)event
-{
-	return self.acceptsFirstMouse;
 }
 
 - (void)mouseEntered:(NSEvent *)theEvent {
@@ -264,6 +236,15 @@
 }
 
 - (void)endTrackingWithEvent:(NSEvent *)event {
+	return;
+}
+
+// Override.
+- (void)_stateWillChange {
+	return;
+}
+
+- (void)_stateDidChange {
 	return;
 }
 

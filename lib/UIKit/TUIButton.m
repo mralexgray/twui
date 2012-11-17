@@ -42,7 +42,6 @@
 		unsigned wasHighlighted:1;
 		
 		unsigned dimsInBackground:1;
-		unsigned lightButtonWhenHighlighted:1;
 		unsigned adjustsImageWhenHighlighted:1;
 		unsigned adjustsImageWhenDisabled:1;
 		unsigned reversesTitleShadowWhenHighlighted:1;
@@ -58,8 +57,10 @@
 
 @implementation TUIButton
 
-+ (id)buttonWithType:(TUIButtonType)buttonType {
-	TUIButton *b = [[self.class alloc] initWithFrame:CGRectZero];
+#pragma mark - Initialization
+
++ (instancetype)buttonWithType:(TUIButtonType)buttonType {
+	TUIButton *b = [[self alloc] initWithFrame:CGRectZero];
 	b->_buttonFlags.buttonType = buttonType;
 	
 	return b;
@@ -67,20 +68,23 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if((self = [super initWithFrame:frame])) {
+		self.contentLookup = [NSMutableDictionary dictionary];
 		_buttonFlags.buttonType = TUIButtonTypeStandard;
 		
+		self.needsDisplayWhenWindowsKeyednessChanges = YES;
+		self.tintColor = [NSColor colorWithCalibratedWhite:0.95f alpha:1.0f];
 		self.backgroundColor = [NSColor clearColor];
-		self.tintColor = [NSColor whiteColor];
 		self.opaque = NO;
 		
-		self.contentLookup = [[NSMutableDictionary alloc] init];
-		
-		self.needsDisplayWhenWindowsKeyednessChanges = YES;
-		self.dimsInBackground = YES;
-		self.reversesTitleShadowWhenHighlighted = NO;
+		_buttonFlags.reversesTitleShadowWhenHighlighted = NO;
+		_buttonFlags.adjustsImageWhenDisabled = YES;
+		_buttonFlags.adjustsImageWhenHighlighted = YES;
+		_buttonFlags.dimsInBackground = YES;
 	}
 	return self;
 }
+
+#pragma mark - Setup
 
 - (BOOL)acceptsFirstResponder {
 	return NO;
@@ -89,6 +93,8 @@
 - (TUIButtonType)buttonType {
 	return _buttonFlags.buttonType;
 }
+
+#pragma mark - Content
 
 - (TUILabel *)titleLabel {
 	if(!_titleLabel) {
@@ -113,45 +119,41 @@
 	return _imageView;
 }
 
+#pragma mark - Properties
+
 - (BOOL)dimsInBackground {
 	return _buttonFlags.dimsInBackground;
 }
 
-- (void)setDimsInBackground:(BOOL)dimsInBackground {
-	_buttonFlags.dimsInBackground = dimsInBackground;
-}
-
-- (BOOL)lightButtonWhenHighlighted {
-	return _buttonFlags.lightButtonWhenHighlighted;
-}
-
-- (void)setLightButtonWhenHighlighted:(BOOL)lightButtonWhenHighlighted {
-	_buttonFlags.lightButtonWhenHighlighted = lightButtonWhenHighlighted;
+- (void)setDimsInBackground:(BOOL)flag {
+	_buttonFlags.dimsInBackground = flag;
 }
 
 - (BOOL)adjustsImageWhenHighlighted {
 	return _buttonFlags.adjustsImageWhenHighlighted;
 }
 
-- (void)setAdjustsImageWhenHighlighted:(BOOL)adjustsImageWhenHighlighted {
-	_buttonFlags.adjustsImageWhenHighlighted = adjustsImageWhenHighlighted;
+- (void)setAdjustsImageWhenHighlighted:(BOOL)flag {
+	_buttonFlags.adjustsImageWhenHighlighted = flag;
 }
 
 - (BOOL)adjustsImageWhenDisabled {
 	return _buttonFlags.adjustsImageWhenDisabled;
 }
 
-- (void)setAdjustsImageWhenDisabled:(BOOL)adjustsImageWhenDisabled {
-	_buttonFlags.adjustsImageWhenDisabled = adjustsImageWhenDisabled;
+- (void)setAdjustsImageWhenDisabled:(BOOL)flag {
+	_buttonFlags.adjustsImageWhenDisabled = flag;
 }
 
 - (BOOL)reversesTitleShadowWhenHighlighted {
 	return _buttonFlags.reversesTitleShadowWhenHighlighted;
 }
 
-- (void)setReversesTitleShadowWhenHighlighted:(BOOL)reversesTitleShadowWhenHighlighted {
-	_buttonFlags.reversesTitleShadowWhenHighlighted = reversesTitleShadowWhenHighlighted;
+- (void)setReversesTitleShadowWhenHighlighted:(BOOL)flag {
+	_buttonFlags.reversesTitleShadowWhenHighlighted = flag;
 }
+
+#pragma mark - Overrides
 
 - (CGRect)backgroundRectForBounds:(CGRect)bounds {
 	return bounds;
@@ -173,7 +175,11 @@
 	return self.currentImage.size;
 }
 
+#pragma mark - Drawing
+
 - (void)drawBackground:(CGRect)rect {
+	BOOL secondaryState = (self.state & TUIControlStateHighlighted) || (self.state & TUIControlStateSelected);
+	
 	if(self.buttonType == TUIButtonTypeCustom) {
 		NSImage *backgroundImage = self.currentBackgroundImage;
 		if(backgroundImage) {
@@ -183,60 +189,28 @@
 			[self.backgroundColor setFill];
 			CGContextFillRect(TUIGraphicsGetCurrentContext(), self.bounds);
 		}
+		
 	} else if(self.buttonType == TUIButtonTypeStandard) {
-		CGFloat level = self.state & TUIControlStateHighlighted ? 0.93 : 0.99;
-		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, 0.5, 0.5)
+		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, 1.0f, 1.0f)
 															 xRadius:3.5f yRadius:3.5f];
-		NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[NSColor colorWithCalibratedWhite:0.93 alpha:1.0]
-															 endingColor:[NSColor colorWithCalibratedWhite:level alpha:1.0]];
+		NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[self.tintColor shadowWithLevel:0.15f]
+															 endingColor:[self.tintColor highlightWithLevel:0.15f]];
 		
-		[gradient drawInBezierPath:path angle:90.0f];
-		[[NSColor whiteColor] setStroke];
-		[path strokeInside];
-		[[NSColor grayColor] setStroke];
-		[path stroke];
-		
-		if(self.state & TUIControlStateHighlighted) {
-			NSColor *shadowColor = [[NSColor shadowColor] colorWithAlphaComponent:0.5];
-			NSShadow *shadow = [NSShadow shadowWithRadius:2.0f offset:CGSizeMake(0, -1) color:shadowColor];
-			
-			[NSGraphicsContext saveGraphicsState]; {
-				[path setClip];
-				[shadow set];
-				[path stroke];
-			} [NSGraphicsContext restoreGraphicsState];
-		}
-	} else if(self.buttonType == TUIButtonTypeBeveled) {
-		NSBezierPath *path = [NSBezierPath bezierPathWithRect:self.bounds];
-		NSGradient *bevel = [[NSGradient alloc] initWithColorsAndLocations:
-							 [NSColor colorWithCalibratedWhite:0.95 alpha:0.5], 0.0,
-							 [NSColor colorWithCalibratedWhite:0.90 alpha:0.5], 0.5,
-							 [NSColor colorWithCalibratedWhite:0.85 alpha:0.5], 0.5,
-							 [NSColor colorWithCalibratedWhite:0.84 alpha:0.5], 1.0, nil];
-		
-		[self.tintColor set];
-		[path fill];
-		
-		[NSGraphicsContext saveGraphicsState];
-		[[NSShadow shadowWithRadius:1.0
-							 offset:NSMakeSize(0, -1.0)
-							  color:[NSColor colorWithCalibratedWhite:.863 alpha:.75]] set];
-		[path fill];
-		[NSGraphicsContext restoreGraphicsState];
-		
-		[bevel drawInBezierPath:path angle:-90.0];
-		if(self.state & TUIControlStateHighlighted) {
-			[[NSColor colorWithCalibratedWhite:0.0 alpha:0.1] set];
+		[NSGraphicsContext saveGraphicsState]; {
+			[[NSShadow shadowWithRadius:1.0f offset:CGSizeMake(0, -1)
+								  color:[NSColor colorWithCalibratedWhite:0.86f alpha:0.75f]] set];
 			[path fill];
-		}
+		} [NSGraphicsContext restoreGraphicsState];
 		
-		[[NSColor colorWithCalibratedWhite:0.57 alpha:1.0] setStroke];
+		[gradient drawInBezierPath:path angle:(secondaryState ? 270.0f : 90.0f)];
+		[[NSColor colorWithCalibratedWhite:0.25f alpha:1.0f] setStroke];
 		[path strokeInside];
 		
-		[path fillWithInnerShadow:[NSShadow shadowWithRadius:4.0
-													  offset:NSMakeSize(0.0, -1.0)
-													   color:[NSColor colorWithCalibratedWhite:0.0 alpha:.52]]];
-	} else if(self.buttonType == TUIButtonTypeEmbossed) {
+		if(secondaryState) {
+			[path fillWithInnerShadow:[NSShadow shadowWithRadius:5.0f offset:NSZeroSize color:[NSColor blackColor]]];
+		}
+		
+	} else if(self.buttonType == TUIButtonTypeFlat) {
 		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, 2.0, 2.0)
 															 xRadius:3.5f yRadius:3.5f];
 		
@@ -247,7 +221,7 @@
 			[path fill];
 		} [NSGraphicsContext restoreGraphicsState];
 		
-		if(self.state & TUIControlStateHighlighted) {
+		if(secondaryState) {
 			[[NSColor colorWithCalibratedWhite:0.0 alpha:0.1] set];
 			[path fill];
 		}
@@ -257,44 +231,22 @@
 														   color:[NSColor colorWithCalibratedWhite:1.0 alpha:0.5]]];
 		} [NSGraphicsContext restoreGraphicsState];
 		
-	} else if(self.buttonType == TUIButtonTypeGradient) {
-		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, 0, 1)
-															 xRadius:3.5f yRadius:3.5f];
-		NSGradient *pressed = [[NSGradient alloc] initWithStartingColor:[NSColor colorWithCalibratedWhite:0.50 alpha:1.0]
-															endingColor:[NSColor colorWithCalibratedWhite:0.38 alpha:1.0]];
-		NSGradient *normal = [[NSGradient alloc] initWithStartingColor:[NSColor colorWithCalibratedWhite:0.67 alpha:1.0]
-														   endingColor:[NSColor colorWithCalibratedWhite:1.00 alpha:1.0]];
-		
-		[NSGraphicsContext saveGraphicsState]; {
-			[[NSShadow shadowWithRadius:1.0 offset:CGSizeMake(0, -1)
-								  color:[NSColor colorWithCalibratedWhite:.86 alpha:0.75]] set];
-			[path fill];
-		} [NSGraphicsContext restoreGraphicsState];
-		
-		[(self.state & TUIControlStateHighlighted) ? pressed : normal drawInBezierPath:path angle:90];
-		[[NSColor colorWithCalibratedWhite:0.25 alpha:1.0] setStroke];
-		[path strokeInside];
-		
-		if(self.state & TUIControlStateHighlighted) {
-			[path fillWithInnerShadow:[NSShadow shadowWithRadius:3.0 offset:NSZeroSize color:[NSColor blackColor]]];
-			[path fillWithInnerShadow:[NSShadow shadowWithRadius:8.0 offset:NSMakeSize(0.0, -2.0)
-														   color:[NSColor colorWithCalibratedWhite:0.0 alpha:.52]]];
-		}
 	} else if(self.buttonType == TUIButtonTypeMinimal) {
 		CGFloat radius = self.bounds.size.height / 2;
 		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, 0.5f, 0.5f)
 															 xRadius:radius yRadius:radius];
-		NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[NSColor colorWithCalibratedWhite:0.95 alpha:1.0]
-															 endingColor:[NSColor colorWithCalibratedWhite:0.85 alpha:1.0]];
+		NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[self.tintColor highlightWithLevel:0.15f]
+															 endingColor:[self.tintColor shadowWithLevel:0.15f]];
 		
-		[gradient drawInBezierPath:path angle:(self.state & TUIControlStateHighlighted) ? 90.0f : 270.0f];
+		[gradient drawInBezierPath:path angle:(secondaryState ? 90.0f : 270.0f)];
 		[[NSColor grayColor] setStroke];
 		[path stroke];
+		
 	} else if(self.buttonType == TUIButtonTypeInline) {
 		CGFloat radius = self.bounds.size.height / 2;
 		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:self.bounds xRadius:radius yRadius:radius];
 		
-		if(self.state & TUIControlStateHighlighted || self.state & TUIControlStateSelected) {
+		if(secondaryState) {
 			[[NSColor colorWithCalibratedWhite:0.15 alpha:0.85] set];
 			[path fill];
 			
@@ -331,7 +283,18 @@
 			b.size.height -= _imageEdgeInsets.bottom + _imageEdgeInsets.top;
 			imageRect = ABRectRoundOrigin(ABRectCenteredInRect(imageRect, b));
 		}
-
+		
+		// Shadow or highlight the image if either option is enabled.
+		if(_buttonFlags.adjustsImageWhenDisabled || _buttonFlags.adjustsImageWhenHighlighted) {
+			[image lockFocus]; {
+				if(_buttonFlags.adjustsImageWhenDisabled)
+					[[NSColor colorWithCalibratedWhite:0.0 alpha:(1.0f / 3.0f)] set];
+				else if(_buttonFlags.adjustsImageWhenHighlighted)
+					[[NSColor colorWithCalibratedWhite:1.0 alpha:(1.0f / 3.0f)] set];
+				NSRectFillUsingOperation((NSRect) {.size = image.size}, NSCompositeSourceAtop);
+			} [image unlockFocus];
+		}
+		
 		[image drawInRect:imageRect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:alpha];
 	}
 	
@@ -363,22 +326,23 @@
 	} CGContextRestoreGState(ctx);
 }
 
+#pragma mark - Menu and Selected State
+
+// BUG: Happens even for large clickCount.
 - (void)mouseDown:(NSEvent *)event {
 	[super mouseDown:event];
 	
-	// BUG: Happens even for large clickCount.
-	if(self.popUpMenu) {
-		NSMenu *menu = self.popUpMenu;
-		NSPoint p = [self frameInNSView].origin;
-		p.x += 6;
-		p.y -= 2;
-		[menu popUpMenuPositioningItem:nil atLocation:p inView:self.nsView];
+	if(self.menu) {
+		[self.menu popUpMenuPositioningItem:nil atLocation:(CGPoint) {
+			.x = self.frameInNSView.origin.x + 6,
+			.y = self.frameInNSView.origin.y - 2
+		} inView:self.nsView];
 		
 		// After this happens, we never get a mouseUp: in the TUINSView.
 		// This screws up _trackingView. For now, fake it with a fake mouseUp:.
 		[self.nsView performSelector:@selector(mouseUp:) withObject:event afterDelay:0.0];
 		
-		_controlFlags.tracking = 0;
+		self.tracking = NO;
 		[TUIView animateWithDuration:0.2 animations:^{
 			[self redraw];
 		}];
@@ -387,26 +351,32 @@
 
 - (void)mouseUp:(NSEvent *)event {
 	[super mouseUp:event];
+	if(![self eventInside:event])
+		return;
 	
-	// Quick hack to allow inline buttons to be selected.
-	if(self.buttonType == TUIButtonTypeInline && [self eventInside:event])
+	if(self.selectable || self.buttonType == TUIButtonTypeInline || self.menu)
 		self.selected = !self.selected;
 }
 
+#pragma mark - Highlight Reversing
+
 - (void)_stateWillChange {
-	if(self.state & TUIControlStateHighlighted)
-		_buttonFlags.wasHighlighted = 1;
+	_buttonFlags.wasHighlighted = (self.state & TUIControlStateHighlighted);
 }
 
 - (void)_stateDidChange {
-	BOOL isHighlighted = (self.state & TUIControlStateHighlighted);
-	if((isHighlighted != _buttonFlags.wasHighlighted) && self.reversesTitleShadowWhenHighlighted) {
+	BOOL reverseShadow = (self.state & TUIControlStateHighlighted) != _buttonFlags.wasHighlighted;
+
+	if(reverseShadow && self.reversesTitleShadowWhenHighlighted) {
 		CGSize shadow = _titleLabel.renderer.shadowOffset;
-		shadow.height *= -1;
-		shadow.width *= -1;
-		_titleLabel.renderer.shadowOffset = shadow;
+		_titleLabel.renderer.shadowOffset = (CGSize) {
+			.height = shadow.height * -1,
+			.width = shadow.width * -1
+		};
 	}
 }
+
+#pragma mark -
 
 @end
 
