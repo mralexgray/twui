@@ -20,7 +20,6 @@
 
 @interface TUIControlTargetAction : NSObject
 
-// nil goes up the responder chain
 @property (nonatomic, unsafe_unretained) id target;
 @property (nonatomic, assign) SEL action;
 @property (nonatomic, copy) void(^block)(void);
@@ -62,8 +61,6 @@
 }
 
 - (TUIControlState)state {
-	// Start with the normal state, then OR in an implicit
-	// state that is based on other properties.
 	TUIControlState actual = TUIControlStateNormal;
 	
 	if(_controlFlags.disabled)
@@ -217,7 +214,6 @@
 	}
 }
 
-// Support tracking cancelation.
 - (void)willMoveToSuperview:(TUIView *)newSuperview {
 	if(!_controlFlags.disabled && _controlFlags.tracking) {
 		[self applyStateChangeAnimated:self.animateStateChange block:^{
@@ -240,7 +236,6 @@
 	}
 }
 
-// Override.
 - (BOOL)beginTrackingWithEvent:(NSEvent *)event {
 	return YES;
 }
@@ -274,15 +269,7 @@
 	return;
 }
 
-@end
-
-@implementation TUIControl (TargetAction)
-
-// add target/action for particular event. you can call this multiple times and you can specify multiple target/actions for a particular event.
-// passing in nil as the target goes up the responder chain. The action may optionally include the sender and the event in that order
-// the action cannot be NULL.
-- (void)addTarget:(id)target action:(SEL)action forControlEvents:(TUIControlEvents)controlEvents
-{
+- (void)addTarget:(id)target action:(SEL)action forControlEvents:(TUIControlEvents)controlEvents {
 	if(action) {
 		TUIControlTargetAction *t = [[TUIControlTargetAction alloc] init];
 		t.target = target;
@@ -292,8 +279,7 @@
 	}
 }
 
-- (void)addActionForControlEvents:(TUIControlEvents)controlEvents block:(void(^)(void))block
-{
+- (void)addActionForControlEvents:(TUIControlEvents)controlEvents block:(void(^)(void))block {
 	if(block) {
 		TUIControlTargetAction *t = [[TUIControlTargetAction alloc] init];
 		t.block = block;
@@ -302,75 +288,61 @@
 	}
 }
 
-// remove the target/action for a set of events. pass in NULL for the action to remove all actions for that target
-- (void)removeTarget:(id)target action:(SEL)action forControlEvents:(TUIControlEvents)controlEvents
-{
+- (void)removeTarget:(id)target action:(SEL)action forControlEvents:(TUIControlEvents)controlEvents {
 	NSMutableArray *targetActionsToRemove = [NSMutableArray array];
-	
 	for(TUIControlTargetAction *t in self.targetActions) {
 		
-		BOOL actionMatches = action == t.action;
+		BOOL actionMatches = (action == t.action);
 		BOOL targetMatches = [target isEqual:t.target];
-		BOOL controlMatches = controlEvents == t.controlEvents; // is this the way UIKit does it? Should I just remove certain bits from t.controlEvents?
+		BOOL controlMatches = (controlEvents == t.controlEvents);
 		
 		if((action && targetMatches && actionMatches && controlMatches) ||
 		   (!action && targetMatches && controlMatches))
-			{
 			[targetActionsToRemove addObject:t];
-			}
 	}
 	
 	[self.targetActions removeObjectsInArray:targetActionsToRemove];
 }
 
-- (NSSet *)allTargets                                                                     // set may include NSNull to indicate at least one nil target
-{
+- (NSSet *)allTargets {
 	NSMutableSet *targets = [NSMutableSet set];
-	for(TUIControlTargetAction *t in self.targetActions) {
-		id target = t.target;
-		[targets addObject:target?target:[NSNull null]];
-	}
+	
+	for(TUIControlTargetAction *t in self.targetActions)
+		[targets addObject:t.target ?: [NSNull null]];
+	
 	return targets;
 }
 
-- (TUIControlEvents)allControlEvents                                                       // list of all events that have at least one action
-{
+- (TUIControlEvents)allControlEvents {
 	TUIControlEvents e = 0;
-	for(TUIControlTargetAction *t in self.targetActions) {
+	
+	for(TUIControlTargetAction *t in self.targetActions)
 		e |= t.controlEvents;
-	}
+	
 	return e;
 }
 
-- (NSArray *)actionsForTarget:(id)target forControlEvent:(TUIControlEvents)controlEvent    // single event. returns NSArray of NSString selector names. returns nil if none
-{
+- (NSArray *)actionsForTarget:(id)target forControlEvent:(TUIControlEvents)controlEvent {
 	NSMutableArray *actions = [NSMutableArray array];
-	for(TUIControlTargetAction *t in self.targetActions) {
-		if([target isEqual:t.target] && controlEvent == t.controlEvents) {
-			[actions addObject:NSStringFromSelector(t.action)];
-		}
-	}
 	
-	if([actions count])
-		return actions;
-	return nil;
+	for(TUIControlTargetAction *t in self.targetActions)
+		if([target isEqual:t.target] && controlEvent == t.controlEvents)
+			[actions addObject:NSStringFromSelector(t.action)];
+	
+	return (actions.count ? actions : nil);
 }
 
-// send the action. the first method is called for the event and is a point at which you can observe or override behavior. it is called repeately by the second.
-- (void)sendAction:(SEL)action to:(id)target forEvent:(NSEvent *)event
-{
+- (void)sendAction:(SEL)action to:(id)target forEvent:(NSEvent *)event {
 	[NSApp sendAction:action to:target from:self];
 }
 
-- (void)sendActionsForControlEvents:(TUIControlEvents)controlEvents                        // send all actions associated with events
-{
+- (void)sendActionsForControlEvents:(TUIControlEvents)controlEvents {
 	for(TUIControlTargetAction *t in self.targetActions) {
 		if(t.controlEvents == controlEvents) {
-			if(t.target && t.action) {
+			if(t.target && t.action)
 				[self sendAction:t.action to:t.target forEvent:nil];
-			} else if(t.block) {
+			else if(t.block)
 				t.block();
-			}
 		}
 	}
 }

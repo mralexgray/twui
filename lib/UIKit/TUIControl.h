@@ -64,7 +64,7 @@ typedef NSUInteger TUIControlState;
 
 @interface TUIControl : TUIView
 
-@property(nonatomic, readonly) TUIControlState state;
+@property (nonatomic, readonly) TUIControlState state;
 @property (nonatomic, assign) BOOL acceptsFirstMouse;
 @property (nonatomic, assign) BOOL animateStateChange;
 
@@ -81,6 +81,10 @@ typedef NSUInteger TUIControlState;
 - (void)stateWillChange;
 - (void)stateDidChange;
 
+// As your custom control changes a state property, it is
+// recommended the control assign the state using this method.
+// This automatically invokes -stateWillChange and -stateDidChange,
+// and calls -setNeedsDisplay or animates -redraw if required.
 - (void)applyStateChangeAnimated:(BOOL)animated block:(void (^)(void))block;
 
 // When control tracking begins, usually by mouse down or
@@ -102,20 +106,35 @@ typedef NSUInteger TUIControlState;
 // opts to cancel it - only when the user cancels the tracking.
 - (void)endTrackingWithEvent:(NSEvent *)event;
 
-@end
-
-@interface TUIControl (TargetAction)
-
+// Add target/action for particular event. You can call this
+// multiple times and you can specify multiple target/actions
+// for a particular event. Passing in nil as the target goes
+// up the responder chain. The action may optionally include
+// the sender and the event as parameters, in that order. The
+// action cannot be NULL. You may also choose to submit a block
+// as an action for a control event mask. You may add any
+// number of blocks as well.
 - (void)addTarget:(id)target action:(SEL)action forControlEvents:(TUIControlEvents)controlEvents;
-
-- (void)removeTarget:(id)target action:(SEL)action forControlEvents:(TUIControlEvents)controlEvents;
-
 - (void)addActionForControlEvents:(TUIControlEvents)controlEvents block:(void(^)(void))action;
 
+// Remove the target and action for a set of events. Pass NULL
+// for the action to remove all actions for that target. You
+// may not, however, remove a block target, due to its unidentifiablity.
+- (void)removeTarget:(id)target action:(SEL)action forControlEvents:(TUIControlEvents)controlEvents;
+
+// Get all targets, actions, and control events registered.
+// May include NSNull to indicate at least one nil target.
+// -actionsForTarget... returns NSArray of NSString selector
+// names or nil if none.
 - (NSSet *)allTargets;
 - (TUIControlEvents)allControlEvents;
 - (NSArray *)actionsForTarget:(id)target forControlEvent:(TUIControlEvents)controlEvent;
 
+// As a TUIControl subclass, these methods enable you to dispatch
+// actions when an event occurs. The first -sendAction:to:forEvent:
+// method call is for the event and is a point at which you can
+// observe or override behavior. It is then called repeately after
+// the second call to this method.
 - (void)sendAction:(SEL)action to:(id)target forEvent:(NSEvent *)event;
 - (void)sendActionsForControlEvents:(TUIControlEvents)controlEvents;
 

@@ -383,6 +383,8 @@
 
 @implementation TUIButton (Content)
 
+#pragma mark - Button Content Lookup
+
 - (TUIButtonContent *)_contentForState:(TUIControlState)state {
 	id key = @(state);
 	TUIButtonContent *c = [_contentLookup objectForKey:key];
@@ -488,5 +490,7 @@
 	
 	return image;
 }
+
+#pragma mark -
 
 @end
