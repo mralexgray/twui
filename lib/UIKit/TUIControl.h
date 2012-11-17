@@ -17,60 +17,141 @@
 #import "TUIView.h"
 
 enum {
+	
+	// A mouse down event in the control.
 	TUIControlEventMouseDown			= 1 <<  0,
+	
+	// A mouse down multi-click event in the control.
+	// -[NSEvent clickCount] will return > 1.
 	TUIControlEventMouseDownRepeat		= 1 <<  1,
+	
+	// A mouse drag within the bounds of the control.
 	TUIControlEventMouseDragInside		= 1 <<  2,
+	
+	// A mouse drag that leaves the bounds of the control.
 	TUIControlEventMouseDragOutside		= 1 <<  3,
+	
 	/*
-	 Needs:
+	 Does not support:
 	 TUIControlEventMouseDragEnter		= 1 <<  4,
 	 TUIControlEventMouseDragExit		= 1 <<  5,
 	 */
+	
+	// A mouse up event inside the control.
 	TUIControlEventMouseUpInside		= 1 <<  6,
+	
+	// A mouse up event outside the control.
 	TUIControlEventMouseUpOutside		= 1 <<  7,
+	
+	// A canceled mouse up event, due to system reasons.
 	TUIControlEventMouseCancel			= 1 <<  8,
 	
+	// A mouse hover begin event that a control is tracking.
 	TUIControlEventMouseHoverBegan		= 1 <<  9,
-	TUIControlEventMouseHoverEnded		= 1 <<  9,
+	
+	// A mouse hover end event that a control stops tracking.
+	TUIControlEventMouseHoverEnded		= 1 <<  10,
+	
+	// A manipulated control caused to emit a series of different values.
 	TUIControlEventValueChanged			= 1 << 12,
 	
-	/*
-	 Needs:
+	// A TUITextField editing session was begun, changed, or ended.
 	TUIControlEventEditingDidBegin		= 1 << 16,
 	TUIControlEventEditingChanged		= 1 << 17,
 	TUIControlEventEditingDidEnd		= 1 << 18,
-	 */
 	TUIControlEventEditingDidEndOnExit	= 1 << 19,
 	
+	// All mouse events.
 	TUIControlEventAllMouseEvents		= 0x00000FFF,
+	
+	// All TUITextField editing session events.
 	TUIControlEventAllEditingEvents		= 0x000F0000,
+	
+	// A range of control-event values available for application use.
 	TUIControlEventApplicationReserved	= 0x0F000000,
+	
+	// A range of control-event values reserved for framework use.
 	TUIControlEventSystemReserved		= 0xF0000000,
+	
+	// All events, including reserved system events.
 	TUIControlEventAllEvents			= 0xFFFFFFFF
 };
 typedef NSUInteger TUIControlEvents;
 
 enum {
-	TUIControlStateNormal			= 0,					   
+	
+	// The normal, or default state of a control—that is,
+	// enabled but neither selected nor highlighted.
+	TUIControlStateNormal			= 0,
+	
+	// The highlighted state of a control. A control enters this
+	// state when a mouse enters and exits during tracking and
+	// when there is a mouse up event. You can retrieve and set
+	// this value through the highlighted property.
 	TUIControlStateHighlighted		= 1 << 0,
+	
+	// the disabled state of a control. This state indicates that
+	// the control is currently disabled. You can retrieve and
+	// set this value through the enabled property.
 	TUIControlStateDisabled			= 1 << 1,
+	
+	// The selected state of a control. For many controls, this
+	// state has no effect on behavior or appearance. But other
+	// subclasses may have different appearance depending on
+	// their selected state. You can retrieve and set this value
+	// through the selected property.
 	TUIControlStateSelected			= 1 << 2,
+	
+	// The state of a control when a mouse cursor is hovering upon
+	// it. This state can also be read through the tracking property.
 	TUIControlStateHover			= 1 << 3,
+	
 	TUIControlStateNotKey			= 1 << 11,
+	
+	// Additional control-state flags available for application use.
 	TUIControlStateApplication		= 0x00FF0000,
+	
+	// Additional control-state flags reserved for framework use.
 	TUIControlStateReserved			= 0xFF000000
 };
 typedef NSUInteger TUIControlState;
 
+// TUIControl is the base class for control objects such as
+// buttons and sliders that convey user intent to the application.
+// You cannot use the TUIControl class directly to instantiate
+// controls. It instead defines the common interface and behavioral
+// structure for all its subclasses. The main role of UIControl is
+// to define an interface and base implementation for preparing
+// action messages and initially dispatching them to their targets
+// when certain events occur. The TUIControl class also includes
+// methods for getting and setting control state—for example,
+// for determining whether a control is enabled or highlighted—and
+// it defines methods for tracking touches within a control. These
+// tracking methods are overridden by TUIControl subclasses.
 @interface TUIControl : TUIView
 
+// One or more TUIControlState bit-mask constants that specify the
+// state of the TUIControl object. Note that the control can be in
+// more than one state, for example, both disabled and selected.
 @property (nonatomic, readonly) TUIControlState state;
 @property (nonatomic, assign) BOOL acceptsFirstMouse;
 @property (nonatomic, assign) BOOL animateStateChange;
 
+// The value is YES if the receiver is tracking mouse events; otherwise NO.
 @property (nonatomic, readonly, getter = isTracking) BOOL tracking;
+
+// If the control's enabled state is NO, the control ignores
+// events and subclasses may draw differently.
 @property (nonatomic, assign, getter = isEnabled) BOOL enabled;
+
+// For many controls, this state has no effect on behavior or
+// appearance. But other subclasses or the application object
+// might read or set this control state.
 @property (nonatomic, assign, getter = isSelected) BOOL selected;
+
+// By default, a control is not highlighted. TUIControl automatically
+// sets and clears this state automatically when a touch enters
+// and exits during tracking and when there is a mouse up.
 @property (nonatomic, assign, getter = isHighlighted) BOOL highlighted;
 @property (nonatomic, assign, getter = isContinuous) BOOL continuous;
 
@@ -131,10 +212,14 @@ typedef NSUInteger TUIControlState;
 - (NSArray *)actionsForTarget:(id)target forControlEvent:(TUIControlEvents)controlEvent;
 
 // As a TUIControl subclass, these methods enable you to dispatch
-// actions when an event occurs. The first -sendAction:to:forEvent:
-// method call is for the event and is a point at which you can
-// observe or override behavior. It is then called repeately after
-// the second call to this method.
+// actions when an event occurs.
+// The first -sendAction:to:forEvent: method call is for the event
+// and is a point at which you can observe or override behavior.
+// It is then called repeately after the second call to this method.
+// To observe or modify the dispatch of action messages to targets
+// for particular events, override sendAction:to:forEvent:, evaluate
+// the passed-in selector, target object, or TUIControlEvents bit
+// mask, and proceed as required.
 - (void)sendAction:(SEL)action to:(id)target forEvent:(NSEvent *)event;
 - (void)sendActionsForControlEvents:(TUIControlEvents)controlEvents;
 

@@ -70,13 +70,12 @@
 		self.contentLookup = [NSMutableDictionary dictionary];
 		_buttonFlags.buttonType = TUIButtonTypeStandard;
 		
-		self.needsDisplayWhenWindowsKeyednessChanges = YES;
 		self.tintColor = [NSColor colorWithCalibratedWhite:0.95f alpha:1.0f];
 		self.backgroundColor = [NSColor clearColor];
 		self.tintFactor = 0.10f;
 		self.opaque = NO;
 		
-		_buttonFlags.reversesTitleShadowWhenHighlighted = NO;
+		self.needsDisplayWhenWindowsKeyednessChanges = YES;
 		_buttonFlags.adjustsImageWhenDisabled = YES;
 		_buttonFlags.adjustsImageWhenHighlighted = YES;
 		_buttonFlags.dimsInBackground = YES;
