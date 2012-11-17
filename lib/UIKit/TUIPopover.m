@@ -472,7 +472,7 @@ CGFloat const TUIPopoverBackgroundViewArrowWidth = 35.0;
 	
 	self.drawRect = ^ (TUIView *view, CGRect rect)
 	{
-		TUIPopoverBackgroundView *strongSelf = (TUIPopoverBackgroundView *)view;
+		TUIPopoverBackgroundView *strongSelf = (id)view;
 		CGContextRef context = TUIGraphicsGetCurrentContext();
 		CGPathRef outerBorder = [strongSelf newPopoverPathForEdge:strongSelf.popoverEdge inFrame:strongSelf.bounds];
 		CGContextSetStrokeColorWithColor(context, strongSelf.strokeColor.tui_CGColor);
