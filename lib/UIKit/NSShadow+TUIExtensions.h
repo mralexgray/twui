@@ -18,8 +18,7 @@
 
 @interface NSShadow (TUIExtensions)
 
-+ (instancetype)shadow;
-+ (instancetype)shadowWithRadius:(CGFloat)radius offset:(CGSize)offset color:(NSColor *)color;
++ (NSShadow *)tui_shadowWithRadius:(CGFloat)radius offset:(CGSize)offset color:(NSColor *)color;
 
 - (id)initWithRadius:(CGFloat)radius offset:(CGSize)offset color:(NSColor *)color;
 

@@ -19,15 +19,15 @@
 const TUIEdgeInsets TUIEdgeInsetsZero = { 0.0, 0.0, 0.0, 0.0 };
 
 NSString* NSStringFromCGPoint(CGPoint point) {
-    return NSStringFromPoint(NSPointFromCGPoint(point));
+    return NSStringFromPoint(point);
 }
 
 NSString* NSStringFromCGRect(CGRect rect) {
-    return NSStringFromRect(NSRectFromCGRect(rect));
+    return NSStringFromRect(rect);
 }
 
 NSString* NSStringFromCGSize(CGSize size) {
-    return NSStringFromSize(NSSizeFromCGSize(size));
+    return NSStringFromSize(size);
 }
 
 NSString* NSStringFromCGAffineTransform(CGAffineTransform transform) {
@@ -41,15 +41,15 @@ NSString* NSStringFromTUIEdgeInsets(TUIEdgeInsets insets) {
 }
 
 CGPoint CGPointFromNSString(NSString *string) {
-	return NSPointToCGPoint(NSPointFromString(string));
+	return NSPointFromString(string);
 }
 
 CGRect CGRectFromNSString(NSString *string) {
-	return NSRectToCGRect(NSRectFromString(string));
+	return NSRectFromString(string);
 }
 
 CGSize CGSizeFromNSString(NSString *string) {
-	return NSSizeToCGSize(NSSizeFromString(string));
+	return NSSizeFromString(string);
 }
 
 CGAffineTransform CGAffineTransformFromNSString(NSString *string) {

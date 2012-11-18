@@ -19,13 +19,12 @@
 
 @interface NSBezierPath (TUIExtensions)
 
-+ (NSBezierPath *)bezierPathWithCGPath:(CGPathRef)pathRef;
-- (CGPathRef)CGPath CF_RETURNS_RETAINED;
++ (NSBezierPath *)tui_bezierPathWithCGPath:(CGPathRef)pathRef;
+- (CGPathRef)tui_CGPath CF_RETURNS_RETAINED;
 
 - (void)fillWithInnerShadow:(NSShadow *)shadow;
 - (void)drawBlurWithColor:(NSColor *)color radius:(CGFloat)radius;
 
-+ (NSBezierPath *)bezierPathWithRoundedRect:(NSRect)rect cornerRadius:(CGFloat)radius;
 + (NSBezierPath *)bezierPathWithRoundedRect:(CGRect)rect
                           byRoundingCorners:(TUIRectCorner)corners
                                 cornerRadii:(CGSize)cornerRadii;

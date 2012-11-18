@@ -19,15 +19,9 @@
 
 @interface NSCoder (TUIExtensions)
 
-- (void)encodeCGPoint:(CGPoint)point forKey:(NSString *)key;
-- (void)encodeCGRect:(CGRect)rect forKey:(NSString *)key;
-- (void)encodeCGSize:(CGSize)size forKey:(NSString *)key;
 - (void)encodeCGAffineTransform:(CGAffineTransform)transform forKey:(NSString *)key;
 - (void)encodeTUIEdgeInsets:(TUIEdgeInsets)insets forKey:(NSString *)key;
 
-- (CGPoint)decodeCGPointForKey:(NSString *)key;
-- (CGRect)decodeCGRectForKey:(NSString *)key;
-- (CGSize)decodeCGSizeForKey:(NSString *)key;
 - (CGAffineTransform)decodeCGAffineTransformForKey:(NSString *)key;
 - (TUIEdgeInsets)decodeTUIEdgeInsetsForKey:(NSString *)key;
 

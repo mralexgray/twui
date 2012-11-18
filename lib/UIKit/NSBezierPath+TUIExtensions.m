@@ -52,14 +52,14 @@ static void CGPathCallback(void *info, const CGPathElement *element) {
 @implementation NSBezierPath (TUIExtensions)
 
 // Sourced from Apple Documentation.
-+ (NSBezierPath *)bezierPathWithCGPath:(CGPathRef)pathRef {
++ (NSBezierPath *)tui_bezierPathWithCGPath:(CGPathRef)pathRef {
 	NSBezierPath *path = [NSBezierPath bezierPath];
 	CGPathApply(pathRef, (__bridge void *)(path), CGPathCallback);
 	
 	return path;
 }
 
-- (CGPathRef)CGPath {
+- (CGPathRef)tui_CGPath {
     CGPathRef immutablePath = NULL;
     int numElements = (int)[self elementCount];
     
@@ -132,7 +132,7 @@ static void CGPathCallback(void *info, const CGPathElement *element) {
 
 - (void)drawBlurWithColor:(NSColor *)color radius:(CGFloat)radius {
 	NSRect bounds = NSInsetRect(self.bounds, -radius, -radius);
-	NSShadow *shadow = [NSShadow shadowWithRadius:radius offset:NSMakeSize(0, bounds.size.height) color:color];
+	NSShadow *shadow = [NSShadow tui_shadowWithRadius:radius offset:NSMakeSize(0, bounds.size.height) color:color];
 	
 	NSBezierPath *path = [self copy];
 	NSAffineTransform *transform = [NSAffineTransform transform];
@@ -149,10 +149,6 @@ static void CGPathCallback(void *info, const CGPathElement *element) {
 		NSRectClip(bounds);
 		[path fill];
 	} [NSGraphicsContext restoreGraphicsState];
-}
-
-+ (NSBezierPath *)bezierPathWithRoundedRect:(NSRect)rect cornerRadius:(CGFloat)radius {
-	return [self bezierPathWithRoundedRect:rect xRadius:radius yRadius:radius];
 }
 
 // Sourced from Google Source Toolbox for Mac.
@@ -191,7 +187,7 @@ static void CGPathCallback(void *info, const CGPathElement *element) {
     } else CGPathAddLineToPoint(path, NULL, topLeft.x, topLeft.y);
     
     CGPathCloseSubpath(path);
-    NSBezierPath *bezier = [NSBezierPath bezierPathWithCGPath:path];
+    NSBezierPath *bezier = [NSBezierPath tui_bezierPathWithCGPath:path];
 	CGPathRelease(path);
 	
 	return bezier;

@@ -18,30 +18,6 @@
 
 @implementation NSValue (TUIExtensions)
 
-+ (NSValue *)valueWithCGPoint:(CGPoint)point {
-	return [NSValue valueWithPoint:NSPointFromCGPoint(point)];
-}
-
-- (CGPoint)CGPointValue {
-	return NSPointToCGPoint([self pointValue]);
-}
-
-+ (NSValue *)valueWithCGRect:(CGRect)rect {
-	return [NSValue valueWithRect:NSRectFromCGRect(rect)];
-}
-
-- (CGRect)CGRectValue {
-	return NSRectToCGRect([self rectValue]);
-}
-
-+ (NSValue *)valueWithCGSize:(CGSize)size {
-	return [NSValue valueWithSize:NSSizeFromCGSize(size)];
-}
-
-- (CGSize)CGSizeValue {
-	return NSSizeToCGSize([self sizeValue]);
-}
-
 + (NSValue *)valueWithCGAffineTransform:(CGAffineTransform)transform {
 	return [NSValue valueWithBytes:&transform objCType:@encode(CGAffineTransform)];
 }

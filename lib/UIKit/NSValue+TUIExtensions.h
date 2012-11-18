@@ -19,15 +19,9 @@
 
 @interface NSValue (TUIExtensions)
 
-+ (instancetype)valueWithCGPoint:(CGPoint)point;
-+ (instancetype)valueWithCGRect:(CGRect)rect;
-+ (instancetype)valueWithCGSize:(CGSize)size;
-+ (instancetype)valueWithCGAffineTransform:(CGAffineTransform)transform;
-+ (instancetype)valueWithTUIEdgeInsets:(TUIEdgeInsets)insets;
++ (NSValue *)valueWithCGAffineTransform:(CGAffineTransform)transform;
++ (NSValue *)valueWithTUIEdgeInsets:(TUIEdgeInsets)insets;
 
-- (CGPoint)CGPointValue;
-- (CGRect)CGRectValue;
-- (CGSize)CGSizeValue;
 - (CGAffineTransform)CGAffineTransformValue;
 - (TUIEdgeInsets)TUIEdgeInsetsValue;
 
