@@ -32,15 +32,15 @@ static void CGPathCallback(void *info, const CGPathElement *element) {
 		} case kCGPathElementAddQuadCurveToPoint: {
 			NSPoint currentPoint = [path currentPoint];
 			NSPoint interpolatedPoint = NSMakePoint((currentPoint.x + 2*points[0].x) / 3,
-                                                    (currentPoint.y + 2*points[0].y) / 3);
+													(currentPoint.y + 2*points[0].y) / 3);
 			[path curveToPoint:NSMakePoint(points[1].x, points[1].y)
-                 controlPoint1:interpolatedPoint
-                 controlPoint2:interpolatedPoint];
+				 controlPoint1:interpolatedPoint
+				 controlPoint2:interpolatedPoint];
 			break;
 		} case kCGPathElementAddCurveToPoint: {
 			[path curveToPoint:NSMakePoint(points[2].x, points[2].y)
-                 controlPoint1:NSMakePoint(points[0].x, points[0].y)
-                 controlPoint2:NSMakePoint(points[1].x, points[1].y)];
+				 controlPoint1:NSMakePoint(points[0].x, points[0].y)
+				 controlPoint2:NSMakePoint(points[1].x, points[1].y)];
 			break;
 		} case kCGPathElementCloseSubpath: {
 			[path closePath];
@@ -60,51 +60,51 @@ static void CGPathCallback(void *info, const CGPathElement *element) {
 }
 
 - (CGPathRef)tui_CGPath {
-    CGPathRef immutablePath = NULL;
-    int numElements = (int)[self elementCount];
-    
-    if(numElements > 0) {
-        CGMutablePathRef path = CGPathCreateMutable();
-        NSPoint points[3];
-        BOOL didClosePath = YES;
-        
-        for(int i = 0; i < numElements; i++) {
-            switch ([self elementAtIndex:i associatedPoints:points]) {
-                case NSMoveToBezierPathElement:
-                    CGPathMoveToPoint(path, NULL, points[0].x, points[0].y);
-                    break;
-                case NSLineToBezierPathElement:
-                    CGPathAddLineToPoint(path, NULL, points[0].x, points[0].y);
-                    didClosePath = NO;
-                    break;
-                case NSCurveToBezierPathElement:
-                    CGPathAddCurveToPoint(path, NULL, points[0].x, points[0].y,
-                                          points[1].x, points[1].y,
-                                          points[2].x, points[2].y);
-                    didClosePath = NO;
-                    break;
-                case NSClosePathBezierPathElement:
-                    CGPathCloseSubpath(path);
-                    didClosePath = YES;
-                    break;
-            }
-        }
-        
-        if(!didClosePath)
-            CGPathCloseSubpath(path);
-		
-        immutablePath = CGPathCreateCopy(path);
-        CGPathRelease(path);
-    }
+	CGPathRef immutablePath = NULL;
+	NSInteger numElements = [self elementCount];
 	
-    return immutablePath;
+	if(numElements > 0) {
+		CGMutablePathRef path = CGPathCreateMutable();
+		NSPoint points[3];
+		BOOL didClosePath = YES;
+		
+		for(int i = 0; i < numElements; i++) {
+			switch ([self elementAtIndex:i associatedPoints:points]) {
+				case NSMoveToBezierPathElement:
+					CGPathMoveToPoint(path, NULL, points[0].x, points[0].y);
+					break;
+				case NSLineToBezierPathElement:
+					CGPathAddLineToPoint(path, NULL, points[0].x, points[0].y);
+					didClosePath = NO;
+					break;
+				case NSCurveToBezierPathElement:
+					CGPathAddCurveToPoint(path, NULL, points[0].x, points[0].y,
+										  points[1].x, points[1].y,
+										  points[2].x, points[2].y);
+					didClosePath = NO;
+					break;
+				case NSClosePathBezierPathElement:
+					CGPathCloseSubpath(path);
+					didClosePath = YES;
+					break;
+			}
+		}
+		
+		if(!didClosePath)
+			CGPathCloseSubpath(path);
+		
+		immutablePath = CGPathCreateCopy(path);
+		CGPathRelease(path);
+	}
+	
+	return immutablePath;
 }
 
 - (void)fillWithInnerShadow:(NSShadow *)shadow {
 	NSSize offset = shadow.shadowOffset;
 	NSSize originalOffset = offset;
 	CGFloat radius = shadow.shadowBlurRadius;
-	NSRect bounds = NSInsetRect(self.bounds, -(ABS(offset.width) + radius), -(ABS(offset.height) + radius));
+	NSRect bounds = NSInsetRect(self.bounds, -(fabs(offset.width) + radius), -(fabs(offset.height) + radius));
 	offset.height += bounds.size.height;
 	shadow.shadowOffset = offset;
 	
@@ -119,13 +119,13 @@ static void CGPathCallback(void *info, const CGPathElement *element) {
 	[drawingPath appendBezierPath:self];
 	[drawingPath transformUsingAffineTransform:transform];
 	
-	[NSGraphicsContext saveGraphicsState]; {
-		[self addClip];
-		[shadow set];
-		
-		[[NSColor blackColor] set];
-		[drawingPath fill];
-	} [NSGraphicsContext restoreGraphicsState];
+	[NSGraphicsContext saveGraphicsState];
+	[self addClip];
+	[shadow set];
+	
+	[[NSColor blackColor] set];
+	[drawingPath fill];
+	[NSGraphicsContext restoreGraphicsState];
 	
 	shadow.shadowOffset = originalOffset;
 }
@@ -142,52 +142,65 @@ static void CGPathCallback(void *info, const CGPathElement *element) {
 		[transform translateXBy:0 yBy:-bounds.size.height];
 	[path transformUsingAffineTransform:transform];
 	
-	[NSGraphicsContext saveGraphicsState]; {
-		[shadow set];
-		[[NSColor blackColor] set];
-		
-		NSRectClip(bounds);
-		[path fill];
-	} [NSGraphicsContext restoreGraphicsState];
+	[NSGraphicsContext saveGraphicsState];
+	[shadow set];
+	[[NSColor blackColor] set];
+	
+	NSRectClip(bounds);
+	[path fill];
+	[NSGraphicsContext restoreGraphicsState];
 }
 
 // Sourced from Google Source Toolbox for Mac.
 + (NSBezierPath *)bezierPathWithRoundedRect:(CGRect)rect
-                           byRoundingCorners:(TUIRectCorner)corners
-                                 cornerRadii:(CGSize)cornerRadii {
-    CGMutablePathRef path = CGPathCreateMutable();
-    
-    const CGPoint topLeft = rect.origin;
-    const CGPoint topRight = CGPointMake(CGRectGetMaxX(rect), CGRectGetMinY(rect));
-    const CGPoint bottomRight = CGPointMake(CGRectGetMaxX(rect), CGRectGetMaxY(rect));
-    const CGPoint bottomLeft = CGPointMake(CGRectGetMinX(rect), CGRectGetMaxY(rect));
-    
-    if (corners & TUIRectCornerTopLeft)
-        CGPathMoveToPoint(path, NULL, topLeft.x+cornerRadii.width, topLeft.y);
-    else CGPathMoveToPoint(path, NULL, topLeft.x, topLeft.y);
-    
-    if (corners & TUIRectCornerTopRight) {
-        CGPathAddLineToPoint(path, NULL, topRight.x-cornerRadii.width, topRight.y);
-        CGPathAddCurveToPoint(path, NULL, topRight.x, topRight.y, topRight.x, topRight.y+cornerRadii.height, topRight.x, topRight.y+cornerRadii.height);
-    } else CGPathAddLineToPoint(path, NULL, topRight.x, topRight.y);
-    
-    if (corners & TUIRectCornerBottomRight) {
-        CGPathAddLineToPoint(path, NULL, bottomRight.x, bottomRight.y-cornerRadii.height);
-        CGPathAddCurveToPoint(path, NULL, bottomRight.x, bottomRight.y, bottomRight.x-cornerRadii.width, bottomRight.y, bottomRight.x-cornerRadii.width, bottomRight.y);
-    } else CGPathAddLineToPoint(path, NULL, bottomRight.x, bottomRight.y);
-    
-    if (corners & TUIRectCornerBottomLeft) {
-        CGPathAddLineToPoint(path, NULL, bottomLeft.x+cornerRadii.width, bottomLeft.y);
-        CGPathAddCurveToPoint(path, NULL, bottomLeft.x, bottomLeft.y, bottomLeft.x, bottomLeft.y-cornerRadii.height, bottomLeft.x, bottomLeft.y-cornerRadii.height);
-    } else CGPathAddLineToPoint(path, NULL, bottomLeft.x, bottomLeft.y);
-    
-    if (corners & TUIRectCornerTopLeft) {
-        CGPathAddLineToPoint(path, NULL, topLeft.x, topLeft.y+cornerRadii.height);
-        CGPathAddCurveToPoint(path, NULL, topLeft.x, topLeft.y, topLeft.x+cornerRadii.width, topLeft.y, topLeft.x+cornerRadii.width, topLeft.y);
-    } else CGPathAddLineToPoint(path, NULL, topLeft.x, topLeft.y);
-    
-    CGPathCloseSubpath(path);
-    NSBezierPath *bezier = [NSBezierPath tui_bezierPathWithCGPath:path];
+						  byRoundingCorners:(TUIRectCorner)corners
+								cornerRadii:(CGSize)cornerRadii {
+	CGMutablePathRef path = CGPathCreateMutable();
+	
+	const CGPoint topLeft = rect.origin;
+	const CGPoint topRight = CGPointMake(CGRectGetMaxX(rect), CGRectGetMinY(rect));
+	const CGPoint bottomRight = CGPointMake(CGRectGetMaxX(rect), CGRectGetMaxY(rect));
+	const CGPoint bottomLeft = CGPointMake(CGRectGetMinX(rect), CGRectGetMaxY(rect));
+	
+	if (corners & TUIRectCornerTopLeft)
+		CGPathMoveToPoint(path, NULL, topLeft.x + cornerRadii.width, topLeft.y);
+	else
+		CGPathMoveToPoint(path, NULL, topLeft.x, topLeft.y);
+	
+	if (corners & TUIRectCornerTopRight) {
+		CGPathAddLineToPoint(path, NULL, topRight.x - cornerRadii.width, topRight.y);
+		CGPathAddCurveToPoint(path, NULL, topRight.x, topRight.y, topRight.x,
+							  topRight.y + cornerRadii.height, topRight.x, topRight.y+cornerRadii.height);
+	} else {
+		CGPathAddLineToPoint(path, NULL, topRight.x, topRight.y);
+	}
+	
+	if (corners & TUIRectCornerBottomRight) {
+		CGPathAddLineToPoint(path, NULL, bottomRight.x, bottomRight.y - cornerRadii.height);
+		CGPathAddCurveToPoint(path, NULL, bottomRight.x, bottomRight.y, bottomRight.x - cornerRadii.width,
+							  bottomRight.y, bottomRight.x - cornerRadii.width, bottomRight.y);
+	} else {
+		CGPathAddLineToPoint(path, NULL, bottomRight.x, bottomRight.y);
+	}
+	
+	if (corners & TUIRectCornerBottomLeft) {
+		CGPathAddLineToPoint(path, NULL, bottomLeft.x + cornerRadii.width, bottomLeft.y);
+		CGPathAddCurveToPoint(path, NULL, bottomLeft.x, bottomLeft.y, bottomLeft.x,
+							  bottomLeft.y - cornerRadii.height, bottomLeft.x, bottomLeft.y - cornerRadii.height);
+	} else {
+		CGPathAddLineToPoint(path, NULL, bottomLeft.x, bottomLeft.y);
+	}
+	
+	if (corners & TUIRectCornerTopLeft) {
+		CGPathAddLineToPoint(path, NULL, topLeft.x, topLeft.y + cornerRadii.height);
+		CGPathAddCurveToPoint(path, NULL, topLeft.x, topLeft.y, topLeft.x + cornerRadii.width,
+							  topLeft.y, topLeft.x + cornerRadii.width, topLeft.y);
+	} else {
+		CGPathAddLineToPoint(path, NULL, topLeft.x, topLeft.y);
+	}
+	
+	CGPathCloseSubpath(path);
+	NSBezierPath *bezier = [NSBezierPath tui_bezierPathWithCGPath:path];
 	CGPathRelease(path);
 	
 	return bezier;
@@ -195,21 +208,21 @@ static void CGPathCallback(void *info, const CGPathElement *element) {
 
 // Sourced from Matt Gemmell's NSBezierPath+StrokeExtensions
 - (void)strokeInside {
-    [self strokeInsideWithinRect:NSZeroRect];
+	[self strokeInsideWithinRect:NSZeroRect];
 }
 
 - (void)strokeInsideWithinRect:(NSRect)clipRect {
 	CGFloat lineWidth = self.lineWidth;
 	
-    [[NSGraphicsContext currentContext] saveGraphicsState]; {
-		self.lineWidth *= 2.0f;
-		[self setClip];
-		
-		if(clipRect.size.width > 0.0 && clipRect.size.height > 0.0)
-			[NSBezierPath clipRect:clipRect];
-		
-		[self stroke];
-	} [[NSGraphicsContext currentContext] restoreGraphicsState];
+	[NSGraphicsContext saveGraphicsState];
+	self.lineWidth *= 2.0f;
+	[self setClip];
+	
+	if (clipRect.size.width > 0.0 && clipRect.size.height > 0.0)
+		[NSBezierPath clipRect:clipRect];
+	
+	[self stroke];
+	[NSGraphicsContext restoreGraphicsState];
 	
 	self.lineWidth = lineWidth;
 }

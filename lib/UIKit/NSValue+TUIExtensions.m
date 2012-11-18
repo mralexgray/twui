@@ -23,13 +23,9 @@
 }
 
 - (CGAffineTransform)CGAffineTransformValue {
-	if(strcmp([self objCType], @encode(CGAffineTransform)) == 0) {
-		CGAffineTransform transform;
-		[self getValue:&transform];
-		return transform;
-	}
-	
-	return CGAffineTransformIdentity;
+	CGAffineTransform transform = CGAffineTransformIdentity;
+	[self getValue:&transform];
+	return transform;
 }
 
 + (NSValue *)valueWithTUIEdgeInsets:(TUIEdgeInsets)insets {
@@ -37,13 +33,9 @@
 }
 
 - (TUIEdgeInsets)TUIEdgeInsetsValue {
-	if(strcmp([self objCType], @encode(TUIEdgeInsets)) == 0) {
-		TUIEdgeInsets insets;
-		[self getValue:&insets];
-		return insets;
-	}
-	
-	return TUIEdgeInsetsZero;
+	TUIEdgeInsets insets = TUIEdgeInsetsZero;
+	[self getValue:&insets];
+	return insets;
 }
 
 @end

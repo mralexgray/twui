@@ -61,14 +61,8 @@ static inline CGPoint CGPointConstrainToRect(CGPoint point, CGRect rect) {
 	return CGPointMake(MAX(rect.origin.x, MIN((rect.origin.x + rect.size.width), point.x)), MAX(rect.origin.y, MIN((rect.origin.y + rect.size.height), point.y)));
 }
 
-extern NSString* NSStringFromCGPoint(CGPoint point);
-extern NSString* NSStringFromCGRect(CGRect rect);
-extern NSString* NSStringFromCGSize(CGSize size);
 extern NSString* NSStringFromCGAffineTransform(CGAffineTransform transform);
 extern NSString* NSStringFromTUIEdgeInsets(TUIEdgeInsets insets);
 
-extern CGPoint CGPointFromNSString(NSString *string);
-extern CGRect CGRectFromNSString(NSString *string);
-extern CGSize CGSizeFromNSString(NSString *string);
 extern CGAffineTransform CGAffineTransformFromNSString(NSString *string);
 extern TUIEdgeInsets TUIEdgeInsetsFromNSString(NSString *string);

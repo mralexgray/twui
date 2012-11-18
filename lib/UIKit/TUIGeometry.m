@@ -16,19 +16,7 @@
 
 #import "TUIGeometry.h"
 
-const TUIEdgeInsets TUIEdgeInsetsZero = { 0.0, 0.0, 0.0, 0.0 };
-
-NSString* NSStringFromCGPoint(CGPoint point) {
-    return NSStringFromPoint(point);
-}
-
-NSString* NSStringFromCGRect(CGRect rect) {
-    return NSStringFromRect(rect);
-}
-
-NSString* NSStringFromCGSize(CGSize size) {
-    return NSStringFromSize(size);
-}
+const TUIEdgeInsets TUIEdgeInsetsZero = { .top = 0.0f, .left = 0.0f, .bottom = 0.0f, .right = 0.0f };
 
 NSString* NSStringFromCGAffineTransform(CGAffineTransform transform) {
     return [NSString stringWithFormat:@"[%lg, %lg, %lg, %lg, %lg, %lg]",
@@ -40,27 +28,13 @@ NSString* NSStringFromTUIEdgeInsets(TUIEdgeInsets insets) {
 			insets.top, insets.left, insets.bottom, insets.right];
 }
 
-CGPoint CGPointFromNSString(NSString *string) {
-	return NSPointFromString(string);
-}
-
-CGRect CGRectFromNSString(NSString *string) {
-	return NSRectFromString(string);
-}
-
-CGSize CGSizeFromNSString(NSString *string) {
-	return NSSizeFromString(string);
-}
-
 CGAffineTransform CGAffineTransformFromNSString(NSString *string) {
 	CGAffineTransform result = CGAffineTransformIdentity;
 	
 	if(string != nil) {
 		double a, b, c, d, tx, ty;
-		const char *input = [string cStringUsingEncoding:NSUTF8StringEncoding];
-		
-        sscanf(input, "[%lg, %lg, %lg, %lg, %lg, %lg]", &a, &b, &c, &d, &tx, &ty);
-		result = (CGAffineTransform) {a, b, c, d, tx, ty};
+        sscanf(string.UTF8String, "[%lg, %lg, %lg, %lg, %lg, %lg]", &a, &b, &c, &d, &tx, &ty);
+		result = CGAffineTransformMake(a, b, c, d, tx, ty);
 	}
 	
 	return result;
@@ -71,10 +45,8 @@ TUIEdgeInsets TUIEdgeInsetsFromNSString(NSString *string) {
 	
 	if(string != nil) {
 		double top, left, bottom, right;
-		const char *input = [string cStringUsingEncoding:NSUTF8StringEncoding];
-		
-        sscanf(input, "[%lg, %lg, %lg, %lg]", &top, &left, &bottom, &right);
-		result = (TUIEdgeInsets) {top, left, bottom, right};
+        sscanf(string.UTF8String, "[%lg, %lg, %lg, %lg]", &top, &left, &bottom, &right);
+		result = TUIEdgeInsetsMake(top, left, bottom, right);
 	}
 	
 	return result;
