@@ -16,14 +16,44 @@
 
 #import <Foundation/Foundation.h>
 
+// A TUIEdgeInset represents the insetting distance for a rectangle
+// represented in CGFloats for the top, left, bottom, and right edges.
 typedef struct TUIEdgeInsets {
 	CGFloat top, left, bottom, right;
 } TUIEdgeInsets;
 
+extern const TUIEdgeInsets TUIEdgeInsetsZero;
+
+// A TUIRectCorner represents a maskable corner of a rectangle.
+enum {
+	
+	// The top left corner, above CGRectMinXEdge.
+    TUIRectCornerTopLeft     = 1 << 0,
+	
+	// The top right corner, above CGRectMaxXEdge.
+    TUIRectCornerTopRight    = 1 << 1,
+	
+	// The bottom left corner, below CGRectMinXEdge.
+    TUIRectCornerBottomLeft  = 1 << 2,
+	
+	// The bottom right corner, below CGRectMaxXEdge.
+    TUIRectCornerBottomRight = 1 << 3,
+	
+	// All four rectangle corners.
+    TUIRectCornerAllCorners  = ~0
+};
+typedef NSUInteger TUIRectCorner;
+
+// Converts from TUIEdgeInsets into NSString and back.
+extern TUIEdgeInsets TUIEdgeInsetsFromNSString(NSString *string);
+extern NSString* NSStringFromTUIEdgeInsets(TUIEdgeInsets insets);
+
+// A function initializer for a TUIEdgeInsets structure.
 static inline TUIEdgeInsets TUIEdgeInsetsMake(CGFloat top, CGFloat left, CGFloat bottom, CGFloat right) {
-	return (TUIEdgeInsets){top, left, bottom, right};
+	return (TUIEdgeInsets){.top = top, .left = left, .bottom = bottom, .right = right};
 }
 
+// Insets and returns the given CGRect by the given TUIEdgeInsets.
 static inline CGRect TUIEdgeInsetsInsetRect(CGRect rect, TUIEdgeInsets insets) {
 	rect.origin.x    += insets.left;
 	rect.origin.y    += insets.top;
@@ -32,37 +62,34 @@ static inline CGRect TUIEdgeInsetsInsetRect(CGRect rect, TUIEdgeInsets insets) {
 	return rect;
 }
 
+// Checks member-to-member equality of two TUIEdgeInsets structures.
 static inline BOOL TUIEdgeInsetsEqualToEdgeInsets(TUIEdgeInsets insets1, TUIEdgeInsets insets2) {
-    return insets1.left == insets2.left && insets1.top == insets2.top && insets1.right == insets2.right && insets1.bottom == insets2.bottom;
+    return (insets1.left == insets2.left &&
+			insets1.top == insets2.top &&
+			insets1.right == insets2.right &&
+			insets1.bottom == insets2.bottom);
 }
 
-extern const TUIEdgeInsets TUIEdgeInsetsZero;
-
-enum {
-    TUIRectCornerTopLeft     = 1 << 0,
-    TUIRectCornerTopRight    = 1 << 1,
-    TUIRectCornerBottomLeft  = 1 << 2,
-    TUIRectCornerBottomRight = 1 << 3,
-    TUIRectCornerAllCorners  = ~0
-};
-typedef NSUInteger TUIRectCorner;
-
-/**
- * @brief Constrain a point to a rectangular region
- *
- * If the provided @p point lies outside the @p rect, it is adjusted to the
- * nearest point that lies inside the @p rect.
- *
- * @param point a point
- * @param rect the constraining rect
- * @return constrained point
- */
+// Constrains a point to a rectangular region. If the point
+// lies outside the rect, it is adjusted to the nearest point
+// that lies inside the rect, then constrained.
 static inline CGPoint CGPointConstrainToRect(CGPoint point, CGRect rect) {
-	return CGPointMake(MAX(rect.origin.x, MIN((rect.origin.x + rect.size.width), point.x)), MAX(rect.origin.y, MIN((rect.origin.y + rect.size.height), point.y)));
+	return CGPointMake(MAX(rect.origin.x, MIN((rect.origin.x + rect.size.width), point.x)),
+					   MAX(rect.origin.y, MIN((rect.origin.y + rect.size.height), point.y)));
 }
 
-extern NSString* NSStringFromCGAffineTransform(CGAffineTransform transform);
-extern NSString* NSStringFromTUIEdgeInsets(TUIEdgeInsets insets);
+@interface NSCoder (TUIExtensions)
 
-extern CGAffineTransform CGAffineTransformFromNSString(NSString *string);
-extern TUIEdgeInsets TUIEdgeInsetsFromNSString(NSString *string);
+// Allows NSCoder objects to encode or decode TUIEdgeInsets.
+- (void)encodeTUIEdgeInsets:(TUIEdgeInsets)insets forKey:(NSString *)key;
+- (TUIEdgeInsets)decodeTUIEdgeInsetsForKey:(NSString *)key;
+
+@end
+
+@interface NSValue (TUIExtensions)
+
+// Allows NSValue boxing and unboxing of TUIEdgeInsets.
++ (NSValue *)valueWithTUIEdgeInsets:(TUIEdgeInsets)insets;
+- (TUIEdgeInsets)TUIEdgeInsetsValue;
+
+@end

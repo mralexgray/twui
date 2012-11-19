@@ -18,26 +18,9 @@
 
 const TUIEdgeInsets TUIEdgeInsetsZero = { .top = 0.0f, .left = 0.0f, .bottom = 0.0f, .right = 0.0f };
 
-NSString* NSStringFromCGAffineTransform(CGAffineTransform transform) {
-    return [NSString stringWithFormat:@"[%lg, %lg, %lg, %lg, %lg, %lg]",
-			transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty];
-}
-
 NSString* NSStringFromTUIEdgeInsets(TUIEdgeInsets insets) {
     return [NSString stringWithFormat:@"{%lg, %lg, %lg, %lg}",
 			insets.top, insets.left, insets.bottom, insets.right];
-}
-
-CGAffineTransform CGAffineTransformFromNSString(NSString *string) {
-	CGAffineTransform result = CGAffineTransformIdentity;
-	
-	if(string != nil) {
-		double a, b, c, d, tx, ty;
-        sscanf(string.UTF8String, "[%lg, %lg, %lg, %lg, %lg, %lg]", &a, &b, &c, &d, &tx, &ty);
-		result = CGAffineTransformMake(a, b, c, d, tx, ty);
-	}
-	
-	return result;
 }
 
 TUIEdgeInsets TUIEdgeInsetsFromNSString(NSString *string) {
@@ -51,3 +34,35 @@ TUIEdgeInsets TUIEdgeInsetsFromNSString(NSString *string) {
 	
 	return result;
 }
+
+@implementation NSCoder (TUIExtensions)
+
+- (void)encodeTUIEdgeInsets:(TUIEdgeInsets)insets forKey:(NSString *)key {
+	NSData *data = [NSData dataWithBytes:&insets length:sizeof(TUIEdgeInsets)];
+	[self encodeObject:data forKey:key];
+}
+
+- (TUIEdgeInsets)decodeTUIEdgeInsetsForKey:(NSString *)key {
+	TUIEdgeInsets result = TUIEdgeInsetsZero;
+	
+	NSData *data = [self decodeObjectForKey:key];
+	[data getBytes:&result length:sizeof(TUIEdgeInsets)];
+	
+	return result;
+}
+
+@end
+
+@implementation NSValue (TUIExtensions)
+
++ (NSValue *)valueWithTUIEdgeInsets:(TUIEdgeInsets)insets {
+	return [NSValue valueWithBytes:&insets objCType:@encode(TUIEdgeInsets)];
+}
+
+- (TUIEdgeInsets)TUIEdgeInsetsValue {
+	TUIEdgeInsets insets = TUIEdgeInsetsZero;
+	[self getValue:&insets];
+	return insets;
+}
+
+@end

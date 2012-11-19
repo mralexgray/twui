@@ -18,8 +18,10 @@
 
 @interface NSShadow (TUIExtensions)
 
+// Returns a shadow with the given shadow radius, offset, and color properties.
 + (NSShadow *)tui_shadowWithRadius:(CGFloat)radius offset:(CGSize)offset color:(NSColor *)color;
 
+// Returns a shadow with the given shadow radius, offset, and color properties.
 - (id)initWithRadius:(CGFloat)radius offset:(CGSize)offset color:(NSColor *)color;
 
 @end

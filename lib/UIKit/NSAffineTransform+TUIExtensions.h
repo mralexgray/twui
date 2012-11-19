@@ -15,14 +15,16 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "TUIGeometry.h"
 
-@interface NSValue (TUIExtensions)
+@interface NSAffineTransform (TUIExtensions)
 
-+ (NSValue *)valueWithCGAffineTransform:(CGAffineTransform)transform;
-+ (NSValue *)valueWithTUIEdgeInsets:(TUIEdgeInsets)insets;
+// Creates an NSAffineTransform object with the passed CGAffineTransform.
++ (NSAffineTransform *)tui_transformWithCGAffineTransform:(CGAffineTransform)transform;
 
-- (CGAffineTransform)CGAffineTransformValue;
-- (TUIEdgeInsets)TUIEdgeInsetsValue;
+// Initializes an NSAffineTransform object with the passed CGAffineTransform.
+- (id)initWithCGAffineTransform:(CGAffineTransform)transform;
+
+// Creates an CGAffineTransform struct with the transform of the reciever.
+- (CGAffineTransform)tui_CGAffineTransform;
 
 @end

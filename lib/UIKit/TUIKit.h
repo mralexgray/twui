@@ -18,15 +18,14 @@
 
 #import "CAAnimation+TUIExtensions.h"
 #import "CoreText+Additions.h"
+#import "NSAffineTransform+TUIExtensions.h"
 #import "NSBezierPath+TUIExtensions.h"
 #import "NSClipView+TUIExtensions.h"
 #import "NSColor+TUIExtensions.h"
-#import "NSCoder+TUIExtensions.h"
 #import "NSFont+TUIExtensions.h"
 #import "NSImage+TUIExtensions.h"
 #import "NSScrollView+TUIExtensions.h"
 #import "NSShadow+TUIExtensions.h"
-#import "NSValue+TUIExtensions.h"
 #import "NSView+TUIExtensions.h"
 
 #import "TUIActivityIndicatorView.h"
