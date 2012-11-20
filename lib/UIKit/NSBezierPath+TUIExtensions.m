@@ -18,7 +18,7 @@
 #import "TUICGAdditions.h"
 
 // Sourced from Apple Documentation.
-static void CGPathCallback(void *info, const CGPathElement *element) {
+static void tui_CGPathCallback(void *info, const CGPathElement *element) {
 	NSBezierPath *path = (__bridge NSBezierPath *)(info);
 	CGPoint *points = element->points;
 	
@@ -54,7 +54,7 @@ static void CGPathCallback(void *info, const CGPathElement *element) {
 // Sourced from Apple Documentation.
 + (NSBezierPath *)tui_bezierPathWithCGPath:(CGPathRef)pathRef {
 	NSBezierPath *path = [NSBezierPath bezierPath];
-	CGPathApply(pathRef, (__bridge void *)(path), CGPathCallback);
+	CGPathApply(pathRef, (__bridge void *)(path), tui_CGPathCallback);
 	
 	return path;
 }
@@ -100,7 +100,7 @@ static void CGPathCallback(void *info, const CGPathElement *element) {
 	return immutablePath;
 }
 
-- (void)fillWithInnerShadow:(NSShadow *)shadow {
+- (void)tui_fillWithInnerShadow:(NSShadow *)shadow {
 	NSSize offset = shadow.shadowOffset;
 	NSSize originalOffset = offset;
 	CGFloat radius = shadow.shadowBlurRadius;
@@ -130,7 +130,7 @@ static void CGPathCallback(void *info, const CGPathElement *element) {
 	shadow.shadowOffset = originalOffset;
 }
 
-- (void)drawBlurWithColor:(NSColor *)color radius:(CGFloat)radius {
+- (void)tui_drawBlurWithColor:(NSColor *)color radius:(CGFloat)radius {
 	NSRect bounds = NSInsetRect(self.bounds, -radius, -radius);
 	NSShadow *shadow = [NSShadow tui_shadowWithRadius:radius offset:NSMakeSize(0, bounds.size.height) color:color];
 	
@@ -152,9 +152,9 @@ static void CGPathCallback(void *info, const CGPathElement *element) {
 }
 
 // Sourced from Google Source Toolbox for Mac.
-+ (NSBezierPath *)bezierPathWithRoundedRect:(CGRect)rect
-						  byRoundingCorners:(TUIRectCorner)corners
-								cornerRadii:(CGSize)cornerRadii {
++ (NSBezierPath *)tui_bezierPathWithRoundedRect:(CGRect)rect
+							  byRoundingCorners:(TUIRectCorner)corners
+									cornerRadii:(CGSize)cornerRadii {
 	CGMutablePathRef path = CGPathCreateMutable();
 	
 	CGPoint topLeft = rect.origin;
@@ -207,11 +207,11 @@ static void CGPathCallback(void *info, const CGPathElement *element) {
 }
 
 // Sourced from Matt Gemmell's NSBezierPath+StrokeExtensions
-- (void)strokeInside {
-	[self strokeInsideWithinRect:NSZeroRect];
+- (void)tui_strokeInside {
+	[self tui_strokeInsideWithinRect:NSZeroRect];
 }
 
-- (void)strokeInsideWithinRect:(NSRect)clipRect {
+- (void)tui_strokeInsideWithinRect:(NSRect)clipRect {
 	CGFloat lineWidth = self.lineWidth;
 	
 	[NSGraphicsContext saveGraphicsState];

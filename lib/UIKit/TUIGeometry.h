@@ -58,18 +58,10 @@ static inline CGPoint CGPointConstrainToRect(CGPoint point, CGRect rect) {
 					   MAX(rect.origin.y, MIN((rect.origin.y + rect.size.height), point.y)));
 }
 
-@interface NSCoder (TUIExtensions)
-
-// Allows NSCoder objects to encode or decode TUIEdgeInsets.
-- (void)encodeTUIEdgeInsets:(TUIEdgeInsets)insets forKey:(NSString *)key;
-- (TUIEdgeInsets)decodeTUIEdgeInsetsForKey:(NSString *)key;
-
-@end
-
 @interface NSValue (TUIExtensions)
 
 // Allows NSValue boxing and unboxing of TUIEdgeInsets.
-+ (NSValue *)valueWithTUIEdgeInsets:(TUIEdgeInsets)insets;
-- (TUIEdgeInsets)TUIEdgeInsetsValue;
++ (NSValue *)tui_valueWithTUIEdgeInsets:(TUIEdgeInsets)insets;
+- (TUIEdgeInsets)tui_TUIEdgeInsetsValue;
 
 @end

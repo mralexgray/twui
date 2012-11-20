@@ -24,21 +24,21 @@
 - (CGPathRef)tui_CGPath CF_RETURNS_RETAINED;
 
 // Fills the given shadow inside the bezier path.
-- (void)fillWithInnerShadow:(NSShadow *)shadow;
+- (void)tui_fillWithInnerShadow:(NSShadow *)shadow;
 
 // Draws a blurred "shadow" inside the bezier path with a color and radius.
-- (void)drawBlurWithColor:(NSColor *)color radius:(CGFloat)radius;
+- (void)tui_drawBlurWithColor:(NSColor *)color radius:(CGFloat)radius;
 
 // Returns a bezier path with a rounded rectangle in the given
 // rect with the selected corners rounded at the given corner radii.
-+ (NSBezierPath *)bezierPathWithRoundedRect:(CGRect)rect
-                          byRoundingCorners:(TUIRectCorner)corners
-                                cornerRadii:(CGSize)cornerRadii;
++ (NSBezierPath *)tui_bezierPathWithRoundedRect:(CGRect)rect
+                              byRoundingCorners:(TUIRectCorner)corners
+                                    cornerRadii:(CGSize)cornerRadii;
 
 // Strokes the bezier path on the inside, instead of the standard outside stroke.
-- (void)strokeInside;
+- (void)tui_strokeInside;
 
 // Strokes the bezier path inside a clipped rectangle within the path's bounds.
-- (void)strokeInsideWithinRect:(NSRect)clipRect;
+- (void)tui_strokeInsideWithinRect:(NSRect)clipRect;
 
 @end

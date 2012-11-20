@@ -19,22 +19,17 @@
 @implementation NSAffineTransform (TUIExtensions)
 
 + (NSAffineTransform *)tui_transformWithCGAffineTransform:(CGAffineTransform)transform {
-	return [[self.class alloc] initWithCGAffineTransform:transform];
-}
-
-- (id)initWithCGAffineTransform:(CGAffineTransform)transform {
-	if((self = [super init])) {
-		self.transformStruct = (NSAffineTransformStruct) {
-			.m11 = transform.a,
-			.m12 = transform.b,
-			.m21 = transform.c,
-			.m22 = transform.d,
-			.tX = transform.tx,
-			.tY = transform.ty
-		};
-	}
+	NSAffineTransform *affineTransform = [NSAffineTransform transform];
+	affineTransform.transformStruct = (NSAffineTransformStruct) {
+		.m11 = transform.a,
+		.m12 = transform.b,
+		.m21 = transform.c,
+		.m22 = transform.d,
+		.tX = transform.tx,
+		.tY = transform.ty
+	};
 	
-	return self;
+	return affineTransform;
 }
 
 - (CGAffineTransform)tui_CGAffineTransform {

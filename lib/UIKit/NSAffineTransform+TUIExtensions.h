@@ -21,9 +21,6 @@
 // Creates an NSAffineTransform object with the passed CGAffineTransform.
 + (NSAffineTransform *)tui_transformWithCGAffineTransform:(CGAffineTransform)transform;
 
-// Initializes an NSAffineTransform object with the passed CGAffineTransform.
-- (id)initWithCGAffineTransform:(CGAffineTransform)transform;
-
 // Creates an CGAffineTransform struct with the transform of the reciever.
 - (CGAffineTransform)tui_CGAffineTransform;
 

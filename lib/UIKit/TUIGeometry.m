@@ -19,8 +19,7 @@
 const TUIEdgeInsets TUIEdgeInsetsZero = { .top = 0.0f, .left = 0.0f, .bottom = 0.0f, .right = 0.0f };
 
 NSString* NSStringFromTUIEdgeInsets(TUIEdgeInsets insets) {
-    return [NSString stringWithFormat:@"{%lg, %lg, %lg, %lg}",
-			insets.top, insets.left, insets.bottom, insets.right];
+	return [NSString stringWithFormat:@"{%lg, %lg, %lg, %lg}", insets.top, insets.left, insets.bottom, insets.right];
 }
 
 TUIEdgeInsets TUIEdgeInsetsFromNSString(NSString *string) {
@@ -28,38 +27,20 @@ TUIEdgeInsets TUIEdgeInsetsFromNSString(NSString *string) {
 	
 	if(string != nil) {
 		double top, left, bottom, right;
-        sscanf(string.UTF8String, "[%lg, %lg, %lg, %lg]", &top, &left, &bottom, &right);
+		sscanf(string.UTF8String, "{%lg, %lg, %lg, %lg}", &top, &left, &bottom, &right);
 		result = TUIEdgeInsetsMake(top, left, bottom, right);
 	}
 	
 	return result;
 }
 
-@implementation NSCoder (TUIExtensions)
-
-- (void)encodeTUIEdgeInsets:(TUIEdgeInsets)insets forKey:(NSString *)key {
-	NSData *data = [NSData dataWithBytes:&insets length:sizeof(TUIEdgeInsets)];
-	[self encodeObject:data forKey:key];
-}
-
-- (TUIEdgeInsets)decodeTUIEdgeInsetsForKey:(NSString *)key {
-	TUIEdgeInsets result = TUIEdgeInsetsZero;
-	
-	NSData *data = [self decodeObjectForKey:key];
-	[data getBytes:&result length:sizeof(TUIEdgeInsets)];
-	
-	return result;
-}
-
-@end
-
 @implementation NSValue (TUIExtensions)
 
-+ (NSValue *)valueWithTUIEdgeInsets:(TUIEdgeInsets)insets {
++ (NSValue *)tui_valueWithTUIEdgeInsets:(TUIEdgeInsets)insets {
 	return [NSValue valueWithBytes:&insets objCType:@encode(TUIEdgeInsets)];
 }
 
-- (TUIEdgeInsets)TUIEdgeInsetsValue {
+- (TUIEdgeInsets)tui_TUIEdgeInsetsValue {
 	TUIEdgeInsets insets = TUIEdgeInsetsZero;
 	[self getValue:&insets];
 	return insets;
