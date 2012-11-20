@@ -23,8 +23,8 @@ extern NSString * const TUIAttributedStringPreDrawBlockName;
 
 typedef void (^TUIAttributedStringPreDrawBlock)(NSAttributedString *attributedString, NSRange substringRange, CGRect rects[], CFIndex rectCount);
 
-typedef enum {		
-	TUILineBreakModeWordWrap = 0,
+typedef enum TUILineBreakMode : NSUInteger {
+	TUILineBreakModeWordWrap,
 	TUILineBreakModeCharacterWrap,
 	TUILineBreakModeClip,
 	TUILineBreakModeHeadTruncation,
@@ -32,21 +32,21 @@ typedef enum {
 	TUILineBreakModeMiddleTruncation,
 } TUILineBreakMode;
 
-typedef enum {
-	TUIBaselineAdjustmentAlignBaselines = 0,
+typedef enum TUIBaselineAdjustment : NSUInteger {
+	TUIBaselineAdjustmentAlignBaselines,
 	TUIBaselineAdjustmentAlignCenters,
 	TUIBaselineAdjustmentNone,
 } TUIBaselineAdjustment;
 
-typedef enum {
-	TUITextAlignmentLeft = 0,
+typedef enum TUITextAlignment : NSUInteger {
+	TUITextAlignmentLeft,
 	TUITextAlignmentCenter,
 	TUITextAlignmentRight,
 	TUITextAlignmentJustified,
 } TUITextAlignment;
 
-typedef enum {
-	TUIBackgroundFillStyleInline = 0,
+typedef enum TUIBackgroundFillStyle : NSUInteger {
+	TUIBackgroundFillStyleInline,
 	TUIBackgroundFillStyleBlock,
 } TUIBackgroundFillStyle;
 

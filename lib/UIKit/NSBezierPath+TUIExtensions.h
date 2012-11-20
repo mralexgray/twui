@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-#import "TUIGeometry.h"
+#import "TUICGAdditions.h"
 #import "NSShadow+TUIExtensions.h"
 
 @interface NSBezierPath (TUIExtensions)

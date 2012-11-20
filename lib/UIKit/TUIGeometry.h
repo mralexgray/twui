@@ -24,26 +24,6 @@ typedef struct TUIEdgeInsets {
 
 extern const TUIEdgeInsets TUIEdgeInsetsZero;
 
-// A TUIRectCorner represents a maskable corner of a rectangle.
-enum {
-	
-	// The top left corner, above CGRectMinXEdge.
-    TUIRectCornerTopLeft     = 1 << 0,
-	
-	// The top right corner, above CGRectMaxXEdge.
-    TUIRectCornerTopRight    = 1 << 1,
-	
-	// The bottom left corner, below CGRectMinXEdge.
-    TUIRectCornerBottomLeft  = 1 << 2,
-	
-	// The bottom right corner, below CGRectMaxXEdge.
-    TUIRectCornerBottomRight = 1 << 3,
-	
-	// All four rectangle corners.
-    TUIRectCornerAllCorners  = ~0
-};
-typedef NSUInteger TUIRectCorner;
-
 // Converts from TUIEdgeInsets into NSString and back.
 extern TUIEdgeInsets TUIEdgeInsetsFromNSString(NSString *string);
 extern NSString* NSStringFromTUIEdgeInsets(TUIEdgeInsets insets);

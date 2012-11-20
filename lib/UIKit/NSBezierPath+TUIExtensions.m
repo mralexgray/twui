@@ -157,10 +157,10 @@ static void CGPathCallback(void *info, const CGPathElement *element) {
 								cornerRadii:(CGSize)cornerRadii {
 	CGMutablePathRef path = CGPathCreateMutable();
 	
-	const CGPoint topLeft = rect.origin;
-	const CGPoint topRight = CGPointMake(CGRectGetMaxX(rect), CGRectGetMinY(rect));
-	const CGPoint bottomRight = CGPointMake(CGRectGetMaxX(rect), CGRectGetMaxY(rect));
-	const CGPoint bottomLeft = CGPointMake(CGRectGetMinX(rect), CGRectGetMaxY(rect));
+	CGPoint topLeft = rect.origin;
+	CGPoint topRight = CGPointMake(CGRectGetMaxX(rect), CGRectGetMinY(rect));
+	CGPoint bottomRight = CGPointMake(CGRectGetMaxX(rect), CGRectGetMaxY(rect));
+	CGPoint bottomLeft = CGPointMake(CGRectGetMinX(rect), CGRectGetMaxY(rect));
 	
 	if (corners & TUIRectCornerTopLeft)
 		CGPathMoveToPoint(path, NULL, topLeft.x + cornerRadii.width, topLeft.y);

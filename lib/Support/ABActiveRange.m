@@ -35,7 +35,7 @@
 
 - (NSString *)description
 {
-	return [NSString stringWithFormat:@"<ABFlavoredRange %d %@ (%@)>", rangeFlavor, NSStringFromRange(rangeValue), displayString];
+	return [NSString stringWithFormat:@"<ABFlavoredRange %ld %@ (%@)>", rangeFlavor, NSStringFromRange(rangeValue), displayString];
 }
 
 - (ABActiveTextRangeFlavor)rangeFlavor
