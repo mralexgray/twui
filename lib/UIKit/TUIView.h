@@ -104,24 +104,24 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView*);
 	} _context;
 	
 	struct {
-		unsigned userInteractionDisabled:1;
-		unsigned moveWindowByDragging:1;
-		unsigned resizeWindowByDragging:1;
-		unsigned didStartMovingByDragging:1;
-		unsigned didStartResizeByDragging:1;
-		unsigned disableSubpixelTextRendering:1;
-		unsigned pasteboardDraggingEnabled:1;
-		unsigned pasteboardDraggingIsDragging:1;
-		unsigned dragDistanceLock:1;
-		unsigned clearsContextBeforeDrawing:1;
-		unsigned drawInBackground:1;
-		unsigned needsDisplayWhenWindowsKeyednessChanges:1;
-		unsigned acceptsTouchEvents:1;
-		unsigned wantsRestingTouches:1;
+		unsigned int userInteractionDisabled:1;
+		unsigned int moveWindowByDragging:1;
+		unsigned int resizeWindowByDragging:1;
+		unsigned int didStartMovingByDragging:1;
+		unsigned int didStartResizeByDragging:1;
+		unsigned int disableSubpixelTextRendering:1;
+		unsigned int pasteboardDraggingEnabled:1;
+		unsigned int pasteboardDraggingIsDragging:1;
+		unsigned int dragDistanceLock:1;
+		unsigned int clearsContextBeforeDrawing:1;
+		unsigned int drawInBackground:1;
+		unsigned int needsDisplayWhenWindowsKeyednessChanges:1;
+		unsigned int acceptsTouchEvents:1;
+		unsigned int wantsRestingTouches:1;
 		
-		unsigned delegateMouseEntered:1;
-		unsigned delegateMouseExited:1;
-		unsigned delegateWillDisplayLayer:1;
+		unsigned int delegateMouseEntered:1;
+		unsigned int delegateMouseExited:1;
+		unsigned int delegateWillDisplayLayer:1;
 	} _viewFlags;
 
 	BOOL isAccessibilityElement;

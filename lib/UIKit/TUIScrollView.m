@@ -1023,12 +1023,12 @@ static float clampBounce(float x) {
 	[self _updateScrollersAnimated:NO];
 }
 
-- (BOOL)isDragging {
-	return _scrollViewFlags.gestureBegan;
+- (BOOL)isTracking {
+	return _scrollViewFlags.gestureBegan || _scrollViewFlags.touchesBegan;
 }
 
-- (BOOL)isTracking {
-	return _scrollViewFlags.gestureBegan && _scrollViewFlags.touchesBegan;
+- (BOOL)isDragging {
+	return _scrollViewFlags.gestureBegan;
 }
 
 - (BOOL)isDecelerating {
@@ -1319,9 +1319,8 @@ static float clampBounce(float x) {
 - (void)mouseEntered:(NSEvent *)event onSubview:(TUIView *)subview {
 	[super mouseEntered:event onSubview:subview];
 	
-	if (!_scrollViewFlags.mouseInside) {
+	if (!_scrollViewFlags.mouseInside)
 		_scrollViewFlags.mouseInside = YES;
-	}
 }
 
 - (void)mouseExited:(NSEvent *)event fromSubview:(TUIView *)subview {
@@ -1335,19 +1334,17 @@ static float clampBounce(float x) {
 	}
 }
 
-#pragma mark - Two-Finger Scroller Visibility
-
 - (void)touchesBeganWithEvent:(NSEvent *)event {
-	NSLog(@"pre begin %u", _scrollViewFlags.touchesBegan);
 	NSUInteger count = [self touchesMatchingPhase:NSTouchPhaseTouching forEvent:event].count;
 	_scrollViewFlags.touchesBegan = (count == 2);
-	NSLog(@"post begin %u", _scrollViewFlags.touchesBegan);
+	
+	[self _updateScrollersAnimated:YES];
 }
 
 - (void)touchesEndedWithEvent:(NSEvent *)event {
-	NSLog(@"pre end %u", _scrollViewFlags.touchesBegan);
 	_scrollViewFlags.touchesBegan = NO;
-	NSLog(@"post end %u", _scrollViewFlags.touchesBegan);
+	
+	[self _updateScrollersAnimated:YES];
 }
 
 - (void)touchesCancelledWithEvent:(NSEvent *)event {

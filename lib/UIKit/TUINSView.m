@@ -517,10 +517,12 @@ static NSComparisonResult compareNSViewOrdering (NSView *viewA, NSView *viewB, v
 			// If the view does not exist, we've reached the top of
 			// the heirarchy, and still have not found a view willing
 			// to accept touches, so simply return early. If not,
-			// check if it's willing to accept touch events.
+			// check if it's willing to accept touch events, and has
+			// successfully implemented -touchesBeganWithEvent:.
 			if(touchView == nil) {
 				return;
-			} else if(touchView->_viewFlags.acceptsTouchEvents) {
+			} else if(touchView->_viewFlags.acceptsTouchEvents &&
+					  [touchView respondsToSelector:@selector(touchesBeganWithEvent:)]) {
 				self.lastTouchView = touchView;
 				break;
 			}
