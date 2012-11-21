@@ -93,6 +93,32 @@
 	}];
 }
 
+// End control tracking when cancelled for any reason.
+- (void)cancelTrackingWithEvent:(NSEvent *)event {
+	[self endTrackingWithEvent:event];
+}
+
+- (void)touchesBeganWithEvent:(NSEvent *)event {
+	if([self touchesMatchingPhase:NSTouchPhaseTouching forEvent:event].count == 2) {
+		NSLog(@"tapped");
+	}
+}
+
+- (void)touchesMovedWithEvent:(NSEvent *)event {
+	if([self touchesMatchingPhase:NSTouchPhaseTouching forEvent:event].count == 2) {
+		NSLog(@"swiped");
+	}
+}
+
+- (void)touchesEndedWithEvent:(NSEvent *)event {
+	NSLog(@"untapped");
+}
+
+// End touch tracking when cancelled for any reason.
+- (void)touchesCancelledWithEvent:(NSEvent *)event {
+	[self touchesEndedWithEvent:event];
+}
+
 @end
 
 @interface ExampleTabBar ()
@@ -112,6 +138,9 @@
 		NSMutableArray *_tabViews = [NSMutableArray arrayWithCapacity:nTabs];
 		for(int i = 0; i < nTabs; ++i) {
 			ExampleTab *t = [[ExampleTab alloc] initWithFrame:CGRectZero];
+			t.acceptsTouchEvents = YES;
+			t.wantsRestingTouches = YES;
+			
 			t.tag = i;
 			t.layout = ^(TUIView *v) { // the layout of an individual tab is a function of the superview bounds, the number of tabs, and the current tab index
 				CGRect b = v.superview.bounds; // reference the passed-in 'v' rather than 't' to avoid a retain cycle
@@ -119,6 +148,7 @@
 				float x = i * width;
 				return CGRectMake(roundf(x), 0, roundf(width), b.size.height);
 			};
+			
 			[self addSubview:t];
 			[_tabViews addObject:t];
 		}
@@ -129,23 +159,20 @@
 }
 
 
-- (void)drawRect:(CGRect)rect
-{
-	// draw tab bar background
-	
-	CGRect b = self.bounds;
+- (void)drawRect:(CGRect)rect {
 	CGContextRef ctx = TUIGraphicsGetCurrentContext();
 	
-	// gray gradient
+	// Tab Bar Gradient
 	CGFloat colorA[] = { 0.85, 0.85, 0.85, 1.0 };
 	CGFloat colorB[] = { 0.71, 0.71, 0.71, 1.0 };
-	CGContextDrawLinearGradientBetweenPoints(ctx, CGPointMake(0, b.size.height), colorA, CGPointMake(0, 0), colorB);
+	CGContextDrawLinearGradientBetweenPoints(ctx, CGPointMake(0, CGRectGetHeight(self.bounds)),
+											 colorA, CGPointMake(0, 0), colorB);
 	
-	// top emboss
+	// Separator Etching
 	CGContextSetRGBFillColor(ctx, 1, 1, 1, 0.5);
-	CGContextFillRect(ctx, CGRectMake(0, b.size.height-2, b.size.width, 1));
+	CGContextFillRect(ctx, CGRectMake(0, self.bounds.size.height-2, self.bounds.size.width, 1));
 	CGContextSetRGBFillColor(ctx, 0, 0, 0, 0.3);
-	CGContextFillRect(ctx, CGRectMake(0, b.size.height-1, b.size.width, 1));
+	CGContextFillRect(ctx, CGRectMake(0, self.bounds.size.height-1, self.bounds.size.width, 1));
 }
 
 @end

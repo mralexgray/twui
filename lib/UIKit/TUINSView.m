@@ -79,6 +79,9 @@ static NSComparisonResult compareNSViewOrdering (NSView *viewA, NSView *viewB, v
 - (void)recalculateNSViewClipping;
 - (void)recalculateNSViewOrdering;
 
+// The last TUIView that was forwarded a touch event.
+@property (nonatomic, strong) TUIView *lastTouchView;
+
 /*
  * A layer used to mask the rendering of NSView-owned layers added to the
  * receiver.
@@ -493,6 +496,74 @@ static NSComparisonResult compareNSViewOrdering (NSView *viewA, NSView *viewB, v
 	[self _updateHoverView:nil withEvent:event]; // don't pop in while scrolling
 }
 
+- (void)touchesBeganWithEvent:(NSEvent *)event {
+	TUIView *eventView = [self viewForEvent:event];
+	NSLog(@"touch began on view: %@", eventView);
+	
+	if(!deliveringEvent && eventView) {
+		BOOL resting = [[[event touchesMatchingPhase:NSTouchPhaseAny inView:self] anyObject] isResting];
+		BOOL allowRestingTouchIfPossible = !resting || (resting && eventView->_viewFlags.wantsRestingTouches);
+		
+		if(eventView->_viewFlags.acceptsTouchEvents && allowRestingTouchIfPossible) {
+			deliveringEvent = YES;
+			[eventView touchesBeganWithEvent:event];
+			self.lastTouchView = eventView;
+			deliveringEvent = NO;
+		}
+	}
+}
+
+- (void)touchesMovedWithEvent:(NSEvent *)event {
+	TUIView *eventView = [self viewForEvent:event];
+	
+	NSLog(@"touch moved on view: %@", eventView);
+	
+	if(!deliveringEvent && eventView) {
+		BOOL resting = [[[event touchesMatchingPhase:NSTouchPhaseAny inView:self] anyObject] isResting];
+		BOOL allowRestingTouchIfPossible = !resting || (resting && eventView->_viewFlags.wantsRestingTouches);
+		
+		if(eventView->_viewFlags.acceptsTouchEvents && allowRestingTouchIfPossible) {
+			deliveringEvent = YES;
+			[eventView touchesMovedWithEvent:event];
+			deliveringEvent = NO;
+		}
+	}
+}
+
+- (void)touchesEndedWithEvent:(NSEvent *)event {
+	TUIView *eventView = [self viewForEvent:event];
+	NSLog(@"touch ended on view: %@", eventView);
+	
+	if(!deliveringEvent && eventView) {
+		BOOL resting = [[[event touchesMatchingPhase:NSTouchPhaseAny inView:self] anyObject] isResting];
+		BOOL allowRestingTouchIfPossible = !resting || (resting && eventView->_viewFlags.wantsRestingTouches);
+		
+		if(eventView->_viewFlags.acceptsTouchEvents && allowRestingTouchIfPossible) {
+			deliveringEvent = YES;
+			[eventView touchesEndedWithEvent:event];
+			self.lastTouchView = nil;
+			deliveringEvent = NO;
+		}
+	}
+}
+
+- (void)touchesCancelledWithEvent:(NSEvent *)event {
+	TUIView *eventView = [self viewForEvent:event];
+	NSLog(@"touch cancelled on view: %@", eventView);
+	
+	if(!deliveringEvent && eventView) {
+		BOOL resting = [[[event touchesMatchingPhase:NSTouchPhaseAny inView:self] anyObject] isResting];
+		BOOL allowRestingTouchIfPossible = !resting || (resting && eventView->_viewFlags.wantsRestingTouches);
+		
+		if(eventView->_viewFlags.acceptsTouchEvents && allowRestingTouchIfPossible) {
+			deliveringEvent = YES;
+			[eventView touchesCancelledWithEvent:event];
+			self.lastTouchView = nil;
+			deliveringEvent = NO;
+		}
+	}
+}
+
 - (void)beginGestureWithEvent:(NSEvent *)event
 {
 	[[self viewForEvent:event] beginGestureWithEvent:event];
@@ -657,6 +728,9 @@ static NSComparisonResult compareNSViewOrdering (NSView *viewA, NSView *viewB, v
 	// set up masking on the AppKit host view, and make ourselves the layout
 	// manager, so that we'll know when new sublayers are added
 	self.appKitHostView.layer.layoutManager = self;
+	
+	[self setAcceptsTouchEvents:YES];
+	[self setWantsRestingTouches:YES];
 
 	#if ENABLE_NSVIEW_CLIPPING
 	self.appKitHostView.layer.mask = self.maskLayer;
