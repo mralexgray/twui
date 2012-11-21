@@ -80,6 +80,8 @@ static NSComparisonResult compareNSViewOrdering (NSView *viewA, NSView *viewB, v
 - (void)recalculateNSViewOrdering;
 
 // The last TUIView that was forwarded a touch event.
+// You can expect that if this is not nil, there is a current
+// internal touch -> view forwarding chain running.
 @property (nonatomic, strong) TUIView *lastTouchView;
 
 /*
@@ -496,72 +498,78 @@ static NSComparisonResult compareNSViewOrdering (NSView *viewA, NSView *viewB, v
 	[self _updateHoverView:nil withEvent:event]; // don't pop in while scrolling
 }
 
+// TODO: Filter out resting NSTouches from NSEvent if needed.
+// TODO: Cache touch-accepting TUIViews instead of live checking.
 - (void)touchesBeganWithEvent:(NSEvent *)event {
-	TUIView *eventView = [self viewForEvent:event];
-	NSLog(@"touch began on view: %@", eventView);
 	
+	// Get the view for which the touch began at if there is one.
+	TUIView *eventView = [self viewForEvent:event];
+	
+	// If we're already delivering an event, or there was no view, don't process it.
 	if(!deliveringEvent && eventView) {
+		
+		// Check whether the view can actually receive touch events.
+		// If it can, register it for future touch forwarding as well.
+		if(eventView->_viewFlags.acceptsTouchEvents)
+			self.lastTouchView = eventView;
+		else return;
+		
+		// Check if the touch is resting, and whether the registered view
+		// allows receipt of resting touches, or if the touch isn't resting.
 		BOOL resting = [[[event touchesMatchingPhase:NSTouchPhaseAny inView:self] anyObject] isResting];
 		BOOL allowRestingTouchIfPossible = !resting || (resting && eventView->_viewFlags.wantsRestingTouches);
 		
-		if(eventView->_viewFlags.acceptsTouchEvents && allowRestingTouchIfPossible) {
+		// If a resting touch was detected, and the view supports it,
+		// or there was no resting touch detected, forward the event.
+		// Block the internal event forwarding chain while doing this.
+		if(allowRestingTouchIfPossible) {
 			deliveringEvent = YES;
 			[eventView touchesBeganWithEvent:event];
-			self.lastTouchView = eventView;
 			deliveringEvent = NO;
 		}
 	}
 }
 
 - (void)touchesMovedWithEvent:(NSEvent *)event {
-	TUIView *eventView = [self viewForEvent:event];
 	
-	NSLog(@"touch moved on view: %@", eventView);
-	
-	if(!deliveringEvent && eventView) {
-		BOOL resting = [[[event touchesMatchingPhase:NSTouchPhaseAny inView:self] anyObject] isResting];
-		BOOL allowRestingTouchIfPossible = !resting || (resting && eventView->_viewFlags.wantsRestingTouches);
-		
-		if(eventView->_viewFlags.acceptsTouchEvents && allowRestingTouchIfPossible) {
-			deliveringEvent = YES;
-			[eventView touchesMovedWithEvent:event];
-			deliveringEvent = NO;
-		}
+	// Since this is a continuation of a previously forwarded touch
+	// set, use the previously registered touch view.
+	// Block the internal event forwarding chain while doing this.
+	if(!deliveringEvent && self.lastTouchView) {
+		deliveringEvent = YES;
+		[self.lastTouchView touchesMovedWithEvent:event];
+		deliveringEvent = NO;
 	}
 }
 
 - (void)touchesEndedWithEvent:(NSEvent *)event {
-	TUIView *eventView = [self viewForEvent:event];
-	NSLog(@"touch ended on view: %@", eventView);
 	
-	if(!deliveringEvent && eventView) {
-		BOOL resting = [[[event touchesMatchingPhase:NSTouchPhaseAny inView:self] anyObject] isResting];
-		BOOL allowRestingTouchIfPossible = !resting || (resting && eventView->_viewFlags.wantsRestingTouches);
-		
-		if(eventView->_viewFlags.acceptsTouchEvents && allowRestingTouchIfPossible) {
-			deliveringEvent = YES;
-			[eventView touchesEndedWithEvent:event];
-			self.lastTouchView = nil;
-			deliveringEvent = NO;
-		}
+	// Since this is a continuation of a previously forwarded touch
+	// set, use the previously registered touch view and end it.
+	// Block the internal event forwarding chain while doing this.
+	if(!deliveringEvent && self.lastTouchView) {
+		deliveringEvent = YES;
+		[self.lastTouchView touchesEndedWithEvent:event];
+		deliveringEvent = NO;
 	}
+	
+	// End the current touch forwarding chain.
+	self.lastTouchView = nil;
 }
 
 - (void)touchesCancelledWithEvent:(NSEvent *)event {
-	TUIView *eventView = [self viewForEvent:event];
-	NSLog(@"touch cancelled on view: %@", eventView);
 	
-	if(!deliveringEvent && eventView) {
-		BOOL resting = [[[event touchesMatchingPhase:NSTouchPhaseAny inView:self] anyObject] isResting];
-		BOOL allowRestingTouchIfPossible = !resting || (resting && eventView->_viewFlags.wantsRestingTouches);
-		
-		if(eventView->_viewFlags.acceptsTouchEvents && allowRestingTouchIfPossible) {
-			deliveringEvent = YES;
-			[eventView touchesCancelledWithEvent:event];
-			self.lastTouchView = nil;
-			deliveringEvent = NO;
-		}
+	// Since this is a continuation of a previously forwarded touch
+	// set, use the previously registered touch view and end it.
+	// Block the internal event forwarding chain while doing this.
+	if(!deliveringEvent && self.lastTouchView) {
+		deliveringEvent = YES;
+		[self.lastTouchView touchesCancelledWithEvent:event];
+		deliveringEvent = NO;
 	}
+	
+	// End the current touch forwarding chain.
+	self.lastTouchView = nil;
 }
 
 - (void)beginGestureWithEvent:(NSEvent *)event
