@@ -498,33 +498,45 @@ static NSComparisonResult compareNSViewOrdering (NSView *viewA, NSView *viewB, v
 	[self _updateHoverView:nil withEvent:event]; // don't pop in while scrolling
 }
 
-// TODO: Filter out resting NSTouches from NSEvent if needed.
+#pragma mark - Internal Touch Forwarding Chain
+// FIXME: Filter out resting NSTouches from NSEvent if needed.
 // TODO: Cache touch-accepting TUIViews instead of live checking.
+
 - (void)touchesBeganWithEvent:(NSEvent *)event {
 	
-	// Get the view for which the touch began at if there is one.
-	TUIView *eventView = [self viewForEvent:event];
-	
 	// If we're already delivering an event, or there was no view, don't process it.
-	if(!deliveringEvent && eventView) {
+	if(!deliveringEvent) {
 		
-		// Check whether the view can actually receive touch events.
+		// Get the view for which the touch began at if there is one,
+		// and check whether the view can actually receive touch events.
 		// If it can, register it for future touch forwarding as well.
-		if(eventView->_viewFlags.acceptsTouchEvents)
-			self.lastTouchView = eventView;
-		else return;
+		// If it can't, check the view heirarchy for the next view
+		// that accepts touch events, and register that instead.
+		for(TUIView *touchView = [self viewForEvent:event];; touchView = touchView.superview) {
+			
+			// If the view does not exist, we've reached the top of
+			// the heirarchy, and still have not found a view willing
+			// to accept touches, so simply return early. If not,
+			// check if it's willing to accept touch events.
+			if(touchView == nil) {
+				return;
+			} else if(touchView->_viewFlags.acceptsTouchEvents) {
+				self.lastTouchView = touchView;
+				break;
+			}
+		}
 		
 		// Check if the touch is resting, and whether the registered view
 		// allows receipt of resting touches, or if the touch isn't resting.
 		BOOL resting = [[[event touchesMatchingPhase:NSTouchPhaseAny inView:self] anyObject] isResting];
-		BOOL allowRestingTouchIfPossible = !resting || (resting && eventView->_viewFlags.wantsRestingTouches);
+		BOOL allowRestingTouchIfPossible = !resting || (resting && self.lastTouchView->_viewFlags.wantsRestingTouches);
 		
 		// If a resting touch was detected, and the view supports it,
 		// or there was no resting touch detected, forward the event.
 		// Block the internal event forwarding chain while doing this.
 		if(allowRestingTouchIfPossible) {
 			deliveringEvent = YES;
-			[eventView touchesBeganWithEvent:event];
+			[self.lastTouchView touchesBeganWithEvent:event];
 			deliveringEvent = NO;
 		}
 	}
@@ -571,6 +583,8 @@ static NSComparisonResult compareNSViewOrdering (NSView *viewA, NSView *viewB, v
 	// End the current touch forwarding chain.
 	self.lastTouchView = nil;
 }
+
+#pragma mark -
 
 - (void)beginGestureWithEvent:(NSEvent *)event
 {
