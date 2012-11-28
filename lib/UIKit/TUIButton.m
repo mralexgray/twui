@@ -244,7 +244,7 @@
 		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, 0.5f, 0.5f)
 															 xRadius:3.5f yRadius:3.5f];
 		NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[NSColor colorWithCalibratedWhite:1.0 alpha:0.1f]
-															 endingColor:[NSColor colorWithCalibratedWhite:1.0 alpha:0.5f]];
+															 endingColor:[NSColor colorWithCalibratedWhite:1.0 alpha:0.9f]];
 		
 		[[NSColor colorWithCalibratedWhite:1.0 alpha:0.1f] set];
 		if(!secondaryState)

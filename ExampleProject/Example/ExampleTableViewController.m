@@ -89,6 +89,7 @@
 	ExampleTableViewCell *cell = reusableTableCellOfClass(tableView, ExampleTableViewCell);
 	
 	TUIAttributedString *s = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"example cell %d", (int)indexPath.row]];
+	s.alignment = TUITextAlignmentCenter;
 	s.color = [NSColor blackColor];
 	s.font = [NSFont fontWithName:@"HelveticaNeue" size:15];;
 	[s setFont:[NSFont fontWithName:@"HelveticaNeue-Bold" size:15] inRange:NSMakeRange(8, 4)]; // make the word "cell" bold
@@ -108,13 +109,9 @@
 		// show context menu
 	}
 }
+
 - (BOOL)tableView:(TUITableView *)tableView shouldSelectRowAtIndexPath:(NSIndexPath *)indexPath forEvent:(NSEvent *)event{
-	switch (event.type) {
-		case NSRightMouseDown:
-			return NO;
-	}
-	
-	return YES;
+	return NO;
 }
 
 -(BOOL)tableView:(TUITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
