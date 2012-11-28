@@ -20,7 +20,7 @@
 
 - (id)initWithFrame:(CGRect)frame {
     if((self = [super initWithFrame:frame])) {
-        self.backgroundColor = [NSColor colorWithCalibratedWhite:0.85 alpha:1.0];
+        self.backgroundColor = [NSColor colorWithCalibratedWhite:0.85f alpha:1.0];
 		
 		for(int i = TUIButtonTypeCustom; i <= TUIButtonTypeInline; i++) {
 			
@@ -36,6 +36,8 @@
 			button.frame = CGRectIntegral(CGRectInset(buttonRect, 10.0f, 10.0f));
 			if(i == TUIButtonTypeFlat)
 				button.tintColor = [NSColor colorWithCalibratedRed:0.17 green:0.69 blue:0.84 alpha:1.0];
+			else button.tintColor = self.backgroundColor;
+			button.tintFactor = 0.22f;
 			button.reversesTitleShadowWhenHighlighted = YES;
 			
 			button.titleLabel.alignment = TUITextAlignmentCenter;
@@ -50,9 +52,11 @@
 			[button setTitle:@"Selected" forState:TUIControlStateSelected];
 			[button setTitleColor:[NSColor blackColor] forState:TUIControlStateNormal];
 			
-			NSMenu *menu = [[NSMenu alloc] initWithTitle:@"Demo"];
-			[menu addItem:[[NSMenuItem alloc] initWithTitle:@"Action" action:@selector(demo:) keyEquivalent:@""]];
-			button.menu = menu;
+			if(i == TUIButtonTypeCustom) {
+				NSMenu *menu = [[NSMenu alloc] initWithTitle:@"Demo"];
+				[menu addItem:[[NSMenuItem alloc] initWithTitle:@"Action" action:@selector(demo:) keyEquivalent:@""]];
+				button.menu = menu;
+			}
 			
 			[self addSubview:button];
 		}

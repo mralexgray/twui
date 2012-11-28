@@ -27,15 +27,16 @@ typedef enum {
 	
 	// Creates a rounded rectangle tintable button that
 	// has a drop shadow and a light beveling effect.
-	// The tintFactor property is used to determine
-	// the gradient colors: tintFactor is subtracted
-	// from tintColor to get the gradient's starting
-	// color, and added to get the ending color.
 	TUIButtonTypeStandard,
 	
 	// Creates a rounded rectangle tintable button
 	// that has a light emboss effect with a flat color.
 	TUIButtonTypeFlat,
+	
+	// Creates a rounded rectangle button that cannot
+	// be tinted, but is transparent and attains the
+	// base color from the button's superview.
+	TUIButtonTypeClear,
 	
 	// Creates a rounded pill shaped button that has
 	// a light border with a light gradient color.

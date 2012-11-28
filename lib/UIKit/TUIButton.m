@@ -240,6 +240,33 @@
 		[[NSColor grayColor] setStroke];
 		[path stroke];
 		
+	} else if(self.buttonType == TUIButtonTypeClear) {
+		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, 0.5f, 0.5f)
+															 xRadius:3.5f yRadius:3.5f];
+		NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[NSColor colorWithCalibratedWhite:1.0 alpha:0.1f]
+															 endingColor:[NSColor colorWithCalibratedWhite:1.0 alpha:0.5f]];
+		
+		[[NSColor colorWithCalibratedWhite:1.0 alpha:0.1f] set];
+		if(!secondaryState)
+			[gradient drawInBezierPath:path angle:90.0f];
+		else
+			[path fill];
+		
+		[[NSColor colorWithCalibratedWhite:1.0 alpha:0.5f] set];
+		[path strokeInside];
+		[[NSColor colorWithCalibratedWhite:0.0f alpha:0.5f] set];
+		[path stroke];
+		
+		if(secondaryState) {
+			NSColor *shadowColor = [[NSColor shadowColor] colorWithAlphaComponent:0.75f];
+			NSShadow *shadow = [NSShadow shadowWithRadius:2.0f offset:CGSizeMake(0, -1) color:shadowColor];
+			
+			[NSGraphicsContext saveGraphicsState]; {
+				[path setClip];
+				[shadow set];
+				[path stroke];
+			} [NSGraphicsContext restoreGraphicsState];
+		}
 	} else if(self.buttonType == TUIButtonTypeInline) {
 		CGFloat radius = self.bounds.size.height / 2;
 		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:self.bounds xRadius:radius yRadius:radius];
@@ -258,13 +285,9 @@
 }
 
 - (void)drawRect:(CGRect)rect {
-	BOOL key = self.nsView.isWindowKey;
-	CGFloat alpha = 1.0f;
-	if(_buttonFlags.dimsInBackground)
-		alpha = key ? alpha : 0.5;
-	
 	[self drawBackground:rect];
 	
+	// Handle the image if it exists.
 	NSImage *image = self.currentImage;
 	if(image) {
 		CGRect imageRect = self.bounds;
@@ -293,6 +316,7 @@
 			} [image unlockFocus];
 		}
 		
+		CGFloat alpha = ((self.nsView.isWindowKey && _buttonFlags.dimsInBackground) ? 1.0f : 0.5);
 		[image drawInRect:imageRect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:alpha];
 	}
 	
@@ -312,6 +336,7 @@
 	
 	CGContextRef ctx = TUIGraphicsGetCurrentContext();
 	CGContextSaveGState(ctx); {
+		CGFloat alpha = ((self.nsView.isWindowKey && _buttonFlags.dimsInBackground) ? 1.0f : 0.5);
 		CGContextTranslateCTM(ctx, _titleEdgeInsets.left, _titleEdgeInsets.bottom);
 		CGContextSetAlpha(ctx, alpha);
 		
