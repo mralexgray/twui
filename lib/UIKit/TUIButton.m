@@ -17,13 +17,13 @@
 #import "TUIButton.h"
 #import "TUICGAdditions.h"
 #import "NSBezierPath+TUIExtensions.h"
+#import "NSShadow+TUIExtensions.h"
 #import "NSImage+TUIExtensions.h"
 #import "TUIImageView.h"
 #import "TUILabel.h"
 #import "TUINSView.h"
 #import "TUIStretchableImage.h"
 #import "TUITextRenderer.h"
-#import "TUIAttributedString.h"
 
 @interface TUIButtonContent : NSObject
 
@@ -196,25 +196,25 @@
 															 endingColor:[self.tintColor highlightWithLevel:self.tintFactor]];
 		
 		[NSGraphicsContext saveGraphicsState]; {
-			[[NSShadow shadowWithRadius:1.0f offset:CGSizeMake(0, -1)
-								  color:[NSColor colorWithCalibratedWhite:0.86f alpha:0.75f]] set];
+			[[NSShadow tui_shadowWithRadius:1.0f offset:CGSizeMake(0, -1)
+									  color:[NSColor colorWithCalibratedWhite:0.86f alpha:0.75f]] set];
 			[path fill];
 		} [NSGraphicsContext restoreGraphicsState];
 		
 		[gradient drawInBezierPath:path angle:(secondaryState ? 270.0f : 90.0f)];
 		[[NSColor colorWithCalibratedWhite:0.25f alpha:1.0f] setStroke];
-		[path strokeInside];
+		[path tui_strokeInside];
 		
 		if(secondaryState)
-			[path fillWithInnerShadow:[NSShadow shadowWithRadius:5.0f offset:NSZeroSize color:[NSColor blackColor]]];
+			[path tui_fillWithInnerShadow:[NSShadow tui_shadowWithRadius:5.0f offset:NSZeroSize color:[NSColor blackColor]]];
 		
 	} else if(self.buttonType == TUIButtonTypeFlat) {
 		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, 2.0, 2.0)
 															 xRadius:3.5f yRadius:3.5f];
 		
 		[NSGraphicsContext saveGraphicsState]; {
-			[[NSShadow shadowWithRadius:2.0 offset:CGSizeMake(0, -1)
-								  color:[NSColor colorWithCalibratedWhite:0.0 alpha:0.5]] set];
+			[[NSShadow tui_shadowWithRadius:2.0 offset:CGSizeMake(0, -1)
+									  color:[NSColor colorWithCalibratedWhite:0.0 alpha:0.5]] set];
 			[self.tintColor set];
 			[path fill];
 		} [NSGraphicsContext restoreGraphicsState];
@@ -225,8 +225,8 @@
 		}
 		
 		[NSGraphicsContext saveGraphicsState]; {
-			[path fillWithInnerShadow:[NSShadow shadowWithRadius:2.0 offset:CGSizeMake(0, -1)
-														   color:[NSColor colorWithCalibratedWhite:1.0 alpha:0.5]]];
+			[path tui_fillWithInnerShadow:[NSShadow tui_shadowWithRadius:2.0 offset:CGSizeMake(0, -1)
+																   color:[NSColor colorWithCalibratedWhite:1.0 alpha:0.5]]];
 		} [NSGraphicsContext restoreGraphicsState];
 		
 	} else if(self.buttonType == TUIButtonTypeMinimal) {
@@ -253,13 +253,13 @@
 			[path fill];
 		
 		[[NSColor colorWithCalibratedWhite:1.0 alpha:0.5f] set];
-		[path strokeInside];
+		[path tui_strokeInside];
 		[[NSColor colorWithCalibratedWhite:0.0f alpha:0.5f] set];
 		[path stroke];
 		
 		if(secondaryState) {
 			NSColor *shadowColor = [[NSColor shadowColor] colorWithAlphaComponent:0.75f];
-			NSShadow *shadow = [NSShadow shadowWithRadius:2.0f offset:CGSizeMake(0, -1) color:shadowColor];
+			NSShadow *shadow = [NSShadow tui_shadowWithRadius:2.0f offset:CGSizeMake(0, -1) color:shadowColor];
 			
 			[NSGraphicsContext saveGraphicsState]; {
 				[path setClip];
@@ -276,7 +276,7 @@
 			[path fill];
 			
 			if(self.state & TUIControlStateSelected)
-				[path fillWithInnerShadow:[NSShadow shadowWithRadius:3.0 offset:NSZeroSize color:[NSColor blackColor]]];
+				[path tui_fillWithInnerShadow:[NSShadow tui_shadowWithRadius:3.0 offset:NSZeroSize color:[NSColor blackColor]]];
 		} else if(self.state & TUIControlStateHover) {
 			[[NSColor colorWithCalibratedWhite:0.15 alpha:0.5] set];
 			[path fill];

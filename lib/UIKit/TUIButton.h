@@ -20,7 +20,7 @@
 @class TUILabel;
 @class TUIImageView;
 
-typedef enum {
+typedef enum TUIButtonType : NSUInteger {
 	// Creates a completely unstyled custom button.
 	// Does not respond to the tintColor property.
 	TUIButtonTypeCustom,

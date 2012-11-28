@@ -16,7 +16,7 @@
 
 #import "TUIView.h"
 
-enum {
+typedef enum TUIControlEvents : NSUInteger {
 	
 	// A mouse down event in the control.
 	TUIControlEventMouseDown			= 1 <<  0,
@@ -75,10 +75,9 @@ enum {
 	
 	// All events, including reserved system events.
 	TUIControlEventAllEvents			= 0xFFFFFFFF
-};
-typedef NSUInteger TUIControlEvents;
+} TUIControlEvents;
 
-enum {
+typedef enum TUIControlState : NSUInteger {
 	
 	// The normal, or default state of a control—that is,
 	// enabled but neither selected nor highlighted.
@@ -113,8 +112,7 @@ enum {
 	
 	// Additional control-state flags reserved for framework use.
 	TUIControlStateReserved			= 0xFF000000
-};
-typedef NSUInteger TUIControlState;
+} TUIControlState;
 
 // TUIControl is the base class for control objects such as
 // buttons and sliders that convey user intent to the application.
