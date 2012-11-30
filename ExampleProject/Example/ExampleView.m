@@ -21,18 +21,17 @@
 
 @implementation ExampleView
 
-- (id)initWithFrame:(CGRect)frame
-{
+- (id)initWithFrame:(CGRect)frame {
 	if((self = [super initWithFrame:frame])) {
-		self.backgroundColor = [NSColor colorWithCalibratedWhite:0.9 alpha:1.0];
-		
 		CGRect b = self.bounds;
 		b.origin.y += TAB_HEIGHT;
 		b.size.height -= TAB_HEIGHT;
 		
-		ExampleTableViewController *tableViewController = [[ExampleTableViewController alloc] initWithNibName:nil bundle:nil];
+		ExampleTableViewController *tableViewController = [[ExampleTableViewController alloc] initWithStyle:TUITableViewStylePlain];
 		_navigationController = [[TUINavigationController alloc] initWithRootViewController:tableViewController];
+		_navigationController.view.backgroundColor = [NSColor colorWithCalibratedWhite:0.95f alpha:1.0f];
 		[self addSubview:_navigationController.view];
+		
 		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeWidth relativeTo:@"superview" attribute:TUILayoutConstraintAttributeWidth]];
 		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeHeight relativeTo:@"superview" attribute:TUILayoutConstraintAttributeHeight offset:-TAB_HEIGHT]];
 		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeMinX relativeTo:@"superview" attribute:TUILayoutConstraintAttributeMinX]];

@@ -20,7 +20,6 @@
 @interface ExampleAppDelegate : NSObject <NSApplicationDelegate> {
 	NSWindow *tableViewWindow;
 	NSWindow *scrollViewWindow;
-	NSWindow *catalogWindow;
 }
 
 - (IBAction)showTableViewExampleWindow:(id)sender;

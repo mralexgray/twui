@@ -188,7 +188,6 @@
 			[self.backgroundColor setFill];
 			CGContextFillRect(TUIGraphicsGetCurrentContext(), self.bounds);
 		}
-		
 	} else if(self.buttonType == TUIButtonTypeStandard) {
 		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, 1.0f, 1.0f)
 															 xRadius:3.5f yRadius:3.5f];
@@ -205,29 +204,28 @@
 		[[NSColor colorWithCalibratedWhite:0.25f alpha:1.0f] setStroke];
 		[path tui_strokeInside];
 		
-		if(secondaryState)
-			[path tui_fillWithInnerShadow:[NSShadow tui_shadowWithRadius:5.0f offset:NSZeroSize color:[NSColor blackColor]]];
-		
+		if(secondaryState) {
+			[path tui_fillWithInnerShadow:[NSShadow tui_shadowWithRadius:5.0f offset:CGSizeZero
+																   color:[NSColor shadowColor]]];
+		}
 	} else if(self.buttonType == TUIButtonTypeFlat) {
 		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, 2.0, 2.0)
 															 xRadius:3.5f yRadius:3.5f];
 		
 		[NSGraphicsContext saveGraphicsState]; {
-			[[NSShadow tui_shadowWithRadius:2.0 offset:CGSizeMake(0, -1)
-									  color:[NSColor colorWithCalibratedWhite:0.0 alpha:0.5]] set];
+			[[NSShadow tui_shadowWithRadius:2.0f offset:CGSizeMake(0, -1)
+									  color:[NSColor colorWithCalibratedWhite:0.0f alpha:0.5f]] set];
 			[self.tintColor set];
 			[path fill];
 		} [NSGraphicsContext restoreGraphicsState];
 		
 		if(secondaryState) {
-			[[NSColor colorWithCalibratedWhite:0.0 alpha:0.1] set];
+			[[NSColor colorWithCalibratedWhite:0.0f alpha:0.1f] set];
 			[path fill];
 		}
 		
-		[NSGraphicsContext saveGraphicsState]; {
-			[path tui_fillWithInnerShadow:[NSShadow tui_shadowWithRadius:2.0 offset:CGSizeMake(0, -1)
-																   color:[NSColor colorWithCalibratedWhite:1.0 alpha:0.5]]];
-		} [NSGraphicsContext restoreGraphicsState];
+		[path tui_fillWithInnerShadow:[NSShadow tui_shadowWithRadius:2.0f offset:CGSizeMake(0, -1)
+															   color:[NSColor colorWithCalibratedWhite:1.0f alpha:0.5f]]];
 		
 	} else if(self.buttonType == TUIButtonTypeMinimal) {
 		CGFloat radius = self.bounds.size.height / 2;
@@ -247,26 +245,22 @@
 															 endingColor:[NSColor colorWithCalibratedWhite:1.0 alpha:0.9f]];
 		
 		[[NSColor colorWithCalibratedWhite:1.0 alpha:0.1f] set];
-		if(!secondaryState)
+		if(!secondaryState) {
 			[gradient drawInBezierPath:path angle:90.0f];
-		else
+		} else {
 			[path fill];
+		}
 		
 		[[NSColor colorWithCalibratedWhite:1.0 alpha:0.5f] set];
 		[path tui_strokeInside];
-		[[NSColor colorWithCalibratedWhite:0.0f alpha:0.5f] set];
-		[path stroke];
 		
 		if(secondaryState) {
-			NSColor *shadowColor = [[NSColor shadowColor] colorWithAlphaComponent:0.75f];
-			NSShadow *shadow = [NSShadow tui_shadowWithRadius:2.0f offset:CGSizeMake(0, -1) color:shadowColor];
-			
-			[NSGraphicsContext saveGraphicsState]; {
-				[path setClip];
-				[shadow set];
-				[path stroke];
-			} [NSGraphicsContext restoreGraphicsState];
+			[path tui_fillWithInnerShadow:[NSShadow tui_shadowWithRadius:3.5f offset:CGSizeMake(0, -1)
+																   color:[NSColor colorWithCalibratedWhite:0.0f alpha:0.5f]]];
 		}
+		
+		[[NSColor colorWithCalibratedWhite:0.0f alpha:0.5f] set];
+		[path stroke];
 	} else if(self.buttonType == TUIButtonTypeInline) {
 		CGFloat radius = self.bounds.size.height / 2;
 		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:self.bounds xRadius:radius yRadius:radius];
@@ -275,8 +269,10 @@
 			[[NSColor colorWithCalibratedWhite:0.15 alpha:0.85] set];
 			[path fill];
 			
-			if(self.state & TUIControlStateSelected)
-				[path tui_fillWithInnerShadow:[NSShadow tui_shadowWithRadius:3.0 offset:NSZeroSize color:[NSColor blackColor]]];
+			if(self.state & TUIControlStateSelected) {
+				[path tui_fillWithInnerShadow:[NSShadow tui_shadowWithRadius:3.0 offset:NSZeroSize
+																	   color:[NSColor shadowColor]]];
+			}
 		} else if(self.state & TUIControlStateHover) {
 			[[NSColor colorWithCalibratedWhite:0.15 alpha:0.5] set];
 			[path fill];
