@@ -21,10 +21,9 @@
 - (id)initWithStyle:(TUITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
 	if((self = [super initWithStyle:style reuseIdentifier:reuseIdentifier])) {
 		
-		// Set the separator style to etched, to draw a fancy light emboss border.
-		self.separatorStyle = TUITableViewCellSeparatorStyleEtched;
-		
-		// Set up the alternating cell color scheme.
+		// Set up the alternating row "look". Very slick, clean look. Just by
+		// setting up a few colors (and optionally a few styles, and if we
+		// need more, overridable methods) we can achieve whatever look we want.
 		self.backgroundColor = [NSColor colorWithCalibratedWhite:0.97 alpha:1.0f];
 		self.highlightColor = [NSColor colorWithCalibratedWhite:0.87 alpha:1.0f];
 		self.selectionColor = [NSColor colorWithCalibratedWhite:0.77 alpha:1.0f];
@@ -35,7 +34,7 @@
 		// Create an actionButton that can be selected and deselected to
 		// trigger cell selection, to show off the overridden cell drawing.
 		_actionButton = [TUIButton buttonWithType:TUIButtonTypeTextured];
-		self.actionButton.frame = CGRectMake(5.0f, 0.0f, 100.0f, 22.0f);
+		self.actionButton.frame = CGRectMake(5.0f, 0.0f, 75.0f, 22.0f);
 		self.actionButton.titleLabel.font = [NSFont systemFontOfSize:[NSFont systemFontSize]];
 		self.actionButton.selectable = YES;
 		self.actionButton.reversesTitleShadowWhenHighlighted = YES;
@@ -74,11 +73,11 @@
 		// text -> layer rendering mechanism class with tie-ins to TUIView,
 		// but can achieve far more if used right (like TUITextView).
 		_textRenderer = [[TUITextRenderer alloc] init];
-		self.textRenderer.verticalAlignment = TUITextVerticalAlignmentMiddle;
-		self.textRenderer.shouldRefuseFirstResponder = YES;
-		self.textRenderer.shadowBlur = 1.0f;
-		self.textRenderer.shadowColor = [NSColor whiteColor];
-		self.textRenderer.shadowOffset = CGSizeMake(0, 1);
+		_textRenderer.verticalAlignment = TUITextVerticalAlignmentMiddle;
+		_textRenderer.shouldRefuseFirstResponder = YES;
+		_textRenderer.shadowBlur = 1.0f;
+		_textRenderer.shadowColor = [NSColor whiteColor];
+		_textRenderer.shadowOffset = CGSizeMake(0, 1);
 		
 		// Add the text renderer to the view so events get routed to it
 		// properly. Text selection, dictionary popup, etc should just work.
@@ -87,16 +86,17 @@
 		// The attributed string in this case is set by setAttributedString:
 		// which is configured by the table view delegate.  The frame needs to
 		// be set before it can be drawn, we do that in drawRect: below.
-		self.textRenderers = @[self.textRenderer];
+		self.textRenderers = @[_textRenderer];
 		
 		// Add in a standard Cocoa text field. We have to enclose this within
 		// a TUIViewNSViewContainer, and we MUST adjust only the frame of that
 		// container, and not the text field's itself.
 		NSTextField *textField = [[NSTextField alloc] initWithFrame:NSMakeRect(20, 180, 91, 22)];
-		self.textFieldContainer = [[TUIViewNSViewContainer alloc] initWithNSView:textField];
 		[textField.cell setUsesSingleLineMode:YES];
 		[textField.cell setScrollable:YES];
 		
+		self.textFieldContainer = [[TUIViewNSViewContainer alloc] initWithNSView:textField];
+		self.textFieldContainer.backgroundColor = [NSColor blueColor];
 		[self addSubview:self.textFieldContainer];
 	}
 	
@@ -105,11 +105,11 @@
 
 // Create a simple attributed string setter/getter to the text renderer.
 - (NSAttributedString *)attributedString {
-	return self.textRenderer.attributedString;
+	return _textRenderer.attributedString;
 }
 
 - (void)setAttributedString:(NSAttributedString *)attributedString {
-	self.textRenderer.attributedString = attributedString;
+	_textRenderer.attributedString = attributedString;
 	[self setNeedsDisplay];
 }
 
@@ -131,8 +131,8 @@
 	
 	// Set the text renderer's frame.
 	CGRect textRect = self.bounds;
-	textRect.origin.x += padding + buttonRect.size.width;
-	textRect.size.width -= self.textFieldContainer.frame.size.width + buttonRect.size.width + (padding * 3);
+	textRect.origin.x += (padding * 2) + buttonRect.size.width;
+	textRect.size.width -= self.textFieldContainer.frame.size.width + buttonRect.size.width + (padding * 4);
 	self.textRenderer.frame = textRect;
 }
 
@@ -141,29 +141,7 @@
 // is preferrably left to the overridable drawing methods - not this.
 - (void)drawRect:(CGRect)rect {
 	[super drawRect:rect];
-	[self.textRenderer draw];
-}
-
-// Override the highlighted and selected drawing methods to draw a
-// nifty gradient, and also take into account that we might be an
-// alternately colored cell.
-- (void)drawHighlightedBackground:(CGRect)rect {
-	NSColor *alternateColor = self.alternateHighlightColor ?: self.alternateBackgroundColor;
-	BOOL alternated = (alternateColor && (self.indexPath.row % 2));
-	
-	[[[NSGradient alloc] initWithStartingColor:alternated ? alternateColor : self.highlightColor
-								   endingColor:self.backgroundColor] drawInRect:rect angle:270.0f];
-}
-
-- (void)drawSelectedBackground:(CGRect)rect {
-	[self drawHighlightedBackground:rect];
-}
-
-// When we are removed from the cell queue to be displayed, this method
-// is called to allow us to make cell changes before display. We'll use
-// this to set the selected state of the action button based on our state.
-- (void)prepareForDisplay {
-	self.actionButton.selected = self.selected;
+	[_textRenderer draw];
 }
 
 @end
