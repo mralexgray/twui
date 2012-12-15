@@ -180,6 +180,8 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 		
 		CGRect rect = self.activity.frame;
 		rect.origin.y = scrollCeiling;
+		rect.size.height = scrollCeiling + offset;
+		rect.size.width = scrollCeiling + offset;
 		self.activity.frame = rect;
 		
 		_refreshControlFlags.intentionalRefresh = NO;
