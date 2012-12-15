@@ -20,36 +20,33 @@
 @class TUILabel;
 @class TUIImageView;
 
+// The TUIButtonType is used to determine how a button should
+// look and feel. A button's type cannot be changed after initialization.
+//
+// TUIButtonTypeCustom		- A completely unstyled custom button.
+// TUIButtonTypeStandard	- A standard Aqua-style tinted button.
+//							  This button type has a standard height.
+//							  This button style automatically adjusts
+//							  its tint to match the user control tint.
+// TUIButtonTypeRectangular	- A rectangular two-phase gradiented button.
+// TUIButtonTypeCircular	- A centered circular "glowing" button.
+// TUIButtonTypeTextured	- A standard popover or toolbar-appropriate
+//							  button whose gradient assumes its tint
+//							  from the background view's color.
+// TUIButtonTypeMinimal		- A pill-shaped convex button with a slight
+//							  gradient, used primarily for toggles.
+// TUIButtonTypeInline		- A pill-shaped button with a light gray
+//							  fill on hover, a dark gray fill on mouse
+//							  press, and a shadowed recess on selection.
+//							  Should be primarily used for token fields.
 typedef enum TUIButtonType : NSUInteger {
-	// Creates a completely unstyled custom button.
-	// Does not respond to the tintColor property.
 	TUIButtonTypeCustom,
-	
-	// Creates a rounded rectangle tintable button that
-	// has a drop shadow and a light beveling effect.
 	TUIButtonTypeStandard,
-	
-	// Creates a rounded rectangle tintable button
-	// that has a light emboss effect with a flat color.
 	TUIButtonTypeRectangular,
-	
-	// Creates a rounded rectangle tintable button
-	// that has a light emboss effect with a flat color.
 	TUIButtonTypeCircular,
-	
-	// Creates a rounded rectangle button that cannot
-	// be tinted, but is transparent and attains the
-	// base color from the button's superview.
 	TUIButtonTypeTextured,
-	
-	// Creates a rounded pill shaped button that has
-	// a light border with a light gradient color.
 	TUIButtonTypeMinimal,
-	
-	// Creates a specialized inline button that cannot
-	// be styled, but can be used to inline text as
-	// selectable. Overrides selectable property as YES.
-	TUIButtonTypeInline,
+	TUIButtonTypeInline
 } TUIButtonType;
 
 // An instance of the TUIButton class implements a button on the screen.
@@ -69,17 +66,17 @@ typedef enum TUIButtonType : NSUInteger {
 @property (nonatomic, assign) TUIEdgeInsets contentEdgeInsets;
 
 // Use this property to resize and reposition the effective drawing
-// rectangle for the button title. The default value is UIEdgeInsetsZero.
+// rectangle for the button title. The default value is TUIEdgeInsetsZero.
 // The insets you specify are applied to the title rectangle after
 // that rectangle has been sized to fit the button’s text. Thus,
 // positive inset values may actually clip the title text.
 @property (nonatomic, assign) TUIEdgeInsets titleEdgeInsets;
 
 // Use this property to resize and reposition the effective drawing
-// rectangle for the button image. The default value is UIEdgeInsetsZero.
+// rectangle for the button image. The default value is TUIEdgeInsetsZero.
 @property (nonatomic, assign) TUIEdgeInsets imageEdgeInsets;
 
-// If YES, the button is drawn lighter when the window is not key. The default value is YES.
+// If YES, the title is drawn lighter when the window is not key. The default value is YES.
 @property (nonatomic, assign) BOOL dimsInBackground;
 
 // If YES, the image is drawn lighter when the button is highlighted. The default value is YES.
@@ -94,19 +91,15 @@ typedef enum TUIButtonType : NSUInteger {
 // If YES, the button can be triggered into a stable selected state and back. The default is NO.
 @property (nonatomic, assign, getter = isSelectable) BOOL selectable;
 
+// The titleLabel is the label on which the button text will be dynamically drawn.
 @property (nonatomic, strong, readonly) TUILabel *titleLabel;
+
+// The imageView is the view on which the button content image will be drawn.
 @property (nonatomic, strong, readonly) TUIImageView *imageView;
 
 // Allows a pop up menu to be displayed if the button is pressed.
 // Setting this overrides selectable property as YES.
 @property (nonatomic, strong) NSMenu *menu;
-
-// The button tint color and factor. Depending on the button type, these
-// values may be used to tint the button into a different color. The factor
-// is used to determine the gradient difference between the start and
-// the end color, positioning the tintColor in the center.
-@property (nonatomic, strong) NSColor *tintColor;
-@property (nonatomic, assign) CGFloat tintFactor;
 
 // This method is a convenience constructor for creating button objects
 // with specific configurations. It you subclass TUIButton, this method
@@ -138,6 +131,10 @@ typedef enum TUIButtonType : NSUInteger {
 
 @end
 
+// In general, if a property is not specified for a state, the default
+// is to use the TUIControlStateNormal value. If the TUIControlStateNormal
+// value is not set, then the property defaults to a system value.
+// Therefore, at a minimum, you should set the value for the normal state.
 @interface TUIButton (Content)
 
 @property (nonatomic, strong, readonly) NSString *currentTitle;
@@ -146,16 +143,21 @@ typedef enum TUIButtonType : NSUInteger {
 @property (nonatomic, strong, readonly) NSImage *currentImage;
 @property (nonatomic, strong, readonly) NSImage *currentBackgroundImage;
 
+// The title for a given button state.
 - (NSString *)titleForState:(TUIControlState)state;
-- (NSColor *)titleColorForState:(TUIControlState)state;
-- (NSColor *)titleShadowColorForState:(TUIControlState)state;
-- (NSImage *)imageForState:(TUIControlState)state;
-- (NSImage *)backgroundImageForState:(TUIControlState)state;
 
-// In general, if a property is not specified for a state, the default
-// is to use the TUIControlStateNormal value. If the TUIControlStateNormal
-// value is not set, then the property defaults to a system value.
-// Therefore, at a minimum, you should set the value for the normal state.
+// The title color for a given button state.
+- (NSColor *)titleColorForState:(TUIControlState)state;
+
+// The title shadow color for a given button state.
+- (NSColor *)titleShadowColorForState:(TUIControlState)state;
+
+// The image for a given button state.
+- (NSImage *)imageForState:(TUIControlState)state;
+
+// The background image for a given button state.
+// This is only applicable if the button type is TUIButtonTypeCustom.
+- (NSImage *)backgroundImageForState:(TUIControlState)state;
 
 // Set the title for the button. The title derives its formatting from
 // the button’s associated label.

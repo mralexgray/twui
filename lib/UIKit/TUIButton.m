@@ -74,12 +74,10 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if((self = [super initWithFrame:frame])) {
-		self.contentLookup = [NSMutableDictionary dictionary];
 		_buttonFlags.buttonType = TUIButtonTypeStandard;
 		
-		self.tintColor = [NSColor colorWithCalibratedWhite:0.95f alpha:1.0f];
+		self.contentLookup = [NSMutableDictionary dictionary];
 		self.backgroundColor = [NSColor clearColor];
-		self.tintFactor = 0.10f;
 		self.opaque = NO;
 		
 		self.needsDisplayWhenWindowsKeyednessChanges = YES;
@@ -199,6 +197,7 @@
 	BOOL secondaryState = (self.state & TUIControlStateHighlighted) || (self.state & TUIControlStateSelected);
 	CGRect drawingRect = [self backgroundRectForBounds:self.bounds];
 	[[TUIButton sharedButtonRenderer] setHighlighted:secondaryState];
+	[[TUIButton sharedButtonRenderer] setEnabled:self.enabled];
 	
 	if(self.buttonType == TUIButtonTypeStandard) {
 		[[TUIButton sharedButtonRenderer] setBezelStyle:NSRoundedBezelStyle];
