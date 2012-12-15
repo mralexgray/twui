@@ -49,14 +49,19 @@
 
 @property (nonatomic, strong) NSMutableDictionary *contentLookup;
 
-@property (nonatomic, strong) NSButtonCell *backingCell;
-
 @property (nonatomic, strong, readwrite) TUILabel *titleLabel;
 @property (nonatomic, strong, readwrite) TUIImageView *imageView;
 
 @end
 
 @implementation TUIButton
+
++ (NSButtonCell *)sharedButtonRenderer {
+	static NSButtonCell *_backingCell = nil;
+	if(!_backingCell)
+		_backingCell = [NSButtonCell new];
+	return _backingCell;
+}
 
 #pragma mark - Initialization
 
@@ -69,8 +74,6 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if((self = [super initWithFrame:frame])) {
-		self.backingCell = [NSButtonCell new];
-		
 		self.contentLookup = [NSMutableDictionary dictionary];
 		_buttonFlags.buttonType = TUIButtonTypeStandard;
 		
@@ -195,18 +198,18 @@
 - (void)drawBackground:(CGRect)rect {
 	BOOL secondaryState = (self.state & TUIControlStateHighlighted) || (self.state & TUIControlStateSelected);
 	CGRect drawingRect = [self backgroundRectForBounds:self.bounds];
-	[self.backingCell setHighlighted:secondaryState];
+	[[TUIButton sharedButtonRenderer] setHighlighted:secondaryState];
 	
 	if(self.buttonType == TUIButtonTypeStandard) {
-		[self.backingCell setBezelStyle:NSRoundedBezelStyle];
+		[[TUIButton sharedButtonRenderer] setBezelStyle:NSRoundedBezelStyle];
 	} else if(self.buttonType == TUIButtonTypeMinimal) {
-		[self.backingCell setBezelStyle:NSRoundRectBezelStyle];
+		[[TUIButton sharedButtonRenderer] setBezelStyle:NSRoundRectBezelStyle];
 	} else if(self.buttonType == TUIButtonTypeTextured) {
-		[self.backingCell setBezelStyle:NSTexturedRoundedBezelStyle];
+		[[TUIButton sharedButtonRenderer] setBezelStyle:NSTexturedRoundedBezelStyle];
 	} else if(self.buttonType == TUIButtonTypeRectangular) {
-		[self.backingCell setBezelStyle:NSSmallSquareBezelStyle];
+		[[TUIButton sharedButtonRenderer] setBezelStyle:NSSmallSquareBezelStyle];
 	} else if(self.buttonType == TUIButtonTypeCircular) {
-		[self.backingCell setBezelStyle:NSCircularBezelStyle];
+		[[TUIButton sharedButtonRenderer] setBezelStyle:NSCircularBezelStyle];
 	} else if(self.buttonType == TUIButtonTypeInline) {
 		CGFloat radius = self.bounds.size.height / 2;
 		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:drawingRect xRadius:radius yRadius:radius];
@@ -235,7 +238,7 @@
 	}
 	
 	if(self.buttonType != TUIButtonTypeInline && self.buttonType != TUIButtonTypeCustom)
-		[self.backingCell drawBezelWithFrame:drawingRect inView:self.nsView];
+		[[TUIButton sharedButtonRenderer] drawBezelWithFrame:drawingRect inView:self.nsView];
 }
 
 - (void)drawRect:(CGRect)rect {
