@@ -160,6 +160,11 @@ typedef enum TUIControlState : NSUInteger {
 - (void)stateWillChange;
 - (void)stateDidChange;
 
+// If the user changed the global control tint (presumably from
+// within the System Preferences application), this method will be
+// called to allow the TUIControl object to adjust itself.
+- (void)systemControlTintChanged;
+
 // As your custom control changes a state property, it is
 // recommended the control assign the state using this method.
 // This automatically invokes -stateWillChange and -stateDidChange,

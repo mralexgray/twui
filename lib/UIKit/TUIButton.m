@@ -49,6 +49,8 @@
 
 @property (nonatomic, strong) NSMutableDictionary *contentLookup;
 
+@property (nonatomic, strong) NSButtonCell *backingCell;
+
 @property (nonatomic, strong, readwrite) TUILabel *titleLabel;
 @property (nonatomic, strong, readwrite) TUIImageView *imageView;
 
@@ -67,6 +69,8 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if((self = [super initWithFrame:frame])) {
+		self.backingCell = [NSButtonCell new];
+		
 		self.contentLookup = [NSMutableDictionary dictionary];
 		_buttonFlags.buttonType = TUIButtonTypeStandard;
 		
@@ -155,11 +159,23 @@
 #pragma mark - Overrides
 
 - (CGRect)backgroundRectForBounds:(CGRect)bounds {
-	return bounds;
+	if(self.buttonType == TUIButtonTypeStandard) {
+		bounds.origin.y -= 2.0f;
+		bounds.size.width += 10.0f;
+		bounds.origin.x -= 5.0f;
+	}
+	
+	return CGRectIntegral(bounds);
 }
 
 - (CGRect)contentRectForBounds:(CGRect)bounds {
-	return bounds;
+	if(self.buttonType == TUIButtonTypeStandard) {
+		bounds.origin.y -= 2.0f;
+		bounds.size.width += 10.0f;
+		bounds.origin.x -= 5.0f;
+	}
+	
+	return CGRectIntegral(bounds);
 }
 
 - (CGRect)titleRectForContentRect:(CGRect)contentRect {
@@ -178,92 +194,22 @@
 
 - (void)drawBackground:(CGRect)rect {
 	BOOL secondaryState = (self.state & TUIControlStateHighlighted) || (self.state & TUIControlStateSelected);
+	CGRect drawingRect = [self backgroundRectForBounds:self.bounds];
+	[self.backingCell setHighlighted:secondaryState];
 	
-	if(self.buttonType == TUIButtonTypeCustom) {
-		NSImage *backgroundImage = self.currentBackgroundImage;
-		if(backgroundImage) {
-			[backgroundImage drawInRect:[self backgroundRectForBounds:self.bounds]
-							   fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0];
-		} else {
-			[self.backgroundColor setFill];
-			CGContextFillRect(TUIGraphicsGetCurrentContext(), self.bounds);
-		}
-	} else if(self.buttonType == TUIButtonTypeStandard) {
-		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, 1.0f, 1.0f)
-															 xRadius:3.5f yRadius:3.5f];
-		NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[self.tintColor shadowWithLevel:self.tintFactor]
-															 endingColor:[self.tintColor highlightWithLevel:self.tintFactor]];
-		
-		[NSGraphicsContext saveGraphicsState]; {
-			[[NSShadow tui_shadowWithRadius:1.0f offset:CGSizeMake(0, -1)
-									  color:[NSColor colorWithCalibratedWhite:0.86f alpha:0.75f]] set];
-			[path fill];
-		} [NSGraphicsContext restoreGraphicsState];
-		
-		[gradient drawInBezierPath:path angle:(secondaryState ? 270.0f : 90.0f)];
-		[[NSColor colorWithCalibratedWhite:0.25f alpha:1.0f] setStroke];
-		[path tui_strokeInside];
-		
-		if(secondaryState) {
-			[path tui_fillWithInnerShadow:[NSShadow tui_shadowWithRadius:5.0f offset:CGSizeZero
-																   color:[NSColor shadowColor]]];
-		}
-	} else if(self.buttonType == TUIButtonTypeFlat) {
-		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, 2.0, 2.0)
-															 xRadius:3.5f yRadius:3.5f];
-		
-		[NSGraphicsContext saveGraphicsState]; {
-			[[NSShadow tui_shadowWithRadius:2.0f offset:CGSizeMake(0, -1)
-									  color:[NSColor colorWithCalibratedWhite:0.0f alpha:0.5f]] set];
-			[self.tintColor set];
-			[path fill];
-		} [NSGraphicsContext restoreGraphicsState];
-		
-		if(secondaryState) {
-			[[NSColor colorWithCalibratedWhite:0.0f alpha:0.1f] set];
-			[path fill];
-		}
-		
-		[path tui_fillWithInnerShadow:[NSShadow tui_shadowWithRadius:2.0f offset:CGSizeMake(0, -1)
-															   color:[NSColor colorWithCalibratedWhite:1.0f alpha:0.5f]]];
-		
+	if(self.buttonType == TUIButtonTypeStandard) {
+		[self.backingCell setBezelStyle:NSRoundedBezelStyle];
 	} else if(self.buttonType == TUIButtonTypeMinimal) {
-		CGFloat radius = self.bounds.size.height / 2;
-		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, 0.5f, 0.5f)
-															 xRadius:radius yRadius:radius];
-		NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[self.tintColor highlightWithLevel:self.tintFactor]
-															 endingColor:[self.tintColor shadowWithLevel:self.tintFactor]];
-		
-		[gradient drawInBezierPath:path angle:(secondaryState ? 90.0f : 270.0f)];
-		[[NSColor grayColor] setStroke];
-		[path stroke];
-		
-	} else if(self.buttonType == TUIButtonTypeClear) {
-		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, 0.5f, 0.5f)
-															 xRadius:3.5f yRadius:3.5f];
-		NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[NSColor colorWithCalibratedWhite:1.0 alpha:0.1f]
-															 endingColor:[NSColor colorWithCalibratedWhite:1.0 alpha:0.9f]];
-		
-		[[NSColor colorWithCalibratedWhite:1.0 alpha:0.1f] set];
-		if(!secondaryState) {
-			[gradient drawInBezierPath:path angle:90.0f];
-		} else {
-			[path fill];
-		}
-		
-		[[NSColor colorWithCalibratedWhite:1.0 alpha:0.5f] set];
-		[path tui_strokeInside];
-		
-		if(secondaryState) {
-			[path tui_fillWithInnerShadow:[NSShadow tui_shadowWithRadius:3.5f offset:CGSizeMake(0, -1)
-																   color:[NSColor colorWithCalibratedWhite:0.0f alpha:0.5f]]];
-		}
-		
-		[[NSColor colorWithCalibratedWhite:0.0f alpha:0.5f] set];
-		[path stroke];
+		[self.backingCell setBezelStyle:NSRoundRectBezelStyle];
+	} else if(self.buttonType == TUIButtonTypeTextured) {
+		[self.backingCell setBezelStyle:NSTexturedRoundedBezelStyle];
+	} else if(self.buttonType == TUIButtonTypeRectangular) {
+		[self.backingCell setBezelStyle:NSSmallSquareBezelStyle];
+	} else if(self.buttonType == TUIButtonTypeCircular) {
+		[self.backingCell setBezelStyle:NSCircularBezelStyle];
 	} else if(self.buttonType == TUIButtonTypeInline) {
 		CGFloat radius = self.bounds.size.height / 2;
-		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:self.bounds xRadius:radius yRadius:radius];
+		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:drawingRect xRadius:radius yRadius:radius];
 		
 		if(secondaryState) {
 			[[NSColor colorWithCalibratedWhite:0.15 alpha:0.85] set];
@@ -277,7 +223,19 @@
 			[[NSColor colorWithCalibratedWhite:0.15 alpha:0.5] set];
 			[path fill];
 		}
+	} else if(self.buttonType == TUIButtonTypeCustom) {
+		NSImage *backgroundImage = self.currentBackgroundImage;
+		if(backgroundImage) {
+			[backgroundImage drawInRect:drawingRect
+							   fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0];
+		} else {
+			[self.backgroundColor setFill];
+			CGContextFillRect(TUIGraphicsGetCurrentContext(), self.bounds);
+		}
 	}
+	
+	if(self.buttonType != TUIButtonTypeInline && self.buttonType != TUIButtonTypeCustom)
+		[self.backingCell drawBezelWithFrame:drawingRect inView:self.nsView];
 }
 
 - (void)drawRect:(CGRect)rect {

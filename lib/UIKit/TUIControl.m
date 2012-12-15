@@ -51,9 +51,32 @@
 	if((self = [super initWithFrame:rect])) {
 		self.targetActions = [NSMutableArray array];
 		self.accessibilityTraits |= TUIAccessibilityTraitButton;
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(_controlTintChanged:)
+													 name:NSControlTintDidChangeNotification
+												   object:nil];
 	}
 	
 	return self;
+}
+
+- (void)dealloc {
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+													name:NSControlTintDidChangeNotification
+												  object:nil];
+}
+
+- (void)_controlTintChanged:(NSNotification *)note {
+	[self systemControlTintChanged];
+}
+
+- (void)systemControlTintChanged {
+	if(self.animateStateChange) {
+		[TUIView animateWithDuration:0.25f animations:^{
+			[self redraw];
+		}];
+	} else [self setNeedsDisplay];
 }
 
 - (BOOL)acceptsFirstMouse:(NSEvent *)event {

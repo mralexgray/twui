@@ -31,12 +31,16 @@ typedef enum TUIButtonType : NSUInteger {
 	
 	// Creates a rounded rectangle tintable button
 	// that has a light emboss effect with a flat color.
-	TUIButtonTypeFlat,
+	TUIButtonTypeRectangular,
+	
+	// Creates a rounded rectangle tintable button
+	// that has a light emboss effect with a flat color.
+	TUIButtonTypeCircular,
 	
 	// Creates a rounded rectangle button that cannot
 	// be tinted, but is transparent and attains the
 	// base color from the button's superview.
-	TUIButtonTypeClear,
+	TUIButtonTypeTextured,
 	
 	// Creates a rounded pill shaped button that has
 	// a light border with a light gradient color.

@@ -34,8 +34,8 @@
 		
 		// Create an actionButton that can be selected and deselected to
 		// trigger cell selection, to show off the overridden cell drawing.
-		_actionButton = [TUIButton buttonWithType:TUIButtonTypeClear];
-		self.actionButton.frame = CGRectMake(5.0f, 0.0f, 75.0f, 22.0f);
+		_actionButton = [TUIButton buttonWithType:TUIButtonTypeTextured];
+		self.actionButton.frame = CGRectMake(5.0f, 0.0f, 100.0f, 22.0f);
 		self.actionButton.titleLabel.font = [NSFont systemFontOfSize:[NSFont systemFontSize]];
 		self.actionButton.selectable = YES;
 		self.actionButton.reversesTitleShadowWhenHighlighted = YES;
