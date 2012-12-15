@@ -79,8 +79,7 @@ typedef enum TUIControlEvents : NSUInteger {
 
 typedef enum TUIControlState : NSUInteger {
 	
-	// The normal, or default state of a control—that is,
-	// enabled but neither selected nor highlighted.
+	// The default state of a control. It is enabled, but not selected or highlighted.
 	TUIControlStateNormal			= 0,
 	
 	// The highlighted state of a control. A control enters this
@@ -118,13 +117,13 @@ typedef enum TUIControlState : NSUInteger {
 // buttons and sliders that convey user intent to the application.
 // You cannot use the TUIControl class directly to instantiate
 // controls. It instead defines the common interface and behavioral
-// structure for all its subclasses. The main role of UIControl is
+// structure for all its subclasses. The main role of TUIControl is
 // to define an interface and base implementation for preparing
 // action messages and initially dispatching them to their targets
 // when certain events occur. The TUIControl class also includes
 // methods for getting and setting control state—for example,
 // for determining whether a control is enabled or highlighted—and
-// it defines methods for tracking touches within a control. These
+// it defines methods for tracking the mouse within a control. These
 // tracking methods are overridden by TUIControl subclasses.
 @interface TUIControl : TUIView
 
@@ -148,7 +147,7 @@ typedef enum TUIControlState : NSUInteger {
 @property (nonatomic, assign, getter = isSelected) BOOL selected;
 
 // By default, a control is not highlighted. TUIControl automatically
-// sets and clears this state automatically when a touch enters
+// sets and clears this state automatically when the mouse enters
 // and exits during tracking and when there is a mouse up.
 @property (nonatomic, assign, getter = isHighlighted) BOOL highlighted;
 @property (nonatomic, assign, getter = isContinuous) BOOL continuous;
@@ -163,7 +162,7 @@ typedef enum TUIControlState : NSUInteger {
 // If the user changed the global control tint (presumably from
 // within the System Preferences application), this method will be
 // called to allow the TUIControl object to adjust itself.
-- (void)systemControlTintChanged;
+- (void)systemControlTintChanged:(NSNotification *)note;
 
 // As your custom control changes a state property, it is
 // recommended the control assign the state using this method.
@@ -190,12 +189,14 @@ typedef enum TUIControlState : NSUInteger {
 // opts to cancel it - only when the user cancels the tracking.
 - (void)endTrackingWithEvent:(NSEvent *)event;
 
-// Add target/action for particular event. You can call this
+// Add target/action for a particular event. You can call this
 // multiple times and you can specify multiple target/actions
 // for a particular event. Passing in nil as the target goes
 // up the responder chain. The action may optionally include
-// the sender and the event as parameters, in that order. The
-// action cannot be NULL. You may also choose to submit a block
+// the sender and the event as parameters, in that order.
+// Ex: - (void)method:(id)sender event:(NSEvent *)event;
+// 
+// The action cannot be NULL. You may also choose to submit a block
 // as an action for a control event mask. You may add any
 // number of blocks as well.
 - (void)addTarget:(id)target action:(SEL)action forControlEvents:(TUIControlEvents)controlEvents;
@@ -208,10 +209,10 @@ typedef enum TUIControlState : NSUInteger {
 
 // Get all targets, actions, and control events registered.
 // May include NSNull to indicate at least one nil target.
-// -actionsForTarget... returns NSArray of NSString selector
-// names or nil if none.
 - (NSSet *)allTargets;
 - (TUIControlEvents)allControlEvents;
+
+// Returns an NSArray of NSString selectors names or nil if none.
 - (NSArray *)actionsForTarget:(id)target forControlEvent:(TUIControlEvents)controlEvent;
 
 // As a TUIControl subclass, these methods enable you to dispatch
