@@ -270,23 +270,3 @@ NSData* TUIGraphicsDrawAsPDF(CGRect *optionalMediaBox, void(^draw)(CGContextRef)
 	CGDataConsumerRelease(dataConsumer);
 	return data;
 }
-
-CGImageRef TUIGenerateNoiseImage(CGSize size, CGFloat factor) {
-	NSUInteger bits = fabs(size.width) * fabs(size.height);
-	char *rgba = (char *)malloc(bits);
-	srand(124);
-	
-	for(int i = 0; i < bits; ++i)
-		rgba[i] = (rand() % 256) * factor;
-	
-	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceGray();
-	CGContextRef bitmapContext = CGBitmapContextCreate(rgba, fabs(size.width), fabs(size.height),
-													   8, fabs(size.width), colorSpace, kCGImageAlphaNone);
-	CGImageRef image = CGBitmapContextCreateImage(bitmapContext);
-	
-	CFRelease(bitmapContext);
-	CGColorSpaceRelease(colorSpace);
-	free(rgba);
-	
-	return image;
-}
