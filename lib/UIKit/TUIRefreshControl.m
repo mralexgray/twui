@@ -1,23 +1,42 @@
+/*
+ Copyright 2011 Twitter, Inc.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this work except in compliance with the License.
+ You may obtain a copy of the License in the LICENSE file, or at:
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
 #import "TUIRefreshControl.h"
+#import "TUITableView.h"
 #import "TUIActivityIndicatorView.h"
+
 #import "TUICGAdditions.h"
 #import "NSColor+TUIExtensions.h"
+#import "CATransaction+TUIExtensions.h"
 
-static CGFloat const TUIRefreshTotalHeight = 350.0f;
+static CGFloat const TUIRefreshTotalHeight		= 350.0f;
 static CGFloat const TUIRefreshOffsetThreshhold = 20.0f;
-static CGFloat const TUIRefreshMinTopPadding = 9.0f;
-static CGFloat const TUIRefreshMaxTopPadding = 5.0f;
-static CGFloat const TUIRefreshMinTopRadius = 12.5f;
-static CGFloat const TUIRefreshMaxTopRadius = 16.0f;
-static CGFloat const TUIRefreshMinBottomRadius = 3.0f;
-static CGFloat const TUIRefreshMaxBottomRadius = 16.0f;
-static CGFloat const TUIRefreshMinBottomPadding = 4.0f;
-static CGFloat const TUIRefreshMaxBottomPadding = 6.0f;
-static CGFloat const TUIRefreshMinArrowSize = 2.0f;
-static CGFloat const TUIRefreshMaxArrowSize = 3.0f;
-static CGFloat const TUIRefreshMinArrowRadius = 5.0f;
-static CGFloat const TUIRefreshMaxArrowRadius = 7.0f;
-static CGFloat const TUIRefreshMaxDistance = 53.0f;
+static CGFloat const TUIRefreshMinTopPadding	= 9.0f;
+static CGFloat const TUIRefreshMaxTopPadding	= 5.0f;
+static CGFloat const TUIRefreshMinTopRadius		= 12.5f;
+static CGFloat const TUIRefreshMaxTopRadius		= 16.0f;
+static CGFloat const TUIRefreshMinBottomRadius	= 3.0f;
+static CGFloat const TUIRefreshMaxBottomRadius	= 16.0f;
+static CGFloat const TUIRefreshMinBottomPadding	= 4.0f;
+static CGFloat const TUIRefreshMaxBottomPadding	= 6.0f;
+static CGFloat const TUIRefreshMinArrowSize		= 2.0f;
+static CGFloat const TUIRefreshMaxArrowSize		= 3.0f;
+static CGFloat const TUIRefreshMinArrowRadius	= 5.0f;
+static CGFloat const TUIRefreshMaxArrowRadius	= 7.0f;
+static CGFloat const TUIRefreshMaxDistance		= 53.0f;
 
 static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 	return a + (b - a) * p;
@@ -138,9 +157,14 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 			self.activity.alpha = 0.0f;
 			[self.activity stopAnimating];
 			
-			[self.tableView scrollToRowAtIndexPath:self.tableView.indexPathForFirstRow
-								  atScrollPosition:TUITableViewScrollPositionTop
-										  animated:YES];
+			if(self.tableView.headerView != nil) {
+				[self.tableView scrollRectToVisible:self.tableView.headerView.frame
+										   animated:YES];
+			} else {
+				[self.tableView scrollToRowAtIndexPath:self.tableView.indexPathForFirstRow
+									  atScrollPosition:TUITableViewScrollPositionTop
+											  animated:YES];
+			}
 		} completion:^(BOOL finished) {
 			[self.shapeLayer removeAllAnimations];
 			[self.arrowLayer removeAllAnimations];
@@ -173,10 +197,10 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 	CGFloat scrollCeiling = MAX(TUIRefreshOffsetThreshhold, -offset + TUIRefreshOffsetThreshhold);
 	
 	if(self.refreshing) {
-		[CATransaction setDisableActions:YES];
-		CGFloat shapeLayerActiveY = scrollCeiling - TUIRefreshMaxDistance;
-		self.shapeLayer.position = CGPointMake(self.shapeLayer.position.x, shapeLayerActiveY);
-		[CATransaction setDisableActions:NO];
+		[CATransaction tui_performWithDisabledActions:^{
+			CGFloat shapeLayerActiveY = scrollCeiling - TUIRefreshMaxDistance;
+			self.shapeLayer.position = CGPointMake(self.shapeLayer.position.x, shapeLayerActiveY);
+		}];
 		
 		CGRect rect = self.activity.frame;
 		rect.origin.y = scrollCeiling;
@@ -186,8 +210,16 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 		
 		_refreshControlFlags.intentionalRefresh = NO;
 		return;
-	} else if(!_refreshControlFlags.drawingRefresh && !_refreshControlFlags.intentionalRefresh)
-		return;
+	} else {
+		BOOL show = (!_refreshControlFlags.drawingRefresh && !_refreshControlFlags.intentionalRefresh);
+		[CATransaction tui_performWithDisabledActions:^{
+			self.shapeLayer.hidden = show;
+			self.arrowLayer.hidden = show;
+		}];
+		
+		if(show)
+			return;
+	}
 	
 	CGFloat verticalShift = MAX(0, -((TUIRefreshMaxTopRadius + TUIRefreshMaxBottomRadius + TUIRefreshMaxTopPadding + TUIRefreshMaxBottomPadding) + offset));
 	CGFloat distance = MIN(TUIRefreshMaxDistance, fabs(verticalShift));
