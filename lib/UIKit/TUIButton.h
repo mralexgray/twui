@@ -76,6 +76,10 @@ typedef enum TUIButtonType : NSUInteger {
 // rectangle for the button image. The default value is TUIEdgeInsetsZero.
 @property (nonatomic, assign) TUIEdgeInsets imageEdgeInsets;
 
+// Sets the position of the button's image relative to its title.
+// See TUIControlImagePosition for the definitions of possible values.
+@property (nonatomic, assign) TUIControlImagePosition imagePosition;
+
 // If YES, the title is drawn lighter when the window is not key. The default value is YES.
 @property (nonatomic, assign) BOOL dimsInBackground;
 

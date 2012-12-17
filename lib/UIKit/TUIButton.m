@@ -56,7 +56,7 @@
 
 @implementation TUIButton
 
-+ (NSButtonCell *)sharedButtonRenderer {
++ (NSButtonCell *)sharedGraphicsRenderer {
 	static NSButtonCell *_backingCell = nil;
 	if(!_backingCell)
 		_backingCell = [NSButtonCell new];
@@ -75,6 +75,7 @@
 - (id)initWithFrame:(CGRect)frame {
 	if((self = [super initWithFrame:frame])) {
 		_buttonFlags.buttonType = TUIButtonTypeStandard;
+		self.imagePosition = TUIControlImagePositionOverlap;
 		
 		self.contentLookup = [NSMutableDictionary dictionary];
 		self.backgroundColor = [NSColor clearColor];
@@ -196,19 +197,19 @@
 - (void)drawBackground:(CGRect)rect {
 	BOOL secondaryState = (self.state & TUIControlStateHighlighted) || (self.state & TUIControlStateSelected);
 	CGRect drawingRect = [self backgroundRectForBounds:self.bounds];
-	[[TUIButton sharedButtonRenderer] setHighlighted:secondaryState];
-	[[TUIButton sharedButtonRenderer] setEnabled:self.enabled];
+	[[TUIButton sharedGraphicsRenderer] setHighlighted:secondaryState];
+	[[TUIButton sharedGraphicsRenderer] setEnabled:self.enabled];
 	
 	if(self.buttonType == TUIButtonTypeStandard) {
-		[[TUIButton sharedButtonRenderer] setBezelStyle:NSRoundedBezelStyle];
+		[[TUIButton sharedGraphicsRenderer] setBezelStyle:NSRoundedBezelStyle];
 	} else if(self.buttonType == TUIButtonTypeMinimal) {
-		[[TUIButton sharedButtonRenderer] setBezelStyle:NSRoundRectBezelStyle];
+		[[TUIButton sharedGraphicsRenderer] setBezelStyle:NSRoundRectBezelStyle];
 	} else if(self.buttonType == TUIButtonTypeTextured) {
-		[[TUIButton sharedButtonRenderer] setBezelStyle:NSTexturedRoundedBezelStyle];
+		[[TUIButton sharedGraphicsRenderer] setBezelStyle:NSTexturedRoundedBezelStyle];
 	} else if(self.buttonType == TUIButtonTypeRectangular) {
-		[[TUIButton sharedButtonRenderer] setBezelStyle:NSSmallSquareBezelStyle];
+		[[TUIButton sharedGraphicsRenderer] setBezelStyle:NSSmallSquareBezelStyle];
 	} else if(self.buttonType == TUIButtonTypeCircular) {
-		[[TUIButton sharedButtonRenderer] setBezelStyle:NSCircularBezelStyle];
+		[[TUIButton sharedGraphicsRenderer] setBezelStyle:NSCircularBezelStyle];
 	} else if(self.buttonType == TUIButtonTypeInline) {
 		CGFloat radius = self.bounds.size.height / 2;
 		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:drawingRect xRadius:radius yRadius:radius];
@@ -237,15 +238,16 @@
 	}
 	
 	if(self.buttonType != TUIButtonTypeInline && self.buttonType != TUIButtonTypeCustom)
-		[[TUIButton sharedButtonRenderer] drawBezelWithFrame:drawingRect inView:self.nsView];
+		[[TUIButton sharedGraphicsRenderer] drawBezelWithFrame:drawingRect inView:self.nsView];
 }
 
 - (void)drawRect:(CGRect)rect {
 	[self drawBackground:rect];
+	CGRect appliedImageRect = CGRectZero;
 	
 	// Handle the image if it exists.
 	NSImage *image = self.currentImage;
-	if(image) {
+	if(image != nil && self.imagePosition != TUIControlImagePositionNone) {
 		CGRect imageRect = self.bounds;
 		if(![image isKindOfClass:[TUIStretchableImage class]]) {
 			
@@ -253,12 +255,21 @@
 			imageRect.origin = CGPointZero;
 			imageRect.size = image.size;
 			
+			// Make sure we respect our .imagePosition property, and
+			// adjust the frame accordingly for both image and text.
 			CGRect b = self.bounds;
-			b.origin.x += _imageEdgeInsets.left;
-			b.origin.y += _imageEdgeInsets.bottom;
-			b.size.width -= _imageEdgeInsets.left + _imageEdgeInsets.right;
-			b.size.height -= _imageEdgeInsets.bottom + _imageEdgeInsets.top;
-			imageRect = ABRectRoundOrigin(ABRectCenteredInRect(imageRect, b));
+			if(self.imagePosition == TUIControlImagePositionBelow || self.imagePosition == TUIControlImagePositionAbove) {
+				b.size.height /= 2;
+				if(self.imagePosition == TUIControlImagePositionAbove)
+					b.origin.y += b.size.height;
+			} else if(self.imagePosition == TUIControlImagePositionLeft || self.imagePosition == TUIControlImagePositionRight) {
+				b.size.width = imageRect.size.width;
+				if(self.imagePosition == TUIControlImagePositionRight)
+					b.origin.x = self.bounds.size.width - imageRect.size.width;
+			}
+			
+			imageRect = CGRectIntegral(ABRectCenteredInRect(imageRect, TUIEdgeInsetsInsetRect(b, self.imageEdgeInsets)));
+			appliedImageRect = imageRect;
 		}
 		
 		// Shadow or highlight the image if either option is enabled.
@@ -276,33 +287,47 @@
 		[image drawInRect:imageRect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:alpha];
 	}
 	
-	NSString *title = self.currentTitle;
-	if(title != nil)
-		self.titleLabel.text = title;
-	
-	NSColor *color = self.currentTitleColor;
-	if(color != nil)
-		self.titleLabel.textColor = color;
-	
-	// The renderer's shadow color may have been manually set,
-	// in which case we don't want to reset it to nothing.
-	NSColor *shadowColor = self.currentTitleShadowColor;
-	if(shadowColor != nil)
-		self.titleLabel.renderer.shadowColor = shadowColor;
-	
-	CGContextRef ctx = TUIGraphicsGetCurrentContext();
-	CGContextSaveGState(ctx); {
-		CGFloat alpha = ((self.nsView.isWindowKey && _buttonFlags.dimsInBackground) ? 1.0f : 0.5);
-		CGContextTranslateCTM(ctx, _titleEdgeInsets.left, _titleEdgeInsets.bottom);
-		CGContextSetAlpha(ctx, alpha);
+	if(self.imagePosition != TUIControlImagePositionOnly) {
+		NSString *title = self.currentTitle;
+		if(title != nil)
+			self.titleLabel.text = title;
 		
-		CGRect titleFrame = self.bounds;
-		titleFrame.size.width -= (_titleEdgeInsets.left + _titleEdgeInsets.right);
-		titleFrame.size.height -= (_titleEdgeInsets.top + _titleEdgeInsets.bottom);
+		NSColor *color = self.currentTitleColor;
+		if(color != nil)
+			self.titleLabel.textColor = color;
 		
-		self.titleLabel.frame = titleFrame;
-		[self.titleLabel drawRect:self.titleLabel.bounds];
-	} CGContextRestoreGState(ctx);
+		// The renderer's shadow color may have been manually set,
+		// in which case we don't want to reset it to nothing.
+		NSColor *shadowColor = self.currentTitleShadowColor;
+		if(shadowColor != nil)
+			self.titleLabel.renderer.shadowColor = shadowColor;
+		
+		CGContextRef ctx = TUIGraphicsGetCurrentContext();
+		CGContextSaveGState(ctx); {
+			CGFloat alpha = ((self.nsView.isWindowKey && _buttonFlags.dimsInBackground) ? 1.0f : 0.5);
+			CGContextSetAlpha(ctx, alpha);
+			
+			// Make sure we respect our .imagePosition property, and
+			// adjust the frame accordingly for both image and text.
+			CGRect b = self.bounds;
+			if(self.imagePosition == TUIControlImagePositionBelow || self.imagePosition == TUIControlImagePositionAbove) {
+				b.size.height /= 2;
+				if(self.imagePosition == TUIControlImagePositionBelow)
+					CGContextTranslateCTM(ctx, 0, b.origin.y + b.size.height);
+			} else if(self.imagePosition == TUIControlImagePositionLeft || self.imagePosition == TUIControlImagePositionRight) {
+				b.size.width -= appliedImageRect.size.width;
+				if(self.imagePosition == TUIControlImagePositionLeft)
+					CGContextTranslateCTM(ctx, appliedImageRect.size.width, 0);
+			}
+			
+			CGContextTranslateCTM(ctx, _titleEdgeInsets.left, _titleEdgeInsets.bottom);
+			b.size.width -= (_titleEdgeInsets.left + _titleEdgeInsets.right);
+			b.size.height -= (_titleEdgeInsets.top + _titleEdgeInsets.bottom);
+			
+			self.titleLabel.frame = b;
+			[self.titleLabel drawRect:self.titleLabel.bounds];
+		} CGContextRestoreGState(ctx);
+	}
 }
 
 #pragma mark - Menu and Selected State

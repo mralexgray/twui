@@ -46,6 +46,7 @@
 		self.actionButton.titleLabel.renderer.shadowBlur = 1.0f;
 		self.actionButton.titleLabel.renderer.shadowColor = [NSColor highlightColor];
 		self.actionButton.titleLabel.renderer.shadowOffset = CGSizeMake(0, -1);
+		self.actionButton.imagePosition = TUIControlImagePositionLeft;
 		
 		// Configure the titles and title colors for the button states.
 		// If we don't configure anything for a state, it tries to default
@@ -53,6 +54,7 @@
 		[self.actionButton setTitle:@"Select" forState:TUIControlStateNormal];
 		[self.actionButton setTitle:@"Deselect" forState:TUIControlStateSelected];
 		[self.actionButton setTitleColor:[NSColor blackColor] forState:TUIControlStateNormal];
+		[self.actionButton setImage:[NSImage imageNamed:NSImageNameActionTemplate] forState:TUIControlStateNormal];
 		
 		// If the button is selected, and we're not selected, animate ourselves
 		// into the selected state, and scroll until we're visible on screen.
