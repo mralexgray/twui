@@ -53,7 +53,8 @@
 		// to the normal state's configured values, i.e. title color.
 		[self.actionButton setTitle:@"Select" forState:TUIControlStateNormal];
 		[self.actionButton setTitle:@"Deselect" forState:TUIControlStateSelected];
-		[self.actionButton setTitleColor:[NSColor blackColor] forState:TUIControlStateNormal];
+		[self.actionButton setTitleColor:[NSColor colorWithCalibratedWhite:0.25 alpha:1.0] forState:TUIControlStateNormal];
+		[self.actionButton setTitleColor:[NSColor colorWithCalibratedWhite:0.15 alpha:1.0] forState:TUIControlStateHighlighted];
 		[self.actionButton setImage:[NSImage imageNamed:NSImageNameActionTemplate] forState:TUIControlStateNormal];
 		
 		// If the button is selected, and we're not selected, animate ourselves

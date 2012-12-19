@@ -80,19 +80,24 @@ typedef enum TUIButtonType : NSUInteger {
 // See TUIControlImagePosition for the definitions of possible values.
 @property (nonatomic, assign) TUIControlImagePosition imagePosition;
 
-// If YES, the title is drawn lighter when the window is not key. The default value is YES.
+// If YES, the title is drawn lighter when the window is not key.
+// The default value is YES.
 @property (nonatomic, assign) BOOL dimsInBackground;
 
-// If YES, the image is drawn lighter when the button is highlighted. The default value is YES.
+// If YES, the image is drawn darker when the button is highlighted.
+// The default value is YES.
 @property (nonatomic, assign) BOOL adjustsImageWhenHighlighted;
 
-// If YES, the image is drawn darker when the button is disabled. The default value is YES.
+// If YES, the image is drawn lighter when the button is disabled.
+// The default value is YES.
 @property (nonatomic, assign) BOOL adjustsImageWhenDisabled;
 
-// If YES, the shadow changes from engrave to emboss appearance when highlighted. The default value is NO.
+// If YES, the shadow changes from engrave to emboss appearance when
+// highlighted. The default value is NO.
 @property (nonatomic, assign) BOOL reversesTitleShadowWhenHighlighted;
 
-// If YES, the button can be triggered into a stable selected state and back. The default is NO.
+// If YES, the button can be triggered into a stable selected state
+// and back. The default is NO.
 @property (nonatomic, assign, getter = isSelectable) BOOL selectable;
 
 // The titleLabel is the label on which the button text will be dynamically drawn.
@@ -116,11 +121,11 @@ typedef enum TUIButtonType : NSUInteger {
 // the button to your interface, you should update the frame.
 + (instancetype)buttonWithType:(TUIButtonType)buttonType;
 
-// The default implementation of this method returns the value in the bounds
-// parameter. This rectangle represents the area in which the button draws
-// its standard background content. Subclasses that provide custom background
-// adornments can override this method and return a modified bounds rectangle
-// to prevent the button from drawing over any custom content.
+// The default implementation of this method returns the value in the
+// bounds parameter. This rectangle represents the area in which the
+// button draws its standard background content. Subclasses that provide
+// custom background adornments can override this method and return a
+// modified bounds rectangle to prevent drawing over custom content.
 - (CGRect)backgroundRectForBounds:(CGRect)bounds;
 
 // The content rectangle is the area needed to display the image and title
@@ -132,6 +137,15 @@ typedef enum TUIButtonType : NSUInteger {
 
 // The rectangle in which the receiver draws its image.
 - (CGRect)imageRectForContentRect:(CGRect)contentRect;
+
+// The methods below are the preferred way to handle custom button
+// drawing. Subclass TUIButton and then override the -drawBackground:
+// method to draw a custom frame for the button, and override the
+// -drawContent: method to draw the custom text and image, or optionally,
+// allow TUIButton to handle the inner content, and just customize
+// the background drawing.
+- (void)drawBackground:(CGRect)rect;
+- (void)drawContent:(CGRect)rect;
 
 @end
 

@@ -195,21 +195,37 @@
 #pragma mark - Drawing
 
 - (void)drawBackground:(CGRect)rect {
-	BOOL secondaryState = (self.state & TUIControlStateHighlighted) || (self.state & TUIControlStateSelected);
 	CGRect drawingRect = [self backgroundRectForBounds:self.bounds];
-	[[TUIButton sharedGraphicsRenderer] setHighlighted:secondaryState];
-	[[TUIButton sharedGraphicsRenderer] setEnabled:self.enabled];
 	
-	if(self.buttonType == TUIButtonTypeStandard) {
-		[[TUIButton sharedGraphicsRenderer] setBezelStyle:NSRoundedBezelStyle];
-	} else if(self.buttonType == TUIButtonTypeMinimal) {
-		[[TUIButton sharedGraphicsRenderer] setBezelStyle:NSRoundRectBezelStyle];
-	} else if(self.buttonType == TUIButtonTypeTextured) {
-		[[TUIButton sharedGraphicsRenderer] setBezelStyle:NSTexturedRoundedBezelStyle];
-	} else if(self.buttonType == TUIButtonTypeRectangular) {
-		[[TUIButton sharedGraphicsRenderer] setBezelStyle:NSSmallSquareBezelStyle];
-	} else if(self.buttonType == TUIButtonTypeCircular) {
-		[[TUIButton sharedGraphicsRenderer] setBezelStyle:NSCircularBezelStyle];
+	// Secondary State holds either highlighted or selected states.
+	// Background State holds window background and disabled states.
+	BOOL secondaryState = (self.state & TUIControlStateHighlighted) || (self.state & TUIControlStateSelected);
+	BOOL backgroundState = (![self.nsView isWindowKey] && _buttonFlags.dimsInBackground) || !self.enabled;
+	
+	// Determine the correct graphics renderer style, and use
+	// NSNotFound for Inline and Custom drawing styles.
+	NSBezelStyle graphicsStyle = NSNotFound;
+	if(self.buttonType == TUIButtonTypeStandard)
+		graphicsStyle = NSRoundedBezelStyle;
+	else if(self.buttonType == TUIButtonTypeMinimal)
+		graphicsStyle = NSRoundRectBezelStyle;
+	else if(self.buttonType == TUIButtonTypeTextured)
+		graphicsStyle = NSTexturedRoundedBezelStyle;
+	else if(self.buttonType == TUIButtonTypeRectangular)
+		graphicsStyle = NSSmallSquareBezelStyle;
+	else if(self.buttonType == TUIButtonTypeCircular)
+		graphicsStyle = NSCircularBezelStyle;
+	
+	// Set the graphics renderer states so CoreUI draws the button for us properly.
+	[[TUIButton sharedGraphicsRenderer] setHighlighted:secondaryState];
+	[[TUIButton sharedGraphicsRenderer] setEnabled:backgroundState];
+	
+	// If we found the proper graphics style, allow the graphics renderer to draw it.
+	// If not, draw it ourselves (Inline or Custom styles only, currently).
+	if(graphicsStyle != NSNotFound) {
+		[[TUIButton sharedGraphicsRenderer] setBezelStyle:graphicsStyle];
+		[[TUIButton sharedGraphicsRenderer] drawBezelWithFrame:drawingRect inView:self.nsView];
+		
 	} else if(self.buttonType == TUIButtonTypeInline) {
 		CGFloat radius = self.bounds.size.height / 2;
 		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:drawingRect xRadius:radius yRadius:radius];
@@ -229,26 +245,29 @@
 	} else if(self.buttonType == TUIButtonTypeCustom) {
 		NSImage *backgroundImage = self.currentBackgroundImage;
 		if(backgroundImage) {
-			[backgroundImage drawInRect:drawingRect
-							   fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0];
+			[backgroundImage tui_drawInRect:rect];
 		} else {
 			[self.backgroundColor setFill];
 			CGContextFillRect(TUIGraphicsGetCurrentContext(), self.bounds);
 		}
 	}
-	
-	if(self.buttonType != TUIButtonTypeInline && self.buttonType != TUIButtonTypeCustom)
-		[[TUIButton sharedGraphicsRenderer] drawBezelWithFrame:drawingRect inView:self.nsView];
 }
 
-- (void)drawRect:(CGRect)rect {
-	[self drawBackground:rect];
-	CGRect appliedImageRect = CGRectZero;
+- (void)drawContent:(CGRect)rect {
+	//rect = CGRectInset(rect, 2.0f, 2.0f);
+	
+	// Secondary State holds either highlighted or selected states.
+	// Background State holds window background and disabled states.
+	BOOL secondaryState = (self.state & TUIControlStateHighlighted) || (self.state & TUIControlStateSelected);
+	secondaryState &= self.adjustsImageWhenHighlighted;
+	BOOL backgroundState = (![self.nsView isWindowKey] && _buttonFlags.dimsInBackground);
+	backgroundState |= !self.enabled;
 	
 	// Handle the image if it exists.
 	NSImage *image = self.currentImage;
+	CGRect appliedImageRect = CGRectZero;
 	if(image != nil && self.imagePosition != TUIControlImagePositionNone) {
-		CGRect imageRect = self.bounds;
+		CGRect imageRect = rect;
 		if(![image isKindOfClass:[TUIStretchableImage class]]) {
 			
 			// Not a stretchable image, so center it.
@@ -257,7 +276,7 @@
 			
 			// Make sure we respect our .imagePosition property, and
 			// adjust the frame accordingly for both image and text.
-			CGRect b = self.bounds;
+			CGRect b = rect;
 			if(self.imagePosition == TUIControlImagePositionBelow || self.imagePosition == TUIControlImagePositionAbove) {
 				b.size.height /= 2;
 				if(self.imagePosition == TUIControlImagePositionAbove)
@@ -265,26 +284,25 @@
 			} else if(self.imagePosition == TUIControlImagePositionLeft || self.imagePosition == TUIControlImagePositionRight) {
 				b.size.width = imageRect.size.width;
 				if(self.imagePosition == TUIControlImagePositionRight)
-					b.origin.x = self.bounds.size.width - imageRect.size.width;
+					b.origin.x = rect.size.width - imageRect.size.width;
 			}
 			
-			imageRect = CGRectIntegral(ABRectCenteredInRect(imageRect, TUIEdgeInsetsInsetRect(b, self.imageEdgeInsets)));
-			appliedImageRect = imageRect;
+			appliedImageRect = imageRect = ABRectCenteredInRect(imageRect, TUIEdgeInsetsInsetRect(b, self.imageEdgeInsets));
 		}
 		
 		// Shadow or highlight the image if either option is enabled.
+		CGFloat alpha = backgroundState ? 0.5f : 1.0f;
 		if(_buttonFlags.adjustsImageWhenDisabled || _buttonFlags.adjustsImageWhenHighlighted) {
 			[image lockFocus]; {
-				if(_buttonFlags.adjustsImageWhenDisabled)
+				if(_buttonFlags.adjustsImageWhenHighlighted)
 					[[NSColor colorWithCalibratedWhite:0.0 alpha:(1.0f / 3.0f)] set];
-				else if(_buttonFlags.adjustsImageWhenHighlighted)
+				else if(_buttonFlags.adjustsImageWhenDisabled)
 					[[NSColor colorWithCalibratedWhite:1.0 alpha:(1.0f / 3.0f)] set];
 				NSRectFillUsingOperation((NSRect) {.size = image.size}, NSCompositeSourceAtop);
 			} [image unlockFocus];
 		}
 		
-		CGFloat alpha = ((self.nsView.isWindowKey && _buttonFlags.dimsInBackground) ? 1.0f : 0.5);
-		[image drawInRect:imageRect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:alpha];
+		[image drawInRect:ABRectRoundOrigin(imageRect) fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:alpha];
 	}
 	
 	if(self.imagePosition != TUIControlImagePositionOnly) {
@@ -309,7 +327,7 @@
 			
 			// Make sure we respect our .imagePosition property, and
 			// adjust the frame accordingly for both image and text.
-			CGRect b = self.bounds;
+			CGRect b = rect;
 			if(self.imagePosition == TUIControlImagePositionBelow || self.imagePosition == TUIControlImagePositionAbove) {
 				b.size.height /= 2;
 				if(self.imagePosition == TUIControlImagePositionBelow)
@@ -328,6 +346,11 @@
 			[self.titleLabel drawRect:self.titleLabel.bounds];
 		} CGContextRestoreGState(ctx);
 	}
+}
+
+- (void)drawRect:(CGRect)rect {
+	[self drawBackground:self.bounds];
+	[self drawContent:self.bounds];
 }
 
 #pragma mark - Menu and Selected State
@@ -357,7 +380,7 @@
 	if(![self eventInside:event])
 		return;
 	
-	if(self.selectable || self.buttonType == TUIButtonTypeInline || self.menu)
+	if((self.selectable || self.buttonType == TUIButtonTypeInline || self.menu) && self.enabled)
 		self.selected = !self.selected;
 }
 
@@ -458,40 +481,60 @@
 
 - (NSString *)currentTitle {
 	NSString *title = [self titleForState:self.state];
-	if(title == nil)
-		title = [self titleForState:TUIControlStateNormal];
+	if(title == nil) {
+		if(self.state & TUIControlStateSelected)
+			title = [self titleForState:TUIControlStateHighlighted];
+		if(title == nil)
+			title = [self titleForState:TUIControlStateNormal];
+	}
 	
 	return title;
 }
 
 - (NSColor *)currentTitleColor {
 	NSColor *color = [self titleColorForState:self.state];
-	if(color == nil)
-		color = [self titleColorForState:TUIControlStateNormal];
+	if(color == nil) {
+		if(self.state & TUIControlStateSelected)
+			color = [self titleColorForState:TUIControlStateHighlighted];
+		if(color == nil)
+			color = [self titleColorForState:TUIControlStateNormal];
+	}
 	
 	return color;
 }
 
 - (NSColor *)currentTitleShadowColor {
 	NSColor *color = [self titleShadowColorForState:self.state];
-	if(color == nil)
-		color = [self titleShadowColorForState:TUIControlStateNormal];
+	if(color == nil) {
+		if(self.state & TUIControlStateSelected)
+			color = [self titleShadowColorForState:TUIControlStateHighlighted];
+		if(color == nil)
+			color = [self titleShadowColorForState:TUIControlStateNormal];
+	}
 	
 	return color;
 }
 
 - (NSImage *)currentImage {
 	NSImage *image = [self imageForState:self.state];
-	if(image == nil)
-		image = [self imageForState:TUIControlStateNormal];
+	if(image == nil) {
+		if(self.state & TUIControlStateSelected)
+			image = [self imageForState:TUIControlStateHighlighted];
+		if(image == nil)
+			image = [self imageForState:TUIControlStateNormal];
+	}
 	
 	return image;
 }
 
 - (NSImage *)currentBackgroundImage {
 	NSImage *image = [self backgroundImageForState:self.state];
-	if(image == nil)
-		image = [self backgroundImageForState:TUIControlStateNormal];
+	if(image == nil) {
+		if(self.state & TUIControlStateSelected)
+			image = [self backgroundImageForState:TUIControlStateHighlighted];
+		if(image == nil)
+			image = [self backgroundImageForState:TUIControlStateNormal];
+	}
 	
 	return image;
 }
