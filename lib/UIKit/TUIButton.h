@@ -103,9 +103,6 @@ typedef enum TUIButtonType : NSUInteger {
 // The titleLabel is the label on which the button text will be dynamically drawn.
 @property (nonatomic, strong, readonly) TUILabel *titleLabel;
 
-// The imageView is the view on which the button content image will be drawn.
-@property (nonatomic, strong, readonly) TUIImageView *imageView;
-
 // Allows a pop up menu to be displayed if the button is pressed.
 // Setting this overrides selectable property as YES.
 @property (nonatomic, strong) NSMenu *menu;

@@ -48,9 +48,7 @@
 }
 
 @property (nonatomic, strong) NSMutableDictionary *contentLookup;
-
 @property (nonatomic, strong, readwrite) TUILabel *titleLabel;
-@property (nonatomic, strong, readwrite) TUIImageView *imageView;
 
 @end
 
@@ -99,7 +97,7 @@
 	return _buttonFlags.buttonType;
 }
 
-#pragma mark - Content
+#pragma mark - Properties
 
 - (TUILabel *)titleLabel {
 	if(!_titleLabel) {
@@ -113,18 +111,6 @@
 	}
 	return _titleLabel;
 }
-
-- (TUIImageView *)imageView {
-	if(!_imageView) {
-		_imageView = [[TUIImageView alloc] initWithFrame:TUIEdgeInsetsInsetRect(self.bounds, self.imageEdgeInsets)];
-		_imageView.backgroundColor = [NSColor clearColor];
-		
-		[self addSubview:_imageView];
-	}
-	return _imageView;
-}
-
-#pragma mark - Properties
 
 - (BOOL)dimsInBackground {
 	return _buttonFlags.dimsInBackground;
@@ -218,7 +204,7 @@
 	
 	// Set the graphics renderer states so CoreUI draws the button for us properly.
 	[[TUIButton sharedGraphicsRenderer] setHighlighted:secondaryState];
-	[[TUIButton sharedGraphicsRenderer] setEnabled:backgroundState];
+	[[TUIButton sharedGraphicsRenderer] setEnabled:!backgroundState];
 	
 	// If we found the proper graphics style, allow the graphics renderer to draw it.
 	// If not, draw it ourselves (Inline or Custom styles only, currently).
@@ -290,19 +276,11 @@
 			appliedImageRect = imageRect = ABRectCenteredInRect(imageRect, TUIEdgeInsetsInsetRect(b, self.imageEdgeInsets));
 		}
 		
-		// Shadow or highlight the image if either option is enabled.
-		CGFloat alpha = backgroundState ? 0.5f : 1.0f;
-		if(_buttonFlags.adjustsImageWhenDisabled || _buttonFlags.adjustsImageWhenHighlighted) {
-			[image lockFocus]; {
-				if(_buttonFlags.adjustsImageWhenHighlighted)
-					[[NSColor colorWithCalibratedWhite:0.0 alpha:(1.0f / 3.0f)] set];
-				else if(_buttonFlags.adjustsImageWhenDisabled)
-					[[NSColor colorWithCalibratedWhite:1.0 alpha:(1.0f / 3.0f)] set];
-				NSRectFillUsingOperation((NSRect) {.size = image.size}, NSCompositeSourceAtop);
-			} [image unlockFocus];
-		}
-		
-		[image drawInRect:ABRectRoundOrigin(imageRect) fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:alpha];
+		// Using the shared graphics renderer, we get free template image drawing,
+		// along with disabled and highlighted state drawing.
+		[[TUIButton sharedGraphicsRenderer] setEnabled:!backgroundState];
+		[[TUIButton sharedGraphicsRenderer] setHighlighted:secondaryState];
+		[[TUIButton sharedGraphicsRenderer] drawImage:image withFrame:imageRect inView:self.nsView];
 	}
 	
 	if(self.imagePosition != TUIControlImagePositionOnly) {
