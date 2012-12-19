@@ -239,8 +239,7 @@
 	}
 }
 
-- (void)drawContent:(CGRect)rect {
-	//rect = CGRectInset(rect, 2.0f, 2.0f);
+- (void)drawImage:(CGRect)rect {
 	
 	// Secondary State holds either highlighted or selected states.
 	// Background State holds window background and disabled states.
@@ -249,86 +248,83 @@
 	BOOL backgroundState = (![self.nsView isWindowKey] && _buttonFlags.dimsInBackground);
 	backgroundState |= !self.enabled;
 	
-	// Handle the image if it exists.
+	// Using the shared graphics renderer, we get free template image drawing,
+	// along with disabled and highlighted state drawing.
+	[[TUIButton sharedGraphicsRenderer] setEnabled:!backgroundState];
+	[[TUIButton sharedGraphicsRenderer] setHighlighted:secondaryState];
+	[[TUIButton sharedGraphicsRenderer] drawImage:self.currentImage
+										withFrame:TUIEdgeInsetsInsetRect(rect, self.imageEdgeInsets)
+										   inView:self.nsView];
+}
+
+- (void)drawTitle:(CGRect)rect {
+	NSString *title = self.currentTitle;
+	if(title != nil)
+		self.titleLabel.text = title;
+	
+	NSColor *color = self.currentTitleColor;
+	if(color != nil)
+		self.titleLabel.textColor = color;
+	
+	// The renderer's shadow color may have been manually set,
+	// in which case we don't want to reset it to nothing.
+	NSColor *shadowColor = self.currentTitleShadowColor;
+	if(shadowColor != nil)
+		self.titleLabel.renderer.shadowColor = shadowColor;
+	
+	CGContextRef ctx = TUIGraphicsGetCurrentContext();
+	CGContextSaveGState(ctx); {
+		CGFloat alpha = ((self.nsView.isWindowKey && _buttonFlags.dimsInBackground) ? 1.0f : 0.5);
+		CGContextSetAlpha(ctx, alpha);
+		
+		CGContextTranslateCTM(ctx, rect.origin.x + _titleEdgeInsets.left, rect.origin.y + _titleEdgeInsets.bottom);
+		rect.size.width -= (_titleEdgeInsets.left + _titleEdgeInsets.right);
+		rect.size.height -= (_titleEdgeInsets.top + _titleEdgeInsets.bottom);
+		
+		self.titleLabel.frame = (CGRect) { .size = rect.size };
+		[self.titleLabel drawRect:self.titleLabel.bounds];
+	} CGContextRestoreGState(ctx);
+}
+
+- (void)drawRect:(CGRect)rect {
+	[self drawBackground:self.bounds];
+	
+	CGRect imageRect = rect;
 	NSImage *image = self.currentImage;
-	CGRect appliedImageRect = CGRectZero;
 	if(image != nil && self.imagePosition != TUIControlImagePositionNone) {
-		CGRect imageRect = rect;
 		if(![image isKindOfClass:[TUIStretchableImage class]]) {
-			
-			// Not a stretchable image, so center it.
-			imageRect.origin = CGPointZero;
-			imageRect.size = image.size;
-			
-			// Make sure we respect our .imagePosition property, and
-			// adjust the frame accordingly for both image and text.
 			CGRect b = rect;
 			if(self.imagePosition == TUIControlImagePositionBelow || self.imagePosition == TUIControlImagePositionAbove) {
 				b.size.height /= 2;
 				if(self.imagePosition == TUIControlImagePositionAbove)
 					b.origin.y += b.size.height;
 			} else if(self.imagePosition == TUIControlImagePositionLeft || self.imagePosition == TUIControlImagePositionRight) {
-				b.size.width = imageRect.size.width;
+				b.size.width = image.size.width;
 				if(self.imagePosition == TUIControlImagePositionRight)
-					b.origin.x = rect.size.width - imageRect.size.width;
+					b.origin.x = rect.size.width - image.size.width;
 			}
 			
-			appliedImageRect = imageRect = ABRectCenteredInRect(imageRect, TUIEdgeInsetsInsetRect(b, self.imageEdgeInsets));
+			imageRect = ABRectCenteredInRect((CGRect) { .size = image.size }, b);
 		}
 		
-		// Using the shared graphics renderer, we get free template image drawing,
-		// along with disabled and highlighted state drawing.
-		[[TUIButton sharedGraphicsRenderer] setEnabled:!backgroundState];
-		[[TUIButton sharedGraphicsRenderer] setHighlighted:secondaryState];
-		[[TUIButton sharedGraphicsRenderer] drawImage:image withFrame:imageRect inView:self.nsView];
+		[self drawImage:imageRect];
 	}
 	
-	if(self.imagePosition != TUIControlImagePositionOnly) {
-		NSString *title = self.currentTitle;
-		if(title != nil)
-			self.titleLabel.text = title;
+	NSString *title = self.currentTitle;
+	if(title != nil && self.imagePosition != TUIControlImagePositionOnly) {
+		CGRect b = rect;
+		if(self.imagePosition == TUIControlImagePositionBelow || self.imagePosition == TUIControlImagePositionAbove) {
+			b.size.height /= 2;
+			if(self.imagePosition == TUIControlImagePositionBelow)
+				b.origin.y += b.size.height;
+		} else if(self.imagePosition == TUIControlImagePositionLeft || self.imagePosition == TUIControlImagePositionRight) {
+			b.size.width = rect.size.width - imageRect.size.width;
+			if(self.imagePosition == TUIControlImagePositionLeft)
+				b.origin.x = imageRect.size.width;
+		}
 		
-		NSColor *color = self.currentTitleColor;
-		if(color != nil)
-			self.titleLabel.textColor = color;
-		
-		// The renderer's shadow color may have been manually set,
-		// in which case we don't want to reset it to nothing.
-		NSColor *shadowColor = self.currentTitleShadowColor;
-		if(shadowColor != nil)
-			self.titleLabel.renderer.shadowColor = shadowColor;
-		
-		CGContextRef ctx = TUIGraphicsGetCurrentContext();
-		CGContextSaveGState(ctx); {
-			CGFloat alpha = ((self.nsView.isWindowKey && _buttonFlags.dimsInBackground) ? 1.0f : 0.5);
-			CGContextSetAlpha(ctx, alpha);
-			
-			// Make sure we respect our .imagePosition property, and
-			// adjust the frame accordingly for both image and text.
-			CGRect b = rect;
-			if(self.imagePosition == TUIControlImagePositionBelow || self.imagePosition == TUIControlImagePositionAbove) {
-				b.size.height /= 2;
-				if(self.imagePosition == TUIControlImagePositionBelow)
-					CGContextTranslateCTM(ctx, 0, b.origin.y + b.size.height);
-			} else if(self.imagePosition == TUIControlImagePositionLeft || self.imagePosition == TUIControlImagePositionRight) {
-				b.size.width -= appliedImageRect.size.width;
-				if(self.imagePosition == TUIControlImagePositionLeft)
-					CGContextTranslateCTM(ctx, appliedImageRect.size.width, 0);
-			}
-			
-			CGContextTranslateCTM(ctx, _titleEdgeInsets.left, _titleEdgeInsets.bottom);
-			b.size.width -= (_titleEdgeInsets.left + _titleEdgeInsets.right);
-			b.size.height -= (_titleEdgeInsets.top + _titleEdgeInsets.bottom);
-			
-			self.titleLabel.frame = b;
-			[self.titleLabel drawRect:self.titleLabel.bounds];
-		} CGContextRestoreGState(ctx);
+		[self drawTitle:b];
 	}
-}
-
-- (void)drawRect:(CGRect)rect {
-	[self drawBackground:self.bounds];
-	[self drawContent:self.bounds];
 }
 
 #pragma mark - Menu and Selected State

@@ -142,7 +142,8 @@ typedef enum TUIButtonType : NSUInteger {
 // allow TUIButton to handle the inner content, and just customize
 // the background drawing.
 - (void)drawBackground:(CGRect)rect;
-- (void)drawContent:(CGRect)rect;
+- (void)drawImage:(CGRect)rect;
+- (void)drawTitle:(CGRect)rect;
 
 @end
 
