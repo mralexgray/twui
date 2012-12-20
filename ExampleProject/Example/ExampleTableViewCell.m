@@ -43,7 +43,6 @@
 		_textRenderer.shadowOffset = CGSizeMake(0, 1);
 		
 		TUISlider *slider = [[TUISlider alloc] initWithFrame:CGRectMake(5, 5, 250, 32 - 5)];
-		slider.value = 50.0f;
 		[self addSubview:slider];
 		
 		// Add the text renderer to the view so events get routed to it

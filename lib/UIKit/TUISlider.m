@@ -36,8 +36,8 @@
 	if((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [NSColor clearColor];
 		
-		self.minValue = 0.0f;
-		self.maxValue = 100.0f;
+		self.maximumValue = 0.0f;
+		self.minimumValue = 1.0f;
 		self.value = 0.0f;
 		
 		self.knobThickness = 0.0f;
@@ -53,23 +53,31 @@
 	TUIExtendedSliderCell *slider = [TUISlider sharedGraphicsRenderer];
 	
 	// Set up the graphics renderer before drawing. Although it
-	// seems like a CPU burden, it takes ~0.000025 seconds to set.
-	[slider setMinValue:self.minValue];
-	[slider setMaxValue:self.maxValue];
+	// seems like a burden, it takes around 25ms to configure.
+	[slider setMinValue:self.minimumValue];
+	[slider setMaxValue:self.maximumValue];
 	[slider setDoubleValue:self.value];
 	[slider setKnobThickness:self.knobThickness];
 	[slider setNumberOfTickMarks:self.numberOfTickMarks];
 	[slider setTickMarkPosition:(NSTickMarkPosition)self.drawTickMarksOnAlternateSide];
 	[slider setAllowsTickMarkValuesOnly:self.snapToTickMarks];
 	
-	// Calculates internal drawing info.
-	[slider calcDrawInfo:self.bounds];
-	[self drawTrack:self.bounds];
-	[self drawKnob:self.bounds];
+	// Call appropriate drawing mechanisms.
+	if(self.drawTrack)
+		self.drawTrack(self, self.bounds);
+	else
+		[self drawTrack:self.bounds];
+	
+	if(self.drawKnob)
+		self.drawKnob(self, self.bounds);
+	else
+		[self drawKnob:self.bounds];
 }
 
 - (void)drawTrack:(CGRect)rect {
 	TUIExtendedSliderCell *slider = [TUISlider sharedGraphicsRenderer];
+	[slider calcDrawInfo:self.bounds];
+	
 	CGPoint trackPoint = CGPointMake(NSMidX(slider.knobRect), NSMidY(slider.knobRect));
 	
 	if(self.tracking)
@@ -85,8 +93,14 @@
 	// NSSliderCell can't draw the knob seperately from the track.
 }
 
-- (CGFloat)snapValueToSlider:(CGFloat)value {
+- (CGFloat)sliderValueForPoint:(CGPoint)point {
 	TUIExtendedSliderCell *slider = [TUISlider sharedGraphicsRenderer];
+	
+	CGFloat value;
+	if(self.bounds.size.width > self.bounds.size.height)
+		value = ((self.bounds.size.width - point.x) / self.bounds.size.width) * (self.maximumValue - self.minimumValue) + self.minimumValue;
+	else
+		value = ((self.bounds.size.height - point.y) / self.bounds.size.height) * (self.maximumValue - self.minimumValue) + self.minimumValue;
 	
 	if(self.snapToTickMarks)
 		return [slider closestTickMarkValueToValue:value];
@@ -98,15 +112,8 @@
 	if(!self.enabled)
 		return NO;
 	
-	CGFloat value;
 	CGPoint entryPoint = [self convertFromWindowPoint:[(NSWindow *)self.nsWindow convertScreenToBase:[NSEvent mouseLocation]]];
-	
-	if(self.bounds.size.width > self.bounds.size.height)
-		value = (entryPoint.x / self.bounds.size.width) * (self.maxValue - self.minValue) + self.minValue;
-	else
-		value = (entryPoint.y / self.bounds.size.height) * (self.maxValue - self.minValue) + self.minValue;
-	
-	self.value = [self snapValueToSlider:value];
+	self.value = [self sliderValueForPoint:entryPoint];
 	
 	return YES;
 }
@@ -115,15 +122,8 @@
 	if(!self.enabled)
 		return NO;
 	
-	CGFloat value;
 	CGPoint entryPoint = [self convertFromWindowPoint:[(NSWindow *)self.nsWindow convertScreenToBase:[NSEvent mouseLocation]]];
-	
-	if(self.bounds.size.width > self.bounds.size.height)
-		value = (entryPoint.x / self.bounds.size.width) * (self.maxValue - self.minValue) + self.minValue;
-	else
-		value = (entryPoint.y / self.bounds.size.height) * (self.maxValue - self.minValue) + self.minValue;
-	
-	self.value = [self snapValueToSlider:value];
+	self.value = [self sliderValueForPoint:entryPoint];
 	
 	return YES;
 }
