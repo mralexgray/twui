@@ -55,14 +55,14 @@
 
 - (id)initWithFrame:(CGRect)rect {
 	if ((self = [super initWithFrame:rect])) {
+		self.periodicDelay = 0.075f;
 		self.targetActions = [NSMutableArray array];
 		self.accessibilityTraits |= TUIAccessibilityTraitButton;
 		
-		[[NSNotificationCenter defaultCenter] addObserverForName:NSControlTintDidChangeNotification
-														  object:nil queue:nil
-													  usingBlock:^(NSNotification *note) {
-														  [self systemControlTintChanged];
-													  }];
+		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(_controlTintUpdated:)
+													 name:NSControlTintDidChangeNotification
+												   object:nil];
 	}
 	
 	return self;
@@ -75,6 +75,10 @@
 }
 
 #pragma mark - Control State and Notifications
+
+- (void)_controlTintUpdated:(NSNotification *)note {
+	[self systemControlTintChanged];
+}
 
 - (void)systemControlTintChanged {
 	if (self.animateStateChange) {
@@ -172,12 +176,6 @@
 		return;
 	[super mouseDown:event];
 	
-	// The mouseExited: and mouseEntered: methods are swallowed.
-	if ([self eventInside:event]) {
-		_controlFlags.hover = 0;
-		[self sendActionsForControlEvents:TUIControlEventMouseHoverEnded];
-	}
-	
 	BOOL track = [self beginTrackingWithEvent:event];
 	[self applyStateChangeAnimated:self.animateStateChange block:^{
 		if (track && !_controlFlags.tracking)
@@ -224,13 +222,6 @@
 	if (_controlFlags.disabled)
 		return;
 	[super mouseUp:event];
-	
-	// The mouseExited: and mouseEntered: methods are swallowed.
-	if ([self eventInside:event]) {
-		_controlFlags.hover = 1;
-		[self sendActionsForControlEvents:TUIControlEventMouseHoverBegan];
-		[self setNeedsDisplay];
-	}
 	
 	if (_controlFlags.tracking) {
 		[self endTrackingWithEvent:event];

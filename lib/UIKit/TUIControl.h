@@ -164,6 +164,11 @@ typedef enum TUIControlState : NSUInteger {
 // action has been finalized. The default value is NO.
 @property (nonatomic, assign, getter = isContinuous) BOOL continuous;
 
+// If a control's .continuous property value is set to YES, the
+// .periodicDelay property corresponds to the periodic delay
+// between each sent action. The default value is 75ms (0.075 seconds).
+@property (nonatomic, assign) NSTimeInterval periodicDelay;
+
 // These methods should be used to react to a state change.
 // The default method implementation does nothing, but if you
 // are subclassing a subclass of TUIControl, such as TUIButton,
