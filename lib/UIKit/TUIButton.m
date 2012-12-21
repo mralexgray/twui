@@ -361,11 +361,11 @@
 #pragma mark - Highlight Reversing
 
 - (void)stateWillChange {
-	_buttonFlags.wasHighlighted = (self.state & TUIControlStateHighlighted);
+	_buttonFlags.wasHighlighted = (self.state & (TUIControlStateHighlighted | TUIControlStateSelected));
 }
 
 - (void)stateDidChange {
-	BOOL reverseShadow = (self.state & TUIControlStateHighlighted) != _buttonFlags.wasHighlighted;
+	BOOL reverseShadow = (self.state & (TUIControlStateHighlighted | TUIControlStateSelected)) != _buttonFlags.wasHighlighted;
 	
 	if(reverseShadow && self.reversesTitleShadowWhenHighlighted) {
 		CGSize shadow = _titleLabel.renderer.shadowOffset;
