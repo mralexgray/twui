@@ -18,6 +18,8 @@
 #import "TUIView+Accessibility.h"
 #import "TUINSView.h"
 
+#pragma mark - Target Action Container
+
 @interface TUIControlTargetAction : NSObject
 
 @property (nonatomic, unsafe_unretained) id target;
@@ -30,14 +32,16 @@
 @implementation TUIControlTargetAction
 @end
 
+#pragma mark -
+
 @interface TUIControl () {
 	struct {
-		unsigned tracking:1;
-		unsigned acceptsFirstMouse:1;
-		unsigned disabled:1;
-		unsigned selected:1;
-		unsigned highlighted:1;
-		unsigned hover:1;
+		unsigned int tracking:1;
+		unsigned int acceptsFirstMouse:1;
+		unsigned int disabled:1;
+		unsigned int selected:1;
+		unsigned int highlighted:1;
+		unsigned int hover:1;
 	} _controlFlags;
 }
 
@@ -47,13 +51,16 @@
 
 @implementation TUIControl
 
+#pragma mark - Object Lifecycle
+
 - (id)initWithFrame:(CGRect)rect {
-	if((self = [super initWithFrame:rect])) {
+	if ((self = [super initWithFrame:rect])) {
+		self.periodicDelay = 0.075f;
 		self.targetActions = [NSMutableArray array];
 		self.accessibilityTraits |= TUIAccessibilityTraitButton;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self
-												 selector:@selector(_controlTintChanged:)
+												 selector:@selector(controlTintUpdated:)
 													 name:NSControlTintDidChangeNotification
 												   object:nil];
 	}
@@ -67,12 +74,14 @@
 												  object:nil];
 }
 
-- (void)_controlTintChanged:(NSNotification *)note {
+#pragma mark - Control State and Notifications
+
+- (void)controlTintUpdated:(NSNotification *)note {
 	[self systemControlTintChanged];
 }
 
 - (void)systemControlTintChanged {
-	if(self.animateStateChange) {
+	if (self.animateStateChange) {
 		[TUIView animateWithDuration:0.25f animations:^{
 			[self redraw];
 		}];
@@ -86,22 +95,21 @@
 - (TUIControlState)state {
 	TUIControlState actual = TUIControlStateNormal;
 	
-	if(_controlFlags.disabled)
+	if (_controlFlags.disabled)
 		actual |= TUIControlStateDisabled;
-	if(![self.nsView isWindowKey])
+	if (![self.nsView isWindowKey])
 		actual |= TUIControlStateNotKey;
-	
-	if(!_controlFlags.selected) {
-		if(_controlFlags.hover)
-			actual |= TUIControlStateHover;
-		
-		if(_controlFlags.tracking || _controlFlags.highlighted)
-			actual |= TUIControlStateHighlighted;
-	} else
+	if (_controlFlags.hover)
+		actual |= TUIControlStateHover;
+	if (_controlFlags.tracking || _controlFlags.highlighted)
+		actual |= TUIControlStateHighlighted;
+	if (_controlFlags.selected)
 		actual |= TUIControlStateSelected;
 	
 	return actual;
 }
+
+#pragma mark - Properties
 
 - (BOOL)acceptsFirstMouse {
 	return _controlFlags.acceptsFirstMouse;
@@ -130,7 +138,7 @@
 }
 
 - (BOOL)isSelected {
-  return _controlFlags.selected;
+	return _controlFlags.selected;
 }
 
 - (void)setSelected:(BOOL)selected {
@@ -149,6 +157,8 @@
 	}];
 }
 
+#pragma mark - User Interaction
+
 - (void)mouseEntered:(NSEvent *)theEvent {
 	_controlFlags.hover = 1;
 	[self sendActionsForControlEvents:TUIControlEventMouseHoverBegan];
@@ -162,23 +172,19 @@
 }
 
 - (void)mouseDown:(NSEvent *)event {
-	if(_controlFlags.disabled)
+	if (_controlFlags.disabled)
 		return;
 	[super mouseDown:event];
 	
-	_controlFlags.hover = 0;
-	[self sendActionsForControlEvents:TUIControlEventMouseHoverEnded];
-	[self setNeedsDisplay];
-	
 	BOOL track = [self beginTrackingWithEvent:event];
 	[self applyStateChangeAnimated:self.animateStateChange block:^{
-		if(track && !_controlFlags.tracking)
+		if (track && !_controlFlags.tracking)
 			_controlFlags.tracking = 1;
-		else if(!track)
+		else if (!track)
 			_controlFlags.tracking = 0;
 	}];
 	
-	if(_controlFlags.tracking) {
+	if (_controlFlags.tracking) {
 		TUIControlEvents currentEvents = (([event clickCount] >= 2) ?
 										  TUIControlEventMouseDownRepeat :
 										  TUIControlEventMouseDown);
@@ -188,20 +194,20 @@
 }
 
 - (void)mouseDragged:(NSEvent *)event {
-	if(_controlFlags.disabled)
+	if (_controlFlags.disabled)
 		return;
 	[super mouseDragged:event];
 	
-	if(_controlFlags.tracking) {
+	if (_controlFlags.tracking) {
 		BOOL track = [self continueTrackingWithEvent:event];
 		[self applyStateChangeAnimated:self.animateStateChange block:^{
-			if(track)
+			if (track)
 				_controlFlags.tracking = 1;
-			else if(!track)
+			else if (!track)
 				_controlFlags.tracking = 0;
 		}];
 		
-		if(_controlFlags.tracking) {
+		if (_controlFlags.tracking) {
 			TUIControlEvents currentEvents = (([self eventInside:event])?
 											  TUIControlEventMouseDragInside :
 											  TUIControlEventMouseDragOutside);
@@ -213,17 +219,11 @@
 }
 
 - (void)mouseUp:(NSEvent *)event {
-	if(_controlFlags.disabled)
+	if (_controlFlags.disabled)
 		return;
 	[super mouseUp:event];
 	
-	if([self eventInside:event]) {
-		_controlFlags.hover = 1;
-		[self sendActionsForControlEvents:TUIControlEventMouseHoverBegan];
-		[self setNeedsDisplay];
-	}
-	
-	if(_controlFlags.tracking) {
+	if (_controlFlags.tracking) {
 		[self endTrackingWithEvent:event];
 		
 		TUIControlEvents currentEvents = (([self eventInside:event])?
@@ -238,22 +238,22 @@
 }
 
 - (void)willMoveToSuperview:(TUIView *)newSuperview {
-	if(!_controlFlags.disabled && _controlFlags.tracking) {
+	if (!_controlFlags.disabled && _controlFlags.tracking) {
 		[self applyStateChangeAnimated:self.animateStateChange block:^{
 			_controlFlags.tracking = 0;
 		}];
-
+		
 		[self endTrackingWithEvent:nil];
 		[self setNeedsDisplay];
 	}
 }
 
 - (void)willMoveToWindow:(TUINSWindow *)newWindow {
-	if(!_controlFlags.disabled && _controlFlags.tracking) {
+	if (!_controlFlags.disabled && _controlFlags.tracking) {
 		[self applyStateChangeAnimated:self.animateStateChange block:^{
 			_controlFlags.tracking = 0;
 		}];
-
+		
 		[self endTrackingWithEvent:nil];
 		[self setNeedsDisplay];
 	}
@@ -268,19 +268,23 @@
 }
 
 - (void)endTrackingWithEvent:(NSEvent *)event {
-	return;
+	// Implemented by subclasses.
 }
+
+#pragma mark - State Change Application
 
 - (void)applyStateChangeAnimated:(BOOL)animated block:(void (^)(void))block {
 	[self stateWillChange];
 	block();
 	[self stateDidChange];
 	
-	if(animated) {
+	if (animated) {
 		[TUIView animateWithDuration:0.25f animations:^{
 			[self redraw];
 		}];
-	} else [self setNeedsDisplay];
+	} else {
+		[self setNeedsDisplay];
+	}
 }
 
 // Override.
@@ -292,8 +296,10 @@
 	return;
 }
 
+#pragma mark - Target Action Interoptability
+
 - (void)addTarget:(id)target action:(SEL)action forControlEvents:(TUIControlEvents)controlEvents {
-	if(action) {
+	if (action != nil) {
 		TUIControlTargetAction *t = [[TUIControlTargetAction alloc] init];
 		t.target = target;
 		t.action = action;
@@ -303,7 +309,7 @@
 }
 
 - (void)addActionForControlEvents:(TUIControlEvents)controlEvents block:(void(^)(void))block {
-	if(block) {
+	if (block != nil) {
 		TUIControlTargetAction *t = [[TUIControlTargetAction alloc] init];
 		t.block = block;
 		t.controlEvents = controlEvents;
@@ -313,14 +319,14 @@
 
 - (void)removeTarget:(id)target action:(SEL)action forControlEvents:(TUIControlEvents)controlEvents {
 	NSMutableArray *targetActionsToRemove = [NSMutableArray array];
-	for(TUIControlTargetAction *t in self.targetActions) {
+	for (TUIControlTargetAction *t in self.targetActions) {
 		
 		BOOL actionMatches = (action == t.action);
 		BOOL targetMatches = [target isEqual:t.target];
 		BOOL controlMatches = (controlEvents == t.controlEvents);
 		
-		if((action && targetMatches && actionMatches && controlMatches) ||
-		   (!action && targetMatches && controlMatches))
+		if ((action && targetMatches && actionMatches && controlMatches) ||
+			(!action && targetMatches && controlMatches))
 			[targetActionsToRemove addObject:t];
 	}
 	
@@ -330,7 +336,7 @@
 - (NSSet *)allTargets {
 	NSMutableSet *targets = [NSMutableSet set];
 	
-	for(TUIControlTargetAction *t in self.targetActions)
+	for (TUIControlTargetAction *t in self.targetActions)
 		[targets addObject:t.target ?: [NSNull null]];
 	
 	return targets;
@@ -339,7 +345,7 @@
 - (TUIControlEvents)allControlEvents {
 	TUIControlEvents e = 0;
 	
-	for(TUIControlTargetAction *t in self.targetActions)
+	for (TUIControlTargetAction *t in self.targetActions)
 		e |= t.controlEvents;
 	
 	return e;
@@ -348,9 +354,10 @@
 - (NSArray *)actionsForTarget:(id)target forControlEvent:(TUIControlEvents)controlEvent {
 	NSMutableArray *actions = [NSMutableArray array];
 	
-	for(TUIControlTargetAction *t in self.targetActions)
-		if([target isEqual:t.target] && controlEvent == t.controlEvents)
+	for (TUIControlTargetAction *t in self.targetActions) {
+		if ([target isEqual:t.target] && controlEvent == t.controlEvents)
 			[actions addObject:NSStringFromSelector(t.action)];
+	}
 	
 	return (actions.count ? actions : nil);
 }
@@ -360,14 +367,16 @@
 }
 
 - (void)sendActionsForControlEvents:(TUIControlEvents)controlEvents {
-	for(TUIControlTargetAction *t in self.targetActions) {
-		if(t.controlEvents == controlEvents) {
-			if(t.target && t.action)
+	for (TUIControlTargetAction *t in self.targetActions) {
+		if (t.controlEvents == controlEvents) {
+			if (t.target && t.action)
 				[self sendAction:t.action to:t.target forEvent:nil];
-			else if(t.block)
+			else if (t.block)
 				t.block();
 		}
 	}
 }
+
+#pragma mark -
 
 @end

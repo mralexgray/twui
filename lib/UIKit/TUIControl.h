@@ -19,38 +19,38 @@
 typedef enum TUIControlEvents : NSUInteger {
 	
 	// A mouse down event in the control.
-	TUIControlEventMouseDown			= 1 <<  0,
+	TUIControlEventMouseDown			= 1 << 0,
 	
 	// A mouse down multi-click event in the control.
 	// -[NSEvent clickCount] will return > 1.
-	TUIControlEventMouseDownRepeat		= 1 <<  1,
+	TUIControlEventMouseDownRepeat		= 1 << 1,
 	
 	// A mouse drag within the bounds of the control.
-	TUIControlEventMouseDragInside		= 1 <<  2,
+	TUIControlEventMouseDragInside		= 1 << 2,
 	
 	// A mouse drag that leaves the bounds of the control.
-	TUIControlEventMouseDragOutside		= 1 <<  3,
+	TUIControlEventMouseDragOutside		= 1 << 3,
 	
 	/*
 	 Does not support:
-	 TUIControlEventMouseDragEnter		= 1 <<  4,
-	 TUIControlEventMouseDragExit		= 1 <<  5,
+	 TUIControlEventMouseDragEnter		= 1 << 4,
+	 TUIControlEventMouseDragExit		= 1 << 5,
 	 */
 	
 	// A mouse up event inside the control.
-	TUIControlEventMouseUpInside		= 1 <<  6,
+	TUIControlEventMouseUpInside		= 1 << 6,
 	
 	// A mouse up event outside the control.
-	TUIControlEventMouseUpOutside		= 1 <<  7,
+	TUIControlEventMouseUpOutside		= 1 << 7,
 	
 	// A canceled mouse up event, due to system reasons.
-	TUIControlEventMouseCancel			= 1 <<  8,
+	TUIControlEventMouseCancel			= 1 << 8,
 	
 	// A mouse hover begin event that a control is tracking.
-	TUIControlEventMouseHoverBegan		= 1 <<  9,
+	TUIControlEventMouseHoverBegan		= 1 << 9,
 	
 	// A mouse hover end event that a control stops tracking.
-	TUIControlEventMouseHoverEnded		= 1 <<  10,
+	TUIControlEventMouseHoverEnded		= 1 << 10,
 	
 	// A manipulated control caused to emit a series of different values.
 	TUIControlEventValueChanged			= 1 << 12,
@@ -79,8 +79,7 @@ typedef enum TUIControlEvents : NSUInteger {
 
 typedef enum TUIControlState : NSUInteger {
 	
-	// The normal, or default state of a control—that is,
-	// enabled but neither selected nor highlighted.
+	// The default state of a control. It is enabled, but not selected or highlighted.
 	TUIControlStateNormal			= 0,
 	
 	// The highlighted state of a control. A control enters this
@@ -139,13 +138,13 @@ typedef enum TUIControlImagePosition : NSUInteger {
 // buttons and sliders that convey user intent to the application.
 // You cannot use the TUIControl class directly to instantiate
 // controls. It instead defines the common interface and behavioral
-// structure for all its subclasses. The main role of UIControl is
+// structure for all its subclasses. The main role of TUIControl is
 // to define an interface and base implementation for preparing
 // action messages and initially dispatching them to their targets
 // when certain events occur. The TUIControl class also includes
 // methods for getting and setting control state—for example,
 // for determining whether a control is enabled or highlighted—and
-// it defines methods for tracking touches within a control. These
+// it defines methods for tracking the mouse within a control. These
 // tracking methods are overridden by TUIControl subclasses.
 @interface TUIControl : TUIView
 
@@ -153,7 +152,14 @@ typedef enum TUIControlImagePosition : NSUInteger {
 // state of the TUIControl object. Note that the control can be in
 // more than one state, for example, both disabled and selected.
 @property (nonatomic, readonly) TUIControlState state;
+
+// Allows the control to accept the window-activating mouse click
+// as a mouse event as well. The default value is NO.
 @property (nonatomic, assign) BOOL acceptsFirstMouse;
+
+// If a control should animate changes between its previous state,
+// and its current state, set this property to YES. The default
+// value varies per control, but is initially NO.
 @property (nonatomic, assign) BOOL animateStateChange;
 
 // The value is YES if the receiver is tracking mouse events; otherwise NO.
@@ -169,10 +175,20 @@ typedef enum TUIControlImagePosition : NSUInteger {
 @property (nonatomic, assign, getter = isSelected) BOOL selected;
 
 // By default, a control is not highlighted. TUIControl automatically
-// sets and clears this state automatically when a touch enters
+// sets and clears this state automatically when the mouse enters
 // and exits during tracking and when there is a mouse up.
 @property (nonatomic, assign, getter = isHighlighted) BOOL highlighted;
+
+// If a control sends TUIControlEventValueChanged actions, then the
+// value of this property is used to determine whether the action
+// is sent periodically on an interval, or discretely, only when the
+// action has been finalized. The default value is NO.
 @property (nonatomic, assign, getter = isContinuous) BOOL continuous;
+
+// If a control's .continuous property value is set to YES, the
+// .periodicDelay property corresponds to the periodic delay
+// between each sent action. The default value is 75ms (0.075 seconds).
+@property (nonatomic, assign) NSTimeInterval periodicDelay;
 
 // These methods should be used to react to a state change.
 // The default method implementation does nothing, but if you
@@ -211,12 +227,14 @@ typedef enum TUIControlImagePosition : NSUInteger {
 // opts to cancel it - only when the user cancels the tracking.
 - (void)endTrackingWithEvent:(NSEvent *)event;
 
-// Add target/action for particular event. You can call this
+// Add target/action for a particular event. You can call this
 // multiple times and you can specify multiple target/actions
 // for a particular event. Passing in nil as the target goes
 // up the responder chain. The action may optionally include
-// the sender and the event as parameters, in that order. The
-// action cannot be NULL. You may also choose to submit a block
+// the sender and the event as parameters, in that order.
+// Ex: - (void)method:(id)sender event:(NSEvent *)event;
+//
+// The action cannot be NULL. You may also choose to submit a block
 // as an action for a control event mask. You may add any
 // number of blocks as well.
 - (void)addTarget:(id)target action:(SEL)action forControlEvents:(TUIControlEvents)controlEvents;
@@ -229,10 +247,10 @@ typedef enum TUIControlImagePosition : NSUInteger {
 
 // Get all targets, actions, and control events registered.
 // May include NSNull to indicate at least one nil target.
-// -actionsForTarget... returns NSArray of NSString selector
-// names or nil if none.
 - (NSSet *)allTargets;
 - (TUIControlEvents)allControlEvents;
+
+// Returns an NSArray of NSString selectors names or nil if none.
 - (NSArray *)actionsForTarget:(id)target forControlEvent:(TUIControlEvents)controlEvent;
 
 // As a TUIControl subclass, these methods enable you to dispatch
@@ -245,6 +263,11 @@ typedef enum TUIControlImagePosition : NSUInteger {
 // the passed-in selector, target object, or TUIControlEvents bit
 // mask, and proceed as required.
 - (void)sendAction:(SEL)action to:(id)target forEvent:(NSEvent *)event;
+
+// TUIControl implements this method to send all action messages associated
+// with controlEvents, repeatedly invoking sendAction:to:forEvent: in the
+// process. The list of targets and actions it looks up is constructed from
+// prior invocations of addTarget:action:forControlEvents:.
 - (void)sendActionsForControlEvents:(TUIControlEvents)controlEvents;
 
 @end
