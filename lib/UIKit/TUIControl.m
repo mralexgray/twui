@@ -60,7 +60,7 @@
 		self.accessibilityTraits |= TUIAccessibilityTraitButton;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self
-												 selector:@selector(_controlTintUpdated:)
+												 selector:@selector(controlTintUpdated:)
 													 name:NSControlTintDidChangeNotification
 												   object:nil];
 	}
@@ -76,7 +76,7 @@
 
 #pragma mark - Control State and Notifications
 
-- (void)_controlTintUpdated:(NSNotification *)note {
+- (void)controlTintUpdated:(NSNotification *)note {
 	[self systemControlTintChanged];
 }
 
@@ -268,7 +268,7 @@
 }
 
 - (void)endTrackingWithEvent:(NSEvent *)event {
-	return;
+	// Implemented by subclasses.
 }
 
 #pragma mark - State Change Application

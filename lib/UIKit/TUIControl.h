@@ -19,38 +19,38 @@
 typedef enum TUIControlEvents : NSUInteger {
 	
 	// A mouse down event in the control.
-	TUIControlEventMouseDown			= 1 <<  0,
+	TUIControlEventMouseDown			= 1 << 0,
 	
 	// A mouse down multi-click event in the control.
 	// -[NSEvent clickCount] will return > 1.
-	TUIControlEventMouseDownRepeat		= 1 <<  1,
+	TUIControlEventMouseDownRepeat		= 1 << 1,
 	
 	// A mouse drag within the bounds of the control.
-	TUIControlEventMouseDragInside		= 1 <<  2,
+	TUIControlEventMouseDragInside		= 1 << 2,
 	
 	// A mouse drag that leaves the bounds of the control.
-	TUIControlEventMouseDragOutside		= 1 <<  3,
+	TUIControlEventMouseDragOutside		= 1 << 3,
 	
 	/*
 	 Does not support:
-	 TUIControlEventMouseDragEnter		= 1 <<  4,
-	 TUIControlEventMouseDragExit		= 1 <<  5,
+	 TUIControlEventMouseDragEnter		= 1 << 4,
+	 TUIControlEventMouseDragExit		= 1 << 5,
 	 */
 	
 	// A mouse up event inside the control.
-	TUIControlEventMouseUpInside		= 1 <<  6,
+	TUIControlEventMouseUpInside		= 1 << 6,
 	
 	// A mouse up event outside the control.
-	TUIControlEventMouseUpOutside		= 1 <<  7,
+	TUIControlEventMouseUpOutside		= 1 << 7,
 	
 	// A canceled mouse up event, due to system reasons.
-	TUIControlEventMouseCancel			= 1 <<  8,
+	TUIControlEventMouseCancel			= 1 << 8,
 	
 	// A mouse hover begin event that a control is tracking.
-	TUIControlEventMouseHoverBegan		= 1 <<  9,
+	TUIControlEventMouseHoverBegan		= 1 << 9,
 	
 	// A mouse hover end event that a control stops tracking.
-	TUIControlEventMouseHoverEnded		= 1 <<  10,
+	TUIControlEventMouseHoverEnded		= 1 << 10,
 	
 	// A manipulated control caused to emit a series of different values.
 	TUIControlEventValueChanged			= 1 << 12,
@@ -242,6 +242,11 @@ typedef enum TUIControlState : NSUInteger {
 // the passed-in selector, target object, or TUIControlEvents bit
 // mask, and proceed as required.
 - (void)sendAction:(SEL)action to:(id)target forEvent:(NSEvent *)event;
+
+// TUIControl implements this method to send all action messages associated
+// with controlEvents, repeatedly invoking sendAction:to:forEvent: in the
+// process. The list of targets and actions it looks up is constructed from
+// prior invocations of addTarget:action:forControlEvents:.
 - (void)sendActionsForControlEvents:(TUIControlEvents)controlEvents;
 
 @end
