@@ -1,3 +1,7 @@
+**This fork of TwUI is feature-frozen.** Our feature work is focusing on
+[Rebel](https://github.com/blog/1300-rebel-a-framework-for-improving-appkit)
+instead.
+
 # TwUI
 
 TwUI is a hardware accelerated UI framework for Mac, inspired by UIKit.  It enables:

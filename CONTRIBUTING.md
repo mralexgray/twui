@@ -1,7 +1,9 @@
 We love that you're interested in contributing to this project!
 
 **This fork of TwUI is feature-frozen.** Only _critical bug fixes_ will be
-accepted, and most significant changes in behavior will be rejected.
+accepted, and most significant changes in behavior will be rejected. We'd prefer
+to focus feature work on
+[Rebel](https://github.com/blog/1300-rebel-a-framework-for-improving-appkit).
 
 ## Prefer Pull Requests
 
