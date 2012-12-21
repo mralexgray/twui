@@ -131,7 +131,14 @@ typedef enum TUIControlState : NSUInteger {
 // state of the TUIControl object. Note that the control can be in
 // more than one state, for example, both disabled and selected.
 @property (nonatomic, readonly) TUIControlState state;
+
+// Allows the control to accept the window-activating mouse click
+// as a mouse event as well. The default value is NO.
 @property (nonatomic, assign) BOOL acceptsFirstMouse;
+
+// If a control should animate changes between its previous state,
+// and its current state, set this property to YES. The default
+// value varies per control, but is initially NO.
 @property (nonatomic, assign) BOOL animateStateChange;
 
 // The value is YES if the receiver is tracking mouse events; otherwise NO.
@@ -150,6 +157,11 @@ typedef enum TUIControlState : NSUInteger {
 // sets and clears this state automatically when the mouse enters
 // and exits during tracking and when there is a mouse up.
 @property (nonatomic, assign, getter = isHighlighted) BOOL highlighted;
+
+// If a control sends TUIControlEventValueChanged actions, then the
+// value of this property is used to determine whether the action
+// is sent periodically on an interval, or discretely, only when the
+// action has been finalized. The default value is NO.
 @property (nonatomic, assign, getter = isContinuous) BOOL continuous;
 
 // These methods should be used to react to a state change.
@@ -162,7 +174,7 @@ typedef enum TUIControlState : NSUInteger {
 // If the user changed the global control tint (presumably from
 // within the System Preferences application), this method will be
 // called to allow the TUIControl object to adjust itself.
-- (void)systemControlTintChanged:(NSNotification *)note;
+- (void)systemControlTintChanged;
 
 // As your custom control changes a state property, it is
 // recommended the control assign the state using this method.

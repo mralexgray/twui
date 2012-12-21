@@ -18,6 +18,8 @@
 #import "TUIView+Accessibility.h"
 #import "TUINSView.h"
 
+#pragma mark - Target Action Container
+
 @interface TUIControlTargetAction : NSObject
 
 @property (nonatomic, unsafe_unretained) id target;
@@ -30,14 +32,16 @@
 @implementation TUIControlTargetAction
 @end
 
+#pragma mark - 
+
 @interface TUIControl () {
 	struct {
-		unsigned tracking:1;
-		unsigned acceptsFirstMouse:1;
-		unsigned disabled:1;
-		unsigned selected:1;
-		unsigned highlighted:1;
-		unsigned hover:1;
+		unsigned int tracking:1;
+		unsigned int acceptsFirstMouse:1;
+		unsigned int disabled:1;
+		unsigned int selected:1;
+		unsigned int highlighted:1;
+		unsigned int hover:1;
 	} _controlFlags;
 }
 
@@ -47,15 +51,18 @@
 
 @implementation TUIControl
 
+#pragma mark - Object Lifecycle
+
 - (id)initWithFrame:(CGRect)rect {
 	if ((self = [super initWithFrame:rect])) {
 		self.targetActions = [NSMutableArray array];
 		self.accessibilityTraits |= TUIAccessibilityTraitButton;
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self
-												 selector:@selector(systemControlTintChanged:)
-													 name:NSControlTintDidChangeNotification
-												   object:nil];
+		[[NSNotificationCenter defaultCenter] addObserverForName:NSControlTintDidChangeNotification
+														  object:nil queue:nil
+													  usingBlock:^(NSNotification *note) {
+														  [self systemControlTintChanged];
+													  }];
 	}
 	
 	return self;
@@ -67,7 +74,9 @@
 												  object:nil];
 }
 
-- (void)systemControlTintChanged:(NSNotification *)note {
+#pragma mark - Control State and Notifications
+
+- (void)systemControlTintChanged {
 	if (self.animateStateChange) {
 		[TUIView animateWithDuration:0.25f animations:^{
 			[self redraw];
@@ -95,6 +104,8 @@
 	
 	return actual;
 }
+
+#pragma mark - Properties
 
 - (BOOL)acceptsFirstMouse {
 	return _controlFlags.acceptsFirstMouse;
@@ -142,6 +153,8 @@
 	}];
 }
 
+#pragma mark - User Interaction
+
 - (void)mouseEntered:(NSEvent *)theEvent {
 	_controlFlags.hover = 1;
 	[self sendActionsForControlEvents:TUIControlEventMouseHoverBegan];
@@ -159,9 +172,11 @@
 		return;
 	[super mouseDown:event];
 	
-	_controlFlags.hover = 0;
-	[self sendActionsForControlEvents:TUIControlEventMouseHoverEnded];
-	[self setNeedsDisplay];
+	// The mouseExited: and mouseEntered: methods are swallowed.
+	if ([self eventInside:event]) {
+		_controlFlags.hover = 0;
+		[self sendActionsForControlEvents:TUIControlEventMouseHoverEnded];
+	}
 	
 	BOOL track = [self beginTrackingWithEvent:event];
 	[self applyStateChangeAnimated:self.animateStateChange block:^{
@@ -210,6 +225,7 @@
 		return;
 	[super mouseUp:event];
 	
+	// The mouseExited: and mouseEntered: methods are swallowed.
 	if ([self eventInside:event]) {
 		_controlFlags.hover = 1;
 		[self sendActionsForControlEvents:TUIControlEventMouseHoverBegan];
@@ -264,6 +280,8 @@
 	return;
 }
 
+#pragma mark - State Change Application
+
 - (void)applyStateChangeAnimated:(BOOL)animated block:(void (^)(void))block {
 	[self stateWillChange];
 	block();
@@ -286,6 +304,8 @@
 - (void)stateDidChange {
 	return;
 }
+
+#pragma mark - Target Action Interoptability
 
 - (void)addTarget:(id)target action:(SEL)action forControlEvents:(TUIControlEvents)controlEvents {
 	if (action != nil) {
@@ -365,5 +385,7 @@
 		}
 	}
 }
+
+#pragma mark -
 
 @end
