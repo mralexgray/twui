@@ -25,6 +25,8 @@
 
 @implementation TUISlider
 
+#pragma mark - Initialization
+
 + (TUIExtendedSliderCell *)sharedGraphicsRenderer {
 	static TUIExtendedSliderCell *_backingCell;
 	if(_backingCell == nil)
@@ -36,8 +38,8 @@
 	if((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [NSColor clearColor];
 		
-		self.maximumValue = 0.0f;
-		self.minimumValue = 1.0f;
+		self.minimumValue = 0.0f;
+		self.maximumValue = 1.0f;
 		self.value = 0.0f;
 		
 		self.knobThickness = 0.0f;
@@ -48,6 +50,8 @@
 	}
 	return self;
 }
+
+#pragma mark - Drawing
 
 - (void)drawRect:(CGRect)rect {
 	TUIExtendedSliderCell *slider = [TUISlider sharedGraphicsRenderer];
@@ -61,6 +65,7 @@
 	[slider setNumberOfTickMarks:self.numberOfTickMarks];
 	[slider setTickMarkPosition:(NSTickMarkPosition)self.drawTickMarksOnAlternateSide];
 	[slider setAllowsTickMarkValuesOnly:self.snapToTickMarks];
+	[slider calcDrawInfo:self.bounds];
 	
 	// Call appropriate drawing mechanisms.
 	if(self.drawTrack)
@@ -69,43 +74,40 @@
 		[self drawTrack:self.bounds];
 	
 	if(self.drawKnob)
-		self.drawKnob(self, self.bounds);
+		self.drawKnob(self, slider.knobRect);
 	else
-		[self drawKnob:self.bounds];
+		[self drawKnob:slider.knobRect];
 }
 
 - (void)drawTrack:(CGRect)rect {
 	TUIExtendedSliderCell *slider = [TUISlider sharedGraphicsRenderer];
-	[slider calcDrawInfo:self.bounds];
 	
-	CGPoint trackPoint = CGPointMake(NSMidX(slider.knobRect), NSMidY(slider.knobRect));
-	
-	if(self.tracking)
+	if(self.tracking) {
+		CGPoint trackPoint = CGPointMake(NSMidX(slider.knobRect), NSMidY(slider.knobRect));
 		[slider startTrackingAt:trackPoint inView:self.nsView];
-	
-	[slider drawWithFrame:rect inView:self.nsView];
-	
-	if(self.tracking)
+		[slider drawWithFrame:rect inView:self.nsView];
 		[slider stopTracking:trackPoint at:trackPoint inView:self.nsView mouseIsUp:YES];
+	} else {
+		[slider drawWithFrame:rect inView:self.nsView];
+	}
 }
 
 - (void)drawKnob:(CGRect)rect {
 	// NSSliderCell can't draw the knob seperately from the track.
+	// The rect passed in, however, is the correct knob rect.
 }
+
+#pragma mark - User Interaction
 
 - (CGFloat)sliderValueForPoint:(CGPoint)point {
 	TUIExtendedSliderCell *slider = [TUISlider sharedGraphicsRenderer];
-	
-	CGFloat value;
-	if(self.bounds.size.width > self.bounds.size.height)
-		value = ((self.bounds.size.width - point.x) / self.bounds.size.width) * (self.maximumValue - self.minimumValue) + self.minimumValue;
-	else
-		value = ((self.bounds.size.height - point.y) / self.bounds.size.height) * (self.maximumValue - self.minimumValue) + self.minimumValue;
+	[slider startTrackingAt:point inView:self.nsView];
+	[slider stopTracking:point at:point inView:self.nsView mouseIsUp:YES];
 	
 	if(self.snapToTickMarks)
-		return [slider closestTickMarkValueToValue:value];
+		return [slider closestTickMarkValueToValue:slider.doubleValue];
 	else
-		return value;
+		return slider.doubleValue;
 }
 
 - (BOOL)beginTrackingWithEvent:(NSEvent *)event {
@@ -114,6 +116,7 @@
 	
 	CGPoint entryPoint = [self convertFromWindowPoint:[(NSWindow *)self.nsWindow convertScreenToBase:[NSEvent mouseLocation]]];
 	self.value = [self sliderValueForPoint:entryPoint];
+	[self sendActionsForControlEvents:TUIControlEventValueChanged];
 	
 	return YES;
 }
@@ -124,13 +127,53 @@
 	
 	CGPoint entryPoint = [self convertFromWindowPoint:[(NSWindow *)self.nsWindow convertScreenToBase:[NSEvent mouseLocation]]];
 	self.value = [self sliderValueForPoint:entryPoint];
+	[self sendActionsForControlEvents:TUIControlEventValueChanged];
 	
 	return YES;
 }
 
+#pragma mark - Properties
+
+// Wrap the value between minimum and maximum values.
+- (void)setValue:(CGFloat)value {
+	if(value > _maximumValue)
+		value = _maximumValue;
+	if(value < _minimumValue)
+		value = _minimumValue;
+	
+	_value = value;
+	[self sendActionsForControlEvents:TUIControlEventValueChanged];
+}
+
+// Wrap the minimum value below the value and maximum values.
+- (void)setMinimumValue:(CGFloat)minimumValue {
+	if(_maximumValue < minimumValue)
+		_maximumValue = minimumValue;
+	if(_value < minimumValue)
+		_value = minimumValue;
+	
+	_minimumValue = minimumValue;
+	[self sendActionsForControlEvents:TUIControlEventValueChanged];
+}
+
+// Wrap the maximum value above the value and minimum values.
+- (void)setMaximumValue:(CGFloat)maximumValue {
+	if(_minimumValue > maximumValue)
+		_minimumValue = maximumValue;
+	if(_value > maximumValue)
+		_value = maximumValue;
+	
+	_maximumValue = maximumValue;
+	[self sendActionsForControlEvents:TUIControlEventValueChanged];
+}
+
+#pragma mark -
+
 @end
 
 @implementation TUIExtendedSliderCell
+
+#pragma mark - Calculation
 
 // Defer the drawing, but allow the cell to cache the rects.
 - (void)calcDrawInfo:(NSRect)rect {
@@ -152,5 +195,7 @@
 	self.knobRect = knobRect;
 	[super drawKnob:knobRect];
 }
+
+#pragma mark -
 
 @end
