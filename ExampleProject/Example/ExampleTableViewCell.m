@@ -51,11 +51,24 @@
 		// Configure the titles and title colors for the button states.
 		// If we don't configure anything for a state, it tries to default
 		// to the normal state's configured values, i.e. title color.
-		[self.actionButton setTitle:@"Select" forState:TUIControlStateNormal];
-		[self.actionButton setTitle:@"Deselect" forState:TUIControlStateSelected];
+		//[self.actionButton setTitle:@"Select" forState:TUIControlStateNormal];
+		//[self.actionButton setTitle:@"Deselect" forState:TUIControlStateSelected];
 		[self.actionButton setTitleColor:[NSColor colorWithCalibratedWhite:0.25 alpha:1.0] forState:TUIControlStateNormal];
 		[self.actionButton setTitleColor:[NSColor colorWithCalibratedWhite:0.15 alpha:1.0] forState:TUIControlStateHighlighted];
 		[self.actionButton setImage:[NSImage imageNamed:NSImageNameActionTemplate] forState:TUIControlStateNormal];
+		
+		// Configure the menu for the button.
+		self.actionButton.preferredMenuEdge = CGRectMinYEdge;
+		self.actionButton.menuType = TUIButtonMenuTypePullDown;
+		self.actionButton.synchronizeMenuTitle = NO;
+		self.actionButton.menu = [NSMenu new];
+		[self.actionButton.menu addItemWithTitle:@"Demo 1" action:nil keyEquivalent:@""];
+		[self.actionButton.menu addItemWithTitle:@"Demo 2" action:nil keyEquivalent:@""];
+		[self.actionButton.menu addItemWithTitle:@"Demo 3" action:nil keyEquivalent:@""];
+		[self.actionButton.menu addItemWithTitle:@"Demo 4" action:nil keyEquivalent:@""];
+		[self.actionButton.menu.itemArray enumerateObjectsUsingBlock:^(NSMenuItem *item, NSUInteger idx, BOOL *stop) {
+			item.enabled = YES;
+		}];
 		
 		// If the button is selected, and we're not selected, animate ourselves
 		// into the selected state, and scroll until we're visible on screen.

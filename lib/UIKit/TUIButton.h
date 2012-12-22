@@ -49,6 +49,13 @@ typedef enum TUIButtonType : NSUInteger {
 	TUIButtonTypeInline
 } TUIButtonType;
 
+typedef enum TUIButtonMenuType : NSUInteger {
+	TUIButtonMenuTypeNone,
+	TUIButtonMenuTypeHold,
+	TUIButtonMenuTypePullDown,
+	TUIButtonMenuTypePopUp
+} TUIButtonMenuType;
+
 // An instance of the TUIButton class implements a button on the screen.
 // A button intercepts touch events and sends an action message to a
 // target object when clicked. Methods for setting the target and action
@@ -103,9 +110,36 @@ typedef enum TUIButtonType : NSUInteger {
 // The titleLabel is the label on which the button text will be dynamically drawn.
 @property (nonatomic, strong, readonly) TUILabel *titleLabel;
 
-// Allows a pop up menu to be displayed if the button is pressed.
+// If the button displays a menu when pressed, the .menuType property
+// must be set to a value other than TUIButtonMenuTypeNone, and the .menu
+// property must be set to a menu with items. For information on possible
+// menu types, see TUIButtonMenuType. The default value is TUIButtonMenuTypeNone.
+@property (nonatomic, assign) TUIButtonMenuType menuType;
+
+// Set a popup or pulldown menu for the button. It is only used if the
+// .menuType property is set to something other than TUIButtonMenuTypeNone.
 // Setting this overrides selectable property as YES.
 @property (nonatomic, strong) NSMenu *menu;
+
+// The prefered edge to display the menu if the .menuType property is set
+// to either TUIButtonMenuTypeHold or TUIButtonMenuTypePullDown.
+// The default value is CGRectMinYEdge.
+@property (nonatomic, assign) CGRectEdge preferredMenuEdge;
+
+// The delay in seconds for the button to be pressed for the menu to be
+// popped up if the .menuType property is set to TUIButtonMenuTypeHold.
+// The default value is 1.0f (seconds).
+@property (nonatomic, assign) NSTimeInterval menuHoldDelay;
+
+// To allow the button's title to synchronize with the menu's highlighted
+// item's title, the value of this property must be set to YES.  If the
+// .menuType property is set to TUIButtonMenuTypePullDown, the first item
+// in the menu is used as the button's title. If the property is set to
+// TUIButtonMenuTypePopUp, the menu's highlighted item's title is synchronized
+// with the title of the button. In either of these modes, alternate state
+// button titles are ignored. This property does nothing for other modes.
+// The default value is YES.
+@property (nonatomic, assign) BOOL synchronizeMenuTitle;
 
 // This method is a convenience constructor for creating button objects
 // with specific configurations. It you subclass TUIButton, this method

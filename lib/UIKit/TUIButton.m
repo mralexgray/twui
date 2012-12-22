@@ -37,16 +37,17 @@
 
 @interface TUIButton () {
     struct {
-        unsigned buttonType:8;
-		unsigned wasHighlighted:1;
+        unsigned int buttonType:8;
+		unsigned int wasHighlighted:1;
 		
-		unsigned dimsInBackground:1;
-		unsigned adjustsImageWhenHighlighted:1;
-		unsigned adjustsImageWhenDisabled:1;
-		unsigned reversesTitleShadowWhenHighlighted:1;
+		unsigned int dimsInBackground:1;
+		unsigned int adjustsImageWhenHighlighted:1;
+		unsigned int adjustsImageWhenDisabled:1;
+		unsigned int reversesTitleShadowWhenHighlighted:1;
     } _buttonFlags;
 }
 
+@property (nonatomic, strong) NSTimer *menuHoldTimer;
 @property (nonatomic, strong) NSMutableDictionary *contentLookup;
 @property (nonatomic, strong, readwrite) TUILabel *titleLabel;
 
@@ -54,10 +55,10 @@
 
 @implementation TUIButton
 
-+ (NSButtonCell *)sharedGraphicsRenderer {
-	static NSButtonCell *_backingCell = nil;
++ (NSPopUpButtonCell *)sharedGraphicsRenderer {
+	static NSPopUpButtonCell *_backingCell = nil;
 	if(!_backingCell)
-		_backingCell = [NSButtonCell new];
+		_backingCell = [NSPopUpButtonCell new];
 	return _backingCell;
 }
 
@@ -74,6 +75,8 @@
 	if((self = [super initWithFrame:frame])) {
 		_buttonFlags.buttonType = TUIButtonTypeStandard;
 		self.imagePosition = TUIControlImagePositionOverlap;
+		self.menuHoldDelay = 1.0f;
+		self.synchronizeMenuTitle = YES;
 		
 		self.contentLookup = [NSMutableDictionary dictionary];
 		self.backgroundColor = [NSColor clearColor];
@@ -104,6 +107,7 @@
 		_titleLabel = [[TUILabel alloc] initWithFrame:CGRectZero];
 		_titleLabel.userInteractionEnabled = NO;
 		_titleLabel.backgroundColor = [NSColor clearColor];
+		_titleLabel.lineBreakMode = TUILineBreakModeTailTruncation;
 		
 		// We'll draw the title ourselves.
 		_titleLabel.hidden = YES;
@@ -161,7 +165,12 @@
 		bounds.origin.y -= 2.0f;
 		bounds.size.width += 10.0f;
 		bounds.origin.x -= 5.0f;
+	} else {
+		bounds = CGRectInset(bounds, 2.0f, 0.0f);
 	}
+	
+	if(self.menuType == TUIButtonMenuTypePopUp || self.menuType == TUIButtonMenuTypePullDown)
+		bounds.size.width -= 15.0f;
 	
 	return CGRectIntegral(bounds);
 }
@@ -182,6 +191,7 @@
 
 - (void)drawBackground:(CGRect)rect {
 	CGRect drawingRect = [self backgroundRectForBounds:self.bounds];
+	NSPopUpButtonCell *renderer = [TUIButton sharedGraphicsRenderer];
 	
 	// Secondary State holds either highlighted or selected states.
 	// Background State holds window background and disabled states.
@@ -203,14 +213,18 @@
 		graphicsStyle = NSCircularBezelStyle;
 	
 	// Set the graphics renderer states so CoreUI draws the button for us properly.
-	[[TUIButton sharedGraphicsRenderer] setHighlighted:secondaryState];
-	[[TUIButton sharedGraphicsRenderer] setEnabled:!backgroundState];
+	[renderer setHighlighted:secondaryState];
+	[renderer setEnabled:!backgroundState];
+	
+	// Configure the menu arrow which is also automatically drawn for us.
+	[renderer setArrowPosition:(self.menuType != TUIButtonMenuTypeNone && self.menuType != TUIButtonMenuTypeHold)];
+	[renderer setPullsDown:(self.menuType != TUIButtonMenuTypePopUp)];
 	
 	// If we found the proper graphics style, allow the graphics renderer to draw it.
 	// If not, draw it ourselves (Inline or Custom styles only, currently).
 	if(graphicsStyle != NSNotFound) {
-		[[TUIButton sharedGraphicsRenderer] setBezelStyle:graphicsStyle];
-		[[TUIButton sharedGraphicsRenderer] drawBezelWithFrame:drawingRect inView:self.nsView];
+		[renderer setBezelStyle:graphicsStyle];
+		[renderer drawBezelWithFrame:drawingRect inView:self.nsView];
 		
 	} else if(self.buttonType == TUIButtonTypeInline) {
 		CGFloat radius = self.bounds.size.height / 2;
@@ -287,7 +301,8 @@
 }
 
 - (void)drawRect:(CGRect)rect {
-	[self drawBackground:self.bounds];
+	[self drawBackground:[self backgroundRectForBounds:self.bounds]];
+	rect = [self contentRectForBounds:rect];
 	
 	CGRect imageRect = rect;
 	NSImage *image = self.currentImage;
@@ -307,7 +322,7 @@
 			imageRect = ABRectCenteredInRect((CGRect) { .size = image.size }, b);
 		}
 		
-		[self drawImage:imageRect];
+		[self drawImage:[self imageRectForContentRect:imageRect]];
 	}
 	
 	NSString *title = self.currentTitle;
@@ -323,7 +338,9 @@
 				b.origin.x = imageRect.size.width;
 		}
 		
-		[self drawTitle:b];
+		b.origin.x += 5.0f;
+		b.size.width -= 5.0f;
+		[self drawTitle:[self titleRectForContentRect:b]];
 	}
 }
 
@@ -333,24 +350,43 @@
 - (void)mouseDown:(NSEvent *)event {
 	[super mouseDown:event];
 	
-	if(self.menu) {
+	if(self.menu && self.menuType != TUIButtonMenuTypeNone) {
 		self.selected = YES;
-		[self.menu popUpMenuPositioningItem:nil atLocation:(CGPoint) {
-			.x = self.frameInNSView.origin.x + 6,
-			.y = self.frameInNSView.origin.y - 2
-		} inView:self.nsView];
+		self.menuHoldTimer = [NSTimer timerWithTimeInterval:fabs(self.menuHoldDelay)
+													 target:self
+												   selector:@selector(displayMenu:)
+												   userInfo:event
+													repeats:NO];
 		
-		// After this happens, we never get a mouseUp: in the TUINSView.
-		// This screws up _trackingView. For now, fake it with a fake mouseUp:.
-		[self.nsView performSelector:@selector(mouseUp:) withObject:event afterDelay:0.0];
-		[TUIView animateWithDuration:0.25f animations:^{
-			[self redraw];
-		}];
+		if(self.menuType == TUIButtonMenuTypeHold)
+			[[NSRunLoop currentRunLoop] addTimer:self.menuHoldTimer forMode:NSRunLoopCommonModes];
+		else
+			[self.menuHoldTimer fire];
 	}
+}
+
+- (void)displayMenu:(NSTimer *)timer {
+	NSEvent *event = timer.userInfo;
+	
+	// Allow NSPopUpButtonCell to handle menu semantics for us: smarter!
+	[[TUIButton sharedGraphicsRenderer] setMenu:self.menu];
+	[[TUIButton sharedGraphicsRenderer] setPreferredEdge:self.preferredMenuEdge];
+	[[TUIButton sharedGraphicsRenderer] performClickWithFrame:self.frameInNSView inView:self.nsView];
+	
+	// After this happens, we never get a mouseUp: in the TUINSView.
+	// This screws up _trackingView. For now, fake it with a fake mouseUp:.
+	[self.nsView performSelector:@selector(mouseUp:) withObject:event afterDelay:0.0];
+	[TUIView animateWithDuration:0.25f animations:^{
+		[self redraw];
+	}];
 }
 
 - (void)mouseUp:(NSEvent *)event {
 	[super mouseUp:event];
+	
+	[self.menuHoldTimer invalidate];
+	self.menuHoldTimer = nil;
+	
 	if(![self eventInside:event])
 		return;
 	
@@ -454,6 +490,18 @@
 }
 
 - (NSString *)currentTitle {
+	if(self.menu && self.synchronizeMenuTitle) {
+		if(self.menuType == TUIButtonMenuTypePopUp) {
+			NSMenuItem *titleItem = self.menu.highlightedItem;
+			if(!titleItem)
+				titleItem = [self.menu itemAtIndex:0];
+			
+			return titleItem.title;
+		} else if(self.menuType == TUIButtonMenuTypePullDown) {
+			return [[self.menu itemAtIndex:0] title];
+		}
+	}
+	
 	NSString *title = [self titleForState:self.state];
 	if(title == nil) {
 		if(self.state & TUIControlStateSelected)
