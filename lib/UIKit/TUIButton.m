@@ -346,7 +346,6 @@
 
 #pragma mark - Menu and Selected State
 
-// FIXME: Happens even for large clickCount.
 - (void)mouseDown:(NSEvent *)event {
 	[super mouseDown:event];
 	

@@ -51,8 +51,8 @@
 		// Configure the titles and title colors for the button states.
 		// If we don't configure anything for a state, it tries to default
 		// to the normal state's configured values, i.e. title color.
-		//[self.actionButton setTitle:@"Select" forState:TUIControlStateNormal];
-		//[self.actionButton setTitle:@"Deselect" forState:TUIControlStateSelected];
+		[self.actionButton setTitle:@"Select" forState:TUIControlStateNormal];
+		[self.actionButton setTitle:@"Deselect" forState:TUIControlStateSelected];
 		[self.actionButton setTitleColor:[NSColor colorWithCalibratedWhite:0.25 alpha:1.0] forState:TUIControlStateNormal];
 		[self.actionButton setTitleColor:[NSColor colorWithCalibratedWhite:0.15 alpha:1.0] forState:TUIControlStateHighlighted];
 		[self.actionButton setImage:[NSImage imageNamed:NSImageNameActionTemplate] forState:TUIControlStateNormal];
