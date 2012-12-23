@@ -114,10 +114,8 @@
 	if(!self.enabled)
 		return NO;
 	
-	CGPoint entryPoint = [self convertFromWindowPoint:[(NSWindow *)self.nsWindow convertScreenToBase:[NSEvent mouseLocation]]];
-	self.value = [self sliderValueForPoint:entryPoint];
-	[self sendActionsForControlEvents:TUIControlEventValueChanged];
-	
+	self.value = [self sliderValueForPoint:[self convertFromWindowPoint:event.locationInWindow]];
+	self.highlighted = YES;
 	return YES;
 }
 
@@ -125,11 +123,12 @@
 	if(!self.enabled)
 		return NO;
 	
-	CGPoint entryPoint = [self convertFromWindowPoint:[(NSWindow *)self.nsWindow convertScreenToBase:[NSEvent mouseLocation]]];
-	self.value = [self sliderValueForPoint:entryPoint];
-	[self sendActionsForControlEvents:TUIControlEventValueChanged];
-	
+	self.value = [self sliderValueForPoint:[self convertFromWindowPoint:event.locationInWindow]];
 	return YES;
+}
+
+- (void)endTrackingWithEvent:(NSEvent *)event {
+	self.highlighted = NO;
 }
 
 #pragma mark - Properties
