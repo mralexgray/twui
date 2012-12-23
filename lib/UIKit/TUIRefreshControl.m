@@ -155,17 +155,9 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 		
 		[TUIView animateWithDuration:0.4 animations:^{
 			self.activity.alpha = 0.0f;
-			[self.activity stopAnimating];
-			
-			if(self.tableView.headerView != nil) {
-				[self.tableView scrollRectToVisible:self.tableView.headerView.frame
-										   animated:YES];
-			} else {
-				[self.tableView scrollToRowAtIndexPath:self.tableView.indexPathForFirstRow
-									  atScrollPosition:TUITableViewScrollPositionTop
-											  animated:YES];
-			}
+			[self.tableView scrollToTopAnimated:YES];
 		} completion:^(BOOL finished) {
+			[self.activity stopAnimating];
 			[self.shapeLayer removeAllAnimations];
 			[self.arrowLayer removeAllAnimations];
 			
