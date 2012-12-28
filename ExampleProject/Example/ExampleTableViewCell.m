@@ -31,59 +31,6 @@
 		self.alternateHighlightColor = [NSColor colorWithCalibratedWhite:0.82 alpha:1.0f];
 		self.alternateSelectionColor = [NSColor colorWithCalibratedWhite:0.72 alpha:1.0f];
 		
-		// Create an actionButton that can be selected and deselected to
-		// trigger cell selection, to show off the overridden cell drawing.
-		_actionButton = [TUIButton buttonWithType:TUIButtonTypeTextured];
-		self.actionButton.frame = CGRectMake(5.0f, 0.0f, 75.0f, 22.0f);
-		self.actionButton.titleLabel.font = [NSFont systemFontOfSize:[NSFont systemFontSize]];
-		self.actionButton.selectable = YES;
-		self.actionButton.reversesTitleShadowWhenHighlighted = YES;
-		
-		// Configure the label's internal text renderer to draw the text
-		// centered and in the middle of the label with an embossed shadow.
-		self.actionButton.titleLabel.alignment = TUITextAlignmentCenter;
-		self.actionButton.titleLabel.renderer.verticalAlignment = TUITextVerticalAlignmentMiddle;
-		self.actionButton.titleLabel.renderer.shadowBlur = 1.0f;
-		self.actionButton.titleLabel.renderer.shadowColor = [NSColor highlightColor];
-		self.actionButton.titleLabel.renderer.shadowOffset = CGSizeMake(0, -1);
-		self.actionButton.imagePosition = TUIControlImagePositionLeft;
-		
-		// Configure the titles and title colors for the button states.
-		// If we don't configure anything for a state, it tries to default
-		// to the normal state's configured values, i.e. title color.
-		[self.actionButton setTitle:@"Select" forState:TUIControlStateNormal];
-		[self.actionButton setTitle:@"Deselect" forState:TUIControlStateSelected];
-		[self.actionButton setTitleColor:[NSColor colorWithCalibratedWhite:0.25 alpha:1.0] forState:TUIControlStateNormal];
-		[self.actionButton setTitleColor:[NSColor colorWithCalibratedWhite:0.15 alpha:1.0] forState:TUIControlStateHighlighted];
-		[self.actionButton setImage:[NSImage imageNamed:NSImageNameActionTemplate] forState:TUIControlStateNormal];
-		
-		// Configure the menu for the button.
-		self.actionButton.preferredMenuEdge = CGRectMinYEdge;
-		self.actionButton.menuType = TUIButtonMenuTypePullDown;
-		self.actionButton.synchronizeMenuTitle = NO;
-		self.actionButton.menu = [NSMenu new];
-		[self.actionButton.menu addItemWithTitle:@"Demo 1" action:nil keyEquivalent:@""];
-		[self.actionButton.menu addItemWithTitle:@"Demo 2" action:nil keyEquivalent:@""];
-		[self.actionButton.menu addItemWithTitle:@"Demo 3" action:nil keyEquivalent:@""];
-		[self.actionButton.menu addItemWithTitle:@"Demo 4" action:nil keyEquivalent:@""];
-		[self.actionButton.menu.itemArray enumerateObjectsUsingBlock:^(NSMenuItem *item, NSUInteger idx, BOOL *stop) {
-			item.enabled = YES;
-		}];
-		
-		// If the button is selected, and we're not selected, animate ourselves
-		// into the selected state, and scroll until we're visible on screen.
-		// If we're already selected, deselect ourselves. This state should be
-		// mirrored by the actionButton's state in -prepareForDisplay.
-		[self.actionButton addActionForControlEvents:TUIControlEventMouseUpInside block:^{
-			if(!self.selected) {
-				[self.tableView selectRowAtIndexPath:self.indexPath animated:YES
-									  scrollPosition:TUITableViewScrollPositionToVisible];
-			} else {
-				[self.tableView deselectRowAtIndexPath:self.indexPath animated:YES];
-			}
-		}];
-		[self addSubview:self.actionButton];
-		
 		// Instead of using a TUILabel or TUITextField, let's take a little
 		// course in the art of using a TUITextRenderer. It acts as a simple
 		// text -> layer rendering mechanism class with tie-ins to TUIView,
@@ -140,15 +87,10 @@
 	CGFloat textFieldLeft = CGRectGetWidth(self.bounds) - textFieldSize.width - padding;
 	self.textFieldContainer.frame = CGRectMake(textFieldLeft, 14, textFieldSize.width, textFieldSize.height);
 	
-	// Set the action button's frame.
-	CGRect buttonRect = self.actionButton.frame;
-	buttonRect.origin.y = floor((self.bounds.size.height / 2) - (buttonRect.size.height / 2));
-	self.actionButton.frame = buttonRect;
-	
 	// Set the text renderer's frame.
 	CGRect textRect = self.bounds;
-	textRect.origin.x += (padding * 2) + buttonRect.size.width;
-	textRect.size.width -= self.textFieldContainer.frame.size.width + buttonRect.size.width + (padding * 4);
+	textRect.origin.x += padding;
+	textRect.size.width -= self.textFieldContainer.frame.size.width + (padding * 3);
 	self.textRenderer.frame = textRect;
 }
 

@@ -161,13 +161,7 @@
 }
 
 - (CGRect)contentRectForBounds:(CGRect)bounds {
-	if(self.buttonType == TUIButtonTypeStandard) {
-		bounds.origin.y -= 2.0f;
-		bounds.size.width += 10.0f;
-		bounds.origin.x -= 5.0f;
-	} else {
-		bounds = CGRectInset(bounds, 2.0f, 0.0f);
-	}
+	bounds = CGRectInset(bounds, 2.0f, 0.0f);
 	
 	if(self.menuType == TUIButtonMenuTypePopUp || self.menuType == TUIButtonMenuTypePullDown)
 		bounds.size.width -= 15.0f;

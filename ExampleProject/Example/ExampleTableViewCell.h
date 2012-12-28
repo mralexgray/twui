@@ -20,8 +20,6 @@
 
 @property (nonatomic, copy) NSAttributedString *attributedString;
 
-@property (nonatomic, strong) TUIButton *actionButton;
-
 @property (nonatomic, strong) TUIView *textFieldContainer;
 @property (nonatomic, strong, readonly) TUITextRenderer *textRenderer;
 
