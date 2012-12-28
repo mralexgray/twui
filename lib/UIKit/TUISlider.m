@@ -29,8 +29,11 @@
 
 + (TUIExtendedSliderCell *)sharedGraphicsRenderer {
 	static TUIExtendedSliderCell *_backingCell;
-	if(_backingCell == nil)
+	static dispatch_once_t onceToken;
+	
+	dispatch_once(&onceToken, ^{
 		_backingCell = [TUIExtendedSliderCell new];
+	});
 	return _backingCell;
 }
 
@@ -58,6 +61,7 @@
 	
 	// Set up the graphics renderer before drawing. Although it
 	// seems like a burden, it takes around 25ms to configure.
+	[slider setControlSize:(NSControlSize)self.controlSize];
 	[slider setMinValue:self.minimumValue];
 	[slider setMaxValue:self.maximumValue];
 	[slider setDoubleValue:self.value];
