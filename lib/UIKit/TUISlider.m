@@ -46,7 +46,7 @@
 		self.numberOfTickMarks = 0;
 		
 		self.drawTickMarksOnAlternateSide = NO;
-		self.snapToTickMarks = NO;
+		self.snapsToTickMarks = NO;
 	}
 	return self;
 }
@@ -64,7 +64,7 @@
 	[slider setKnobThickness:self.knobThickness];
 	[slider setNumberOfTickMarks:self.numberOfTickMarks];
 	[slider setTickMarkPosition:(NSTickMarkPosition)self.drawTickMarksOnAlternateSide];
-	[slider setAllowsTickMarkValuesOnly:self.snapToTickMarks];
+	[slider setAllowsTickMarkValuesOnly:self.snapsToTickMarks];
 	[slider calcDrawInfo:self.bounds];
 	
 	// Call appropriate drawing mechanisms.
@@ -104,7 +104,7 @@
 	[slider startTrackingAt:point inView:self.nsView];
 	[slider stopTracking:point at:point inView:self.nsView mouseIsUp:YES];
 	
-	if(self.snapToTickMarks)
+	if(self.snapsToTickMarks)
 		return [slider closestTickMarkValueToValue:slider.doubleValue];
 	else
 		return slider.doubleValue;

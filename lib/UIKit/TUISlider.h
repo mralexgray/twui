@@ -47,7 +47,7 @@
 
 // The number of the slider's tick marks. The tick marks assigned to
 // the minimum and maximum values are included.
-@property (nonatomic, assign) NSInteger numberOfTickMarks;
+@property (nonatomic, assign) NSUInteger numberOfTickMarks;
 
 // Draw the tick marks on the alternate side of the slider - for a
 // vertical slider, this draws the ticks on the top, and for a horizontal
@@ -62,7 +62,7 @@
 // values are 0, 25, 50, 75, and 100. When users move the slider’s knob, it
 // jumps to the tick mark nearest the cursor when the mouse button is released.
 // This method has no effect if the slider has no tick marks.
-@property (nonatomic, assign) BOOL snapToTickMarks;
+@property (nonatomic, assign) BOOL snapsToTickMarks;
 
 // To customize the drawing of the slider, override both the drawTrack and
 // drawKnob blocks, or subclass and override the methods in the new class.
