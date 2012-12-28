@@ -148,10 +148,12 @@
 	_buttonFlags.reversesTitleShadowWhenHighlighted = flag;
 }
 
-#pragma mark - Overrides
+#pragma mark - Drawing Calculations
 
 - (CGRect)backgroundRectForBounds:(CGRect)bounds {
-	if(self.buttonType == TUIButtonTypeStandard) {
+	BOOL requiresMenu = (self.menuType == TUIButtonMenuTypePopUp || self.menuType == TUIButtonMenuTypePullDown);
+	
+	if(self.buttonType == TUIButtonTypeStandard && !requiresMenu) {
 		bounds.origin.y -= 2.0f;
 		bounds.size.width += 10.0f;
 		bounds.origin.x -= 5.0f;
@@ -161,19 +163,56 @@
 }
 
 - (CGRect)contentRectForBounds:(CGRect)bounds {
-	bounds = CGRectInset(bounds, 2.0f, 0.0f);
+	BOOL requiresMenu = (self.menuType == TUIButtonMenuTypePopUp ||
+						 self.menuType == TUIButtonMenuTypePullDown);
+	BOOL hidesArrows = (self.buttonType == TUIButtonTypeCircular ||
+						self.buttonType == TUIButtonTypeInline ||
+						self.buttonType == TUIButtonTypeRectangular);
 	
-	if(self.menuType == TUIButtonMenuTypePopUp || self.menuType == TUIButtonMenuTypePullDown)
+	bounds = CGRectInset(bounds, 2.0f, 0.0f);
+	if(requiresMenu && !hidesArrows)
 		bounds.size.width -= 15.0f;
 	
 	return CGRectIntegral(bounds);
 }
 
 - (CGRect)titleRectForContentRect:(CGRect)contentRect {
-	return contentRect;
+	CGRect imageRect = [self imageRectForContentRect:contentRect];
+	
+	CGRect b = contentRect;
+	if(self.imagePosition == TUIControlImagePositionBelow || self.imagePosition == TUIControlImagePositionAbove) {
+		b.size.height /= 2;
+		if(self.imagePosition == TUIControlImagePositionBelow)
+			b.origin.y += b.size.height;
+	} else if(self.imagePosition == TUIControlImagePositionLeft || self.imagePosition == TUIControlImagePositionRight) {
+		b.size.width = contentRect.size.width - imageRect.size.width;
+		if(self.imagePosition == TUIControlImagePositionLeft)
+			b.origin.x = imageRect.size.width;
+	}
+	
+	b.origin.x += 5.0f;
+	b.size.width -= 5.0f;
+	return b;
 }
 
 - (CGRect)imageRectForContentRect:(CGRect)contentRect {
+	NSImage *image = self.currentImage;
+	
+	if(![image isKindOfClass:[TUIStretchableImage class]]) {
+		CGRect b = contentRect;
+		if(self.imagePosition == TUIControlImagePositionBelow || self.imagePosition == TUIControlImagePositionAbove) {
+			b.size.height /= 2;
+			if(self.imagePosition == TUIControlImagePositionAbove)
+				b.origin.y += b.size.height;
+		} else if(self.imagePosition == TUIControlImagePositionLeft || self.imagePosition == TUIControlImagePositionRight) {
+			b.size.width = image.size.width;
+			if(self.imagePosition == TUIControlImagePositionRight)
+				b.origin.x = contentRect.size.width - image.size.width;
+		}
+		
+		contentRect = ABRectCenteredInRect((CGRect) { .size = image.size }, b);
+	}
+	
 	return contentRect;
 }
 
@@ -248,6 +287,7 @@
 }
 
 - (void)drawImage:(CGRect)rect {
+	NSPopUpButtonCell *renderer = [TUIButton sharedGraphicsRenderer];
 	
 	// Secondary State holds either highlighted or selected states.
 	// Background State holds window background and disabled states.
@@ -258,11 +298,11 @@
 	
 	// Using the shared graphics renderer, we get free template image drawing,
 	// along with disabled and highlighted state drawing.
-	[[TUIButton sharedGraphicsRenderer] setEnabled:!backgroundState];
-	[[TUIButton sharedGraphicsRenderer] setHighlighted:secondaryState];
-	[[TUIButton sharedGraphicsRenderer] drawImage:self.currentImage
-										withFrame:TUIEdgeInsetsInsetRect(rect, self.imageEdgeInsets)
-										   inView:self.nsView];
+	[renderer setEnabled:!backgroundState];
+	[renderer setHighlighted:secondaryState];
+	[renderer drawImage:self.currentImage
+			  withFrame:TUIEdgeInsetsInsetRect(rect, self.imageEdgeInsets)
+				 inView:self.nsView];
 }
 
 - (void)drawTitle:(CGRect)rect {
@@ -298,44 +338,11 @@
 	[self drawBackground:[self backgroundRectForBounds:self.bounds]];
 	rect = [self contentRectForBounds:rect];
 	
-	CGRect imageRect = rect;
-	NSImage *image = self.currentImage;
-	if(image != nil && self.imagePosition != TUIControlImagePositionNone) {
-		if(![image isKindOfClass:[TUIStretchableImage class]]) {
-			CGRect b = rect;
-			if(self.imagePosition == TUIControlImagePositionBelow || self.imagePosition == TUIControlImagePositionAbove) {
-				b.size.height /= 2;
-				if(self.imagePosition == TUIControlImagePositionAbove)
-					b.origin.y += b.size.height;
-			} else if(self.imagePosition == TUIControlImagePositionLeft || self.imagePosition == TUIControlImagePositionRight) {
-				b.size.width = image.size.width;
-				if(self.imagePosition == TUIControlImagePositionRight)
-					b.origin.x = rect.size.width - image.size.width;
-			}
-			
-			imageRect = ABRectCenteredInRect((CGRect) { .size = image.size }, b);
-		}
-		
-		[self drawImage:[self imageRectForContentRect:imageRect]];
-	}
+	if(self.currentImage != nil && self.imagePosition != TUIControlImagePositionNone)
+		[self drawImage:[self imageRectForContentRect:rect]];
 	
-	NSString *title = self.currentTitle;
-	if(title != nil && self.imagePosition != TUIControlImagePositionOnly) {
-		CGRect b = rect;
-		if(self.imagePosition == TUIControlImagePositionBelow || self.imagePosition == TUIControlImagePositionAbove) {
-			b.size.height /= 2;
-			if(self.imagePosition == TUIControlImagePositionBelow)
-				b.origin.y += b.size.height;
-		} else if(self.imagePosition == TUIControlImagePositionLeft || self.imagePosition == TUIControlImagePositionRight) {
-			b.size.width = rect.size.width - imageRect.size.width;
-			if(self.imagePosition == TUIControlImagePositionLeft)
-				b.origin.x = imageRect.size.width;
-		}
-		
-		b.origin.x += 5.0f;
-		b.size.width -= 5.0f;
-		[self drawTitle:[self titleRectForContentRect:b]];
-	}
+	if(self.currentTitle != nil && self.imagePosition != TUIControlImagePositionOnly)
+		[self drawTitle:[self titleRectForContentRect:rect]];
 }
 
 #pragma mark - Menu and Selected State
@@ -343,6 +350,8 @@
 - (void)mouseDown:(NSEvent *)event {
 	[super mouseDown:event];
 	
+	// If we have a menu, and we are to display it, then
+	// create a menu timer targeted at our displayMenu: method.
 	if(self.menu && self.menuType != TUIButtonMenuTypeNone) {
 		self.selected = YES;
 		self.menuHoldTimer = [NSTimer timerWithTimeInterval:fabs(self.menuHoldDelay)
@@ -351,6 +360,9 @@
 												   userInfo:event
 													repeats:NO];
 		
+		// If the mouse has to be held to show the menu, then
+		// add the timer to the run-loop with our menu delay.
+		// Otherwise, fire it and don't start it.
 		if(self.menuType == TUIButtonMenuTypeHold)
 			[[NSRunLoop currentRunLoop] addTimer:self.menuHoldTimer forMode:NSRunLoopCommonModes];
 		else
@@ -359,12 +371,13 @@
 }
 
 - (void)displayMenu:(NSTimer *)timer {
+	NSPopUpButtonCell *renderer = [TUIButton sharedGraphicsRenderer];
 	NSEvent *event = timer.userInfo;
 	
 	// Allow NSPopUpButtonCell to handle menu semantics for us: smarter!
-	[[TUIButton sharedGraphicsRenderer] setMenu:self.menu];
-	[[TUIButton sharedGraphicsRenderer] setPreferredEdge:self.preferredMenuEdge];
-	[[TUIButton sharedGraphicsRenderer] performClickWithFrame:self.frameInNSView inView:self.nsView];
+	[renderer setMenu:self.menu];
+	[renderer setPreferredEdge:self.preferredMenuEdge];
+	[renderer performClickWithFrame:self.frameInNSView inView:self.nsView];
 	
 	// After this happens, we never get a mouseUp: in the TUINSView.
 	// This screws up _trackingView. For now, fake it with a fake mouseUp:.
@@ -377,13 +390,20 @@
 - (void)mouseUp:(NSEvent *)event {
 	[super mouseUp:event];
 	
+	// Invalidate and remove the menu timer no matter what.
 	[self.menuHoldTimer invalidate];
 	self.menuHoldTimer = nil;
 	
-	if(![self eventInside:event])
+	// If the event was not inside our boundaries, or we are disabled,
+	// don't even handle the selection.
+	if(![self eventInside:event] || !self.enabled)
 		return;
 	
-	if((self.selectable || self.buttonType == TUIButtonTypeInline || self.menu) && self.enabled)
+	// If we have a menu, and are to display it, or we are selectable,
+	// then switch the selected property around (toggle it).
+	BOOL hasMenu = (self.menu && self.menuType != TUIButtonMenuTypeNone);
+	BOOL inlineButton = (self.buttonType == TUIButtonTypeInline);
+	if(self.selectable || inlineButton || hasMenu)
 		self.selected = !self.selected;
 }
 
