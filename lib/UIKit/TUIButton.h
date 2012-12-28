@@ -164,9 +164,11 @@ typedef enum TUIButtonMenuType : NSUInteger {
 - (CGRect)contentRectForBounds:(CGRect)bounds;
 
 // The rectangle in which the receiver draws its title.
+// Takes into account the .imagePosition property of TUIControl.
 - (CGRect)titleRectForContentRect:(CGRect)contentRect;
 
 // The rectangle in which the receiver draws its image.
+// Takes into account the .imagePosition property of TUIControl.
 - (CGRect)imageRectForContentRect:(CGRect)contentRect;
 
 // The methods below are the preferred way to handle custom button

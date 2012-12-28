@@ -374,10 +374,21 @@
 	NSPopUpButtonCell *renderer = [TUIButton sharedGraphicsRenderer];
 	NSEvent *event = timer.userInfo;
 	
+	// If we don't synchronize titles, the shared graphics renderer
+	// "swallows" the first item when in pull-down mode, so fake it.
+	NSMenuItem *placeholderItem = [[NSMenuItem alloc] initWithTitle:@"" action:nil keyEquivalent:@""];
+	if(!self.synchronizeMenuTitle && self.menuType == TUIButtonMenuTypePullDown)
+		[self.menu insertItem:placeholderItem atIndex:0];
+	
 	// Allow NSPopUpButtonCell to handle menu semantics for us: smarter!
 	[renderer setMenu:self.menu];
 	[renderer setPreferredEdge:self.preferredMenuEdge];
 	[renderer performClickWithFrame:self.frameInNSView inView:self.nsView];
+	
+	// Once the menu has been displayed, remove this fake item.
+	if(!self.synchronizeMenuTitle && self.menuType == TUIButtonMenuTypePullDown)
+		[self.menu removeItemAtIndex:0];
+	placeholderItem = nil;
 	
 	// After this happens, we never get a mouseUp: in the TUINSView.
 	// This screws up _trackingView. For now, fake it with a fake mouseUp:.
@@ -503,16 +514,16 @@
 }
 
 - (NSString *)currentTitle {
-	if(self.menu && self.synchronizeMenuTitle) {
-		if(self.menuType == TUIButtonMenuTypePopUp) {
-			NSMenuItem *titleItem = self.menu.highlightedItem;
-			if(!titleItem)
-				titleItem = [self.menu itemAtIndex:0];
-			
-			return titleItem.title;
-		} else if(self.menuType == TUIButtonMenuTypePullDown) {
-			return [[self.menu itemAtIndex:0] title];
-		}
+	BOOL hasMenu = (self.menu && self.synchronizeMenuTitle);
+	
+	if(hasMenu && (self.menuType == TUIButtonMenuTypePopUp)) {
+		NSMenuItem *titleItem = self.menu.highlightedItem;
+		if(!titleItem)
+			titleItem = [self.menu itemAtIndex:0];
+		
+		return titleItem.title;
+	} else if(hasMenu && (self.menuType == TUIButtonMenuTypePullDown)) {
+		return [[self.menu itemAtIndex:0] title];
 	}
 	
 	NSString *title = [self titleForState:self.state];

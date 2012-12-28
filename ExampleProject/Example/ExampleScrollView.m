@@ -31,17 +31,17 @@
 	CGFloat padding = 5.0f;
 	
 	NSUInteger buttonCount = 0;
-	NSUInteger buttonsPerRow = 5;
+	NSUInteger buttonsPerRow = 4;
 	
 	CGFloat designatedWidth = fabs((self.bounds.size.width / (CGFloat)buttonsPerRow) - (padding * 2));
 	CGFloat designatedHeight = 22.0f;
 	
 	#define buttonRow ((int)(buttonCount / buttonsPerRow))
 	#define buttonColumn ((int)(buttonCount % buttonsPerRow))
-	
+		
 #pragma mark -
 	
-	button = [TUIButton buttonWithType:TUIButtonTypeStandard];
+	button = [TUIButton buttonWithType:TUIButtonTypeRectangular];
 	button.frame = CGRectMake(((buttonColumn + 1) * padding) + (buttonColumn * designatedWidth),
 							  ((buttonRow + 1) * padding) + (buttonRow * designatedHeight),
 							  designatedWidth, designatedHeight);
@@ -61,8 +61,8 @@
 	[button setImage:[NSImage imageNamed:NSImageNameActionTemplate] forState:TUIControlStateNormal];
 	
 	button.preferredMenuEdge = CGRectMinYEdge;
-	button.menuType = TUIButtonMenuTypePopUp;
-	button.synchronizeMenuTitle = NO;
+	button.menuType = TUIButtonMenuTypePullDown;
+	button.synchronizeMenuTitle = YES;
 	
 	button.menu = [NSMenu new];
 	[button.menu addItemWithTitle:@"Demo 1" action:nil keyEquivalent:@""];
@@ -95,9 +95,9 @@
 	[button setTitleColor:[NSColor colorWithCalibratedWhite:0.15 alpha:1.0] forState:TUIControlStateHighlighted];
 	[button setImage:[NSImage imageNamed:NSImageNameActionTemplate] forState:TUIControlStateNormal];
 	
-	button.preferredMenuEdge = CGRectMinYEdge;
-	button.menuType = TUIButtonMenuTypePopUp;
-	button.synchronizeMenuTitle = NO;
+	button.preferredMenuEdge = CGRectMaxYEdge;
+	button.menuType = TUIButtonMenuTypePullDown;
+	button.synchronizeMenuTitle = YES;
 	
 	button.menu = [NSMenu new];
 	[button.menu addItemWithTitle:@"Demo 1" action:nil keyEquivalent:@""];
@@ -111,7 +111,7 @@
 	[self addSubview:button];
 	buttonCount++;
 	
-	button = [TUIButton buttonWithType:TUIButtonTypeCircular];
+	button = [TUIButton buttonWithType:TUIButtonTypeRectangular];
 	button.frame = CGRectMake(((buttonColumn + 1) * padding) + (buttonColumn * designatedWidth),
 							  ((buttonRow + 1) * padding) + (buttonRow * designatedHeight),
 							  designatedWidth, designatedHeight);
@@ -130,9 +130,9 @@
 	[button setTitleColor:[NSColor colorWithCalibratedWhite:0.15 alpha:1.0] forState:TUIControlStateHighlighted];
 	[button setImage:[NSImage imageNamed:NSImageNameActionTemplate] forState:TUIControlStateNormal];
 	
-	button.preferredMenuEdge = CGRectMinYEdge;
-	button.menuType = TUIButtonMenuTypePopUp;
-	button.synchronizeMenuTitle = NO;
+	button.preferredMenuEdge = CGRectMinXEdge;
+	button.menuType = TUIButtonMenuTypePullDown;
+	button.synchronizeMenuTitle = YES;
 	
 	button.menu = [NSMenu new];
 	[button.menu addItemWithTitle:@"Demo 1" action:nil keyEquivalent:@""];
@@ -146,7 +146,7 @@
 	[self addSubview:button];
 	buttonCount++;
 	
-	button = [TUIButton buttonWithType:TUIButtonTypeTextured];
+	button = [TUIButton buttonWithType:TUIButtonTypeRectangular];
 	button.frame = CGRectMake(((buttonColumn + 1) * padding) + (buttonColumn * designatedWidth),
 							  ((buttonRow + 1) * padding) + (buttonRow * designatedHeight),
 							  designatedWidth, designatedHeight);
@@ -165,9 +165,9 @@
 	[button setTitleColor:[NSColor colorWithCalibratedWhite:0.15 alpha:1.0] forState:TUIControlStateHighlighted];
 	[button setImage:[NSImage imageNamed:NSImageNameActionTemplate] forState:TUIControlStateNormal];
 	
-	button.preferredMenuEdge = CGRectMinYEdge;
-	button.menuType = TUIButtonMenuTypePopUp;
-	button.synchronizeMenuTitle = NO;
+	button.preferredMenuEdge = CGRectMaxXEdge;
+	button.menuType = TUIButtonMenuTypePullDown;
+	button.synchronizeMenuTitle = YES;
 	
 	button.menu = [NSMenu new];
 	[button.menu addItemWithTitle:@"Demo 1" action:nil keyEquivalent:@""];
@@ -181,75 +181,6 @@
 	[self addSubview:button];
 	buttonCount++;
 	
-	button = [TUIButton buttonWithType:TUIButtonTypeMinimal];
-	button.frame = CGRectMake(((buttonColumn + 1) * padding) + (buttonColumn * designatedWidth),
-							  ((buttonRow + 1) * padding) + (buttonRow * designatedHeight),
-							  designatedWidth, designatedHeight);
-	button.titleLabel.font = [NSFont systemFontOfSize:[NSFont systemFontSize]];
-	
-	button.titleLabel.alignment = TUITextAlignmentCenter;
-	button.titleLabel.renderer.verticalAlignment = TUITextVerticalAlignmentMiddle;
-	button.titleLabel.renderer.shadowBlur = 1.0f;
-	button.titleLabel.renderer.shadowColor = [NSColor highlightColor];
-	button.titleLabel.renderer.shadowOffset = CGSizeMake(0, -1);
-	button.imagePosition = TUIControlImagePositionLeft;
-	
-	[button setTitle:@"Select" forState:TUIControlStateNormal];
-	[button setTitle:@"Deselect" forState:TUIControlStateSelected];
-	[button setTitleColor:[NSColor colorWithCalibratedWhite:0.25 alpha:1.0] forState:TUIControlStateNormal];
-	[button setTitleColor:[NSColor colorWithCalibratedWhite:0.15 alpha:1.0] forState:TUIControlStateHighlighted];
-	[button setImage:[NSImage imageNamed:NSImageNameActionTemplate] forState:TUIControlStateNormal];
-	
-	button.preferredMenuEdge = CGRectMinYEdge;
-	button.menuType = TUIButtonMenuTypePopUp;
-	button.synchronizeMenuTitle = NO;
-	
-	button.menu = [NSMenu new];
-	[button.menu addItemWithTitle:@"Demo 1" action:nil keyEquivalent:@""];
-	[button.menu addItemWithTitle:@"Demo 2" action:nil keyEquivalent:@""];
-	[button.menu addItemWithTitle:@"Demo 3" action:nil keyEquivalent:@""];
-	[button.menu addItemWithTitle:@"Demo 4" action:nil keyEquivalent:@""];
-	[button.menu.itemArray enumerateObjectsUsingBlock:^(NSMenuItem *item, NSUInteger idx, BOOL *stop) {
-		item.enabled = YES;
-	}];
-	
-	[self addSubview:button];
-	buttonCount++;
-	
-	button = [TUIButton buttonWithType:TUIButtonTypeInline];
-	button.frame = CGRectMake(((buttonColumn + 1) * padding) + (buttonColumn * designatedWidth),
-							  ((buttonRow + 1) * padding) + (buttonRow * designatedHeight),
-							  designatedWidth, designatedHeight);
-	button.titleLabel.font = [NSFont systemFontOfSize:[NSFont systemFontSize]];
-	
-	button.titleLabel.alignment = TUITextAlignmentCenter;
-	button.titleLabel.renderer.verticalAlignment = TUITextVerticalAlignmentMiddle;
-	button.titleLabel.renderer.shadowBlur = 1.0f;
-	button.titleLabel.renderer.shadowColor = [NSColor highlightColor];
-	button.titleLabel.renderer.shadowOffset = CGSizeMake(0, -1);
-	button.imagePosition = TUIControlImagePositionLeft;
-	
-	[button setTitle:@"Select" forState:TUIControlStateNormal];
-	[button setTitle:@"Deselect" forState:TUIControlStateSelected];
-	[button setTitleColor:[NSColor colorWithCalibratedWhite:0.25 alpha:1.0] forState:TUIControlStateNormal];
-	[button setTitleColor:[NSColor colorWithCalibratedWhite:0.15 alpha:1.0] forState:TUIControlStateHighlighted];
-	[button setImage:[NSImage imageNamed:NSImageNameActionTemplate] forState:TUIControlStateNormal];
-	
-	button.preferredMenuEdge = CGRectMinYEdge;
-	button.menuType = TUIButtonMenuTypePopUp;
-	button.synchronizeMenuTitle = NO;
-	
-	button.menu = [NSMenu new];
-	[button.menu addItemWithTitle:@"Demo 1" action:nil keyEquivalent:@""];
-	[button.menu addItemWithTitle:@"Demo 2" action:nil keyEquivalent:@""];
-	[button.menu addItemWithTitle:@"Demo 3" action:nil keyEquivalent:@""];
-	[button.menu addItemWithTitle:@"Demo 4" action:nil keyEquivalent:@""];
-	[button.menu.itemArray enumerateObjectsUsingBlock:^(NSMenuItem *item, NSUInteger idx, BOOL *stop) {
-		item.enabled = YES;
-	}];
-	
-	[self addSubview:button];
-	buttonCount++;
 #pragma mark -
 	
 }
