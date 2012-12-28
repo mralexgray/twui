@@ -59,15 +59,16 @@
 - (void)drawRect:(CGRect)rect {
 	TUIExtendedSliderCell *slider = [TUISlider sharedGraphicsRenderer];
 	
-	// Set up the graphics renderer before drawing. Although it
-	// seems like a burden, it takes around 25ms to configure.
+	// Set up the graphics renderer before drawing. We need
+	// to do this each time because there's one renderer for
+	// all the sliders - not one per instance.
 	[slider setControlSize:(NSControlSize)self.controlSize];
 	[slider setMinValue:self.minimumValue];
 	[slider setMaxValue:self.maximumValue];
 	[slider setDoubleValue:self.value];
 	[slider setKnobThickness:self.knobThickness];
 	[slider setNumberOfTickMarks:self.numberOfTickMarks];
-	[slider setTickMarkPosition:(NSTickMarkPosition)self.drawTickMarksOnAlternateSide];
+	[slider setTickMarkPosition:(self.drawTickMarksOnAlternateSide ? NSTickMarkAbove : NSTickMarkBelow)];
 	[slider setAllowsTickMarkValuesOnly:self.snapsToTickMarks];
 	[slider calcDrawInfo:self.bounds];
 	
@@ -137,7 +138,7 @@
 
 #pragma mark - Properties
 
-// Wrap the value between minimum and maximum values.
+// Constrain the value between minimum and maximum values.
 - (void)setValue:(CGFloat)value {
 	if(value > _maximumValue)
 		value = _maximumValue;
@@ -148,7 +149,7 @@
 	[self sendActionsForControlEvents:TUIControlEventValueChanged];
 }
 
-// Wrap the minimum value below the value and maximum values.
+// Constrain the minimum value below the value and maximum values.
 - (void)setMinimumValue:(CGFloat)minimumValue {
 	if(_maximumValue < minimumValue)
 		_maximumValue = minimumValue;
@@ -159,7 +160,7 @@
 	[self sendActionsForControlEvents:TUIControlEventValueChanged];
 }
 
-// Wrap the maximum value above the value and minimum values.
+// Constrain the maximum value above the value and minimum values.
 - (void)setMaximumValue:(CGFloat)maximumValue {
 	if(_minimumValue > maximumValue)
 		_minimumValue = maximumValue;
@@ -168,6 +169,22 @@
 	
 	_maximumValue = maximumValue;
 	[self sendActionsForControlEvents:TUIControlEventValueChanged];
+}
+
+#pragma mark - Control Sizing
+
+- (CGSize)sizeThatFits:(CGSize)size {
+	return [[TUISlider sharedGraphicsRenderer] cellSizeForBounds:(CGRect) { .size = size }];
+}
+
+- (void)sizeToFit {
+	CGSize minimumSize = [[TUISlider sharedGraphicsRenderer] cellSize];
+	CGRect minimumRect = (CGRect) {
+		.origin = self.frame.origin,
+		.size = minimumSize
+	};
+	
+	self.frame = ABRectCenteredInRect(minimumRect, self.frame);
 }
 
 #pragma mark -

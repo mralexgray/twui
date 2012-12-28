@@ -117,9 +117,9 @@ typedef enum TUIControlState : NSUInteger {
 // by the .controlSize property of a control, and only if the
 // TUIControl subclass takes this property into account.
 //
-// NSRegularControlSize		- The control is regularly sized.
-// NSSmallControlSize		- The control has a smaller size.
-// NSMiniControlSize		- The control has a further smaller size.
+// TUIControlSizeRegular	- The control is regularly sized.
+// TUIControlSizeSmall		- The control has a smaller size.
+// TUIControlSizeMini		- The control has a further smaller size.
 typedef enum TUIControlSize : NSUInteger {
     TUIControlSizeRegular	= NSRegularControlSize,
     TUIControlSizeSmall		= NSSmallControlSize,
