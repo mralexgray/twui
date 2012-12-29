@@ -104,7 +104,7 @@
 	if (_controlFlags.hover)
 		actual |= TUIControlStateHover;
 	if (_controlFlags.tracking || _controlFlags.highlighted)
-		actual |= TUIControlStateHighlighted;
+		actual = (actual & ~TUIControlStateHover) | TUIControlStateHighlighted;
 	if (_controlFlags.selected)
 		actual |= TUIControlStateSelected;
 	
