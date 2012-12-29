@@ -74,9 +74,11 @@
 - (id)initWithFrame:(CGRect)frame {
 	if((self = [super initWithFrame:frame])) {
 		_buttonFlags.buttonType = TUIButtonTypeStandard;
+		
 		self.imagePosition = TUIControlImagePositionOverlap;
 		self.menuHoldDelay = 1.0f;
 		self.synchronizeMenuTitle = YES;
+		self.preferredMenuEdge = CGRectMinYEdge;
 		
 		self.contentLookup = [NSMutableDictionary dictionary];
 		self.backgroundColor = [NSColor clearColor];
@@ -171,7 +173,7 @@
 	
 	bounds = CGRectInset(bounds, 2.0f, 0.0f);
 	if(requiresMenu && !hidesArrows)
-		bounds.size.width -= 15.0f;
+		bounds.size.width -= 16.0f;
 	
 	return CGRectIntegral(bounds);
 }
@@ -217,7 +219,26 @@
 }
 
 - (CGSize)sizeThatFits:(CGSize)size {
-	return self.currentImage.size;
+	CGSize totalSize = CGSizeZero;
+	
+	NSImage *image = self.currentImage;
+	if(image != nil) {
+		totalSize.height += image.size.height;
+		totalSize.width += image.size.width;
+	}
+	
+	NSString *title = self.currentTitle;
+	if(title != nil && ![title isEqualToString:@""]) {
+		self.titleLabel.text = title;
+		totalSize.width += [self.titleLabel sizeThatFits:size].width;
+	}
+	
+	if(self.menuType == TUIButtonMenuTypePullDown || self.menuType == TUIButtonMenuTypePopUp)
+		totalSize.width += 16.0f;
+	
+	// Padding of 10px.
+	totalSize.width += 10.0f;
+	return totalSize;
 }
 
 #pragma mark - Drawing

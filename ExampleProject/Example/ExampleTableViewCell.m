@@ -51,6 +51,21 @@
 		// be set before it can be drawn, we do that in drawRect: below.
 		self.textRenderers = @[_textRenderer];
 		
+		self.button = [TUIButton buttonWithType:TUIButtonTypeTextured];
+		self.button.menuType = TUIButtonMenuTypePullDown;
+		self.button.synchronizeMenuTitle = NO;
+		self.button.menu = [NSMenu new];
+		[self.button.menu addItemWithTitle:@"Email" action:nil keyEquivalent:@""];
+		[self.button.menu addItemWithTitle:@"Chat" action:nil keyEquivalent:@""];
+		[self.button.menu addItemWithTitle:@"Save" action:nil keyEquivalent:@""];
+		[self.button.menu addItemWithTitle:@"Copy" action:nil keyEquivalent:@""];
+		[[self.button.menu itemAtIndex:0] setImage:[NSImage imageNamed:NSImageNameStatusAvailable]];
+		[[self.button.menu itemAtIndex:1] setImage:[NSImage imageNamed:NSImageNameStatusPartiallyAvailable]];
+		[[self.button.menu itemAtIndex:2] setImage:[NSImage imageNamed:NSImageNameStatusUnavailable]];
+		[[self.button.menu itemAtIndex:3] setImage:[NSImage imageNamed:NSImageNameStatusNone]];
+		[self.button setImage:[NSImage imageNamed:NSImageNameActionTemplate] forState:TUIControlStateNormal];
+		[self addSubview:self.button];
+		
 		// Add in a standard Cocoa text field. We have to enclose this within
 		// a TUIViewNSViewContainer, and we MUST adjust only the frame of that
 		// container, and not the text field's itself.
@@ -87,10 +102,13 @@
 	CGFloat textFieldLeft = CGRectGetWidth(self.bounds) - textFieldSize.width - padding;
 	self.textFieldContainer.frame = CGRectMake(textFieldLeft, 14, textFieldSize.width, textFieldSize.height);
 	
+	CGSize fittingSize = [self.button sizeThatFits:self.bounds.size];
+	self.button.frame = CGRectMake(5, 5, fittingSize.width, self.bounds.size.height - 5);
+	
 	// Set the text renderer's frame.
 	CGRect textRect = self.bounds;
-	textRect.origin.x += padding;
-	textRect.size.width -= self.textFieldContainer.frame.size.width + (padding * 3);
+	textRect.origin.x += (padding * 2) + fittingSize.width;
+	textRect.size.width -= self.textFieldContainer.frame.size.width + fittingSize.width + (padding * 4);
 	self.textRenderer.frame = textRect;
 }
 
