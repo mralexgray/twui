@@ -224,6 +224,11 @@ typedef enum TUIControlSize : NSUInteger {
 // opts to cancel it - only when the user cancels the tracking.
 - (void)endTrackingWithEvent:(NSEvent *)event;
 
+// When control tracking ends, this method is called to allow
+// the control to clean up. It is called when the control or the
+// system cancels mouse tracking (view heirarchy changes, etc).
+- (void)cancelTrackingWithEvent:(NSEvent *)event;
+
 // Add target/action for a particular event. You can call this
 // multiple times and you can specify multiple target/actions
 // for a particular event. Passing in nil as the target goes

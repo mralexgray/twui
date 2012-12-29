@@ -245,7 +245,7 @@
 			_controlFlags.tracking = 0;
 		}];
 		
-		[self endTrackingWithEvent:nil];
+		[self cancelTrackingWithEvent:nil];
 		[self setNeedsDisplay];
 	}
 }
@@ -256,7 +256,18 @@
 			_controlFlags.tracking = 0;
 		}];
 		
-		[self endTrackingWithEvent:nil];
+		[self cancelTrackingWithEvent:nil];
+		[self setNeedsDisplay];
+	}
+}
+
+- (void)windowDidResignKey {
+	if (!_controlFlags.disabled && _controlFlags.tracking) {
+		[self applyStateChangeAnimated:self.animateStateChange block:^{
+			_controlFlags.tracking = 0;
+		}];
+		
+		[self cancelTrackingWithEvent:nil];
 		[self setNeedsDisplay];
 	}
 }
@@ -271,6 +282,10 @@
 
 - (void)endTrackingWithEvent:(NSEvent *)event {
 	// Implemented by subclasses.
+}
+
+- (void)cancelTrackingWithEvent:(NSEvent *)event {
+	return;
 }
 
 #pragma mark - State Change Application
@@ -297,6 +312,7 @@
 - (void)stateDidChange {
 	return;
 }
+
 
 #pragma mark - Target Action Interoptability
 
