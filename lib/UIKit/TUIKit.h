@@ -47,6 +47,7 @@
 #import "TUIResponder.h"
 #import "TUIScrollView.h"
 #import "TUIScrollView+TUIBridgedScrollView.h"
+#import "TUISlider.h"
 #import "TUIStretchableImage.h"
 #import "TUIStringDrawing.h"
 #import "TUITableView+Additions.h"

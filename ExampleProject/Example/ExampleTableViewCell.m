@@ -42,6 +42,9 @@
 		_textRenderer.shadowColor = [NSColor whiteColor];
 		_textRenderer.shadowOffset = CGSizeMake(0, 1);
 		
+		self.slider = [[TUISlider alloc] initWithFrame:CGRectMake(0, 0, 150, self.bounds.size.height)];
+		[self addSubview:self.slider];
+		
 		// Add the text renderer to the view so events get routed to it
 		// properly. Text selection, dictionary popup, etc should just work.
 		// You can add more than one.
@@ -104,6 +107,8 @@
 	
 	CGSize fittingSize = [self.button sizeThatFits:self.bounds.size];
 	self.button.frame = CGRectMake(5, 5, fittingSize.width, self.bounds.size.height - 5);
+	
+	self.slider.frame = CGRectMake(0, 0, self.slider.bounds.size.width, self.bounds.size.height);
 	
 	// Set the text renderer's frame.
 	CGRect textRect = self.bounds;

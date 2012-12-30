@@ -56,6 +56,8 @@
 - (id)initWithFrame:(CGRect)rect {
 	if ((self = [super initWithFrame:rect])) {
 		self.periodicDelay = 0.075f;
+		self.controlSize = TUIControlSizeRegular;
+		
 		self.targetActions = [NSMutableArray array];
 		self.accessibilityTraits |= TUIAccessibilityTraitButton;
 		
@@ -102,7 +104,7 @@
 	if (_controlFlags.hover)
 		actual |= TUIControlStateHover;
 	if (_controlFlags.tracking || _controlFlags.highlighted)
-		actual |= TUIControlStateHighlighted;
+		actual = (actual & ~TUIControlStateHover) | TUIControlStateHighlighted;
 	if (_controlFlags.selected)
 		actual |= TUIControlStateSelected;
 	
@@ -243,7 +245,7 @@
 			_controlFlags.tracking = 0;
 		}];
 		
-		[self endTrackingWithEvent:nil];
+		[self cancelTrackingWithEvent:nil];
 		[self setNeedsDisplay];
 	}
 }
@@ -254,7 +256,18 @@
 			_controlFlags.tracking = 0;
 		}];
 		
-		[self endTrackingWithEvent:nil];
+		[self cancelTrackingWithEvent:nil];
+		[self setNeedsDisplay];
+	}
+}
+
+- (void)windowDidResignKey {
+	if (!_controlFlags.disabled && _controlFlags.tracking) {
+		[self applyStateChangeAnimated:self.animateStateChange block:^{
+			_controlFlags.tracking = 0;
+		}];
+		
+		[self cancelTrackingWithEvent:nil];
 		[self setNeedsDisplay];
 	}
 }
@@ -269,6 +282,10 @@
 
 - (void)endTrackingWithEvent:(NSEvent *)event {
 	// Implemented by subclasses.
+}
+
+- (void)cancelTrackingWithEvent:(NSEvent *)event {
+	return;
 }
 
 #pragma mark - State Change Application
@@ -295,6 +312,7 @@
 - (void)stateDidChange {
 	return;
 }
+
 
 #pragma mark - Target Action Interoptability
 

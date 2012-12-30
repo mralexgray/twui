@@ -134,6 +134,19 @@ typedef enum TUIControlImagePosition : NSUInteger {
 	TUIControlImagePositionOverlap	= 1000
 } TUIControlImagePosition;
 
+// These constants specify a cell’s size. These constants are used
+// by the .controlSize property of a control, and only if the
+// TUIControl subclass takes this property into account.
+//
+// TUIControlSizeRegular	- The control is regularly sized.
+// TUIControlSizeSmall		- The control has a smaller size.
+// TUIControlSizeMini		- The control has a further smaller size.
+typedef enum TUIControlSize : NSUInteger {
+    TUIControlSizeRegular	= NSRegularControlSize,
+    TUIControlSizeSmall		= NSSmallControlSize,
+    TUIControlSizeMini		= NSMiniControlSize
+} TUIControlSize;
+
 // TUIControl is the base class for control objects such as
 // buttons and sliders that convey user intent to the application.
 // You cannot use the TUIControl class directly to instantiate
@@ -190,6 +203,11 @@ typedef enum TUIControlImagePosition : NSUInteger {
 // between each sent action. The default value is 75ms (0.075 seconds).
 @property (nonatomic, assign) NSTimeInterval periodicDelay;
 
+// The size of a static control. Changing the control size does
+// not change its font. Use the systemFontSizeForControlSize: class
+// method of NSFont to obtain the system font based on size.
+@property (nonatomic, assign) TUIControlSize controlSize;
+
 // These methods should be used to react to a state change.
 // The default method implementation does nothing, but if you
 // are subclassing a subclass of TUIControl, such as TUIButton,
@@ -226,6 +244,11 @@ typedef enum TUIControlImagePosition : NSUInteger {
 // the control to clean up. It is NOT called when the control
 // opts to cancel it - only when the user cancels the tracking.
 - (void)endTrackingWithEvent:(NSEvent *)event;
+
+// When control tracking ends, this method is called to allow
+// the control to clean up. It is called when the control or the
+// system cancels mouse tracking (view heirarchy changes, etc).
+- (void)cancelTrackingWithEvent:(NSEvent *)event;
 
 // Add target/action for a particular event. You can call this
 // multiple times and you can specify multiple target/actions
