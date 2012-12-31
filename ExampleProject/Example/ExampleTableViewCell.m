@@ -55,7 +55,8 @@
 		self.textRenderers = @[_textRenderer];
 		
 		self.button = [TUIButton buttonWithType:TUIButtonTypeTextured];
-		self.button.menuType = TUIButtonMenuTypePullDown;
+		self.button.imageEdgeInsets = TUIEdgeInsetsMake(0, 0, 0, 1);
+		self.button.menuType = TUIButtonMenuTypeHold;
 		self.button.synchronizeMenuTitle = NO;
 		self.button.menu = [NSMenu new];
 		[self.button.menu addItemWithTitle:@"Email" action:nil keyEquivalent:@""];
@@ -106,14 +107,17 @@
 	self.textFieldContainer.frame = CGRectMake(textFieldLeft, 14, textFieldSize.width, textFieldSize.height);
 	
 	CGSize fittingSize = [self.button sizeThatFits:self.bounds.size];
-	self.button.frame = CGRectMake(5, 5, fittingSize.width, self.bounds.size.height - 5);
+	CGRect buttonRect = CGRectMake(5, (self.bounds.size.height / 2 - fittingSize.height / 2), fittingSize.width, fittingSize.height);
 	
-	self.slider.frame = CGRectMake(0, 0, self.slider.bounds.size.width, self.bounds.size.height);
+	self.button.frame = ABRectRoundOrigin(buttonRect);
+	self.slider.frame = CGRectMake(CGRectGetMaxX(self.button.frame) + 5, 5,
+								   self.slider.bounds.size.width, self.bounds.size.height - 5);
+	fittingSize.width += self.slider.frame.size.width + (padding * 3);
 	
 	// Set the text renderer's frame.
 	CGRect textRect = self.bounds;
-	textRect.origin.x += (padding * 2) + fittingSize.width;
-	textRect.size.width -= self.textFieldContainer.frame.size.width + fittingSize.width + (padding * 4);
+	textRect.origin.x += fittingSize.width;
+	textRect.size.width -= self.textFieldContainer.frame.size.width + fittingSize.width + (padding * 2);
 	self.textRenderer.frame = textRect;
 }
 

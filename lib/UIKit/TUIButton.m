@@ -24,6 +24,7 @@
 #import "TUINSView.h"
 #import "TUIStretchableImage.h"
 #import "TUITextRenderer.h"
+#import "TUIStringDrawing.h"
 
 @interface TUIButtonContent : NSObject
 
@@ -219,25 +220,65 @@
 }
 
 - (CGSize)sizeThatFits:(CGSize)size {
+	NSPopUpButtonCell *renderer = [TUIButton sharedGraphicsRenderer];
+	
+	// Prepare the calculation variables.
 	CGSize totalSize = CGSizeZero;
+	CGFloat maximumHeight = size.height;
+	CGFloat imageWidth = 0.0f;
+	CGFloat titleWidth = 0.0f;
 	
+	// Determine the proper graphics style if we're using one.
+	NSBezelStyle graphicsStyle = NSNotFound;
+	if(self.buttonType == TUIButtonTypeStandard)
+		graphicsStyle = NSRoundedBezelStyle;
+	else if(self.buttonType == TUIButtonTypeMinimal)
+		graphicsStyle = NSRoundRectBezelStyle;
+	else if(self.buttonType == TUIButtonTypeTextured)
+		graphicsStyle = NSTexturedRoundedBezelStyle;
+	else if(self.buttonType == TUIButtonTypeRectangular)
+		graphicsStyle = NSSmallSquareBezelStyle;
+	else if(self.buttonType == TUIButtonTypeCircular)
+		graphicsStyle = NSCircularBezelStyle;
+	
+	// If we found a graphics style, get the maximum button height
+	// of the graphics style (NSButtons are height-constrained).
+	if(graphicsStyle != NSNotFound) {
+		[renderer setBezelStyle:graphicsStyle];
+		[renderer setControlSize:NSRegularControlSize];
+		maximumHeight = renderer.cellSize.height;
+	}
+	
+	// If we have an image, get its width.
 	NSImage *image = self.currentImage;
-	if(image != nil) {
-		totalSize.height += image.size.height;
-		totalSize.width += image.size.width;
-	}
+	if(image != nil)
+		imageWidth = image.size.width;
 	
+	// If we have a title, get its width.
 	NSString *title = self.currentTitle;
-	if(title != nil && ![title isEqualToString:@""]) {
-		self.titleLabel.text = title;
-		totalSize.width += [self.titleLabel sizeThatFits:size].width;
-	}
+	if(title != nil && ![title isEqualToString:@""])
+		titleWidth += [title ab_sizeWithFont:self.titleLabel.font constrainedToSize:size].width;
 	
+	// Accounting for the button's image positon, calculate its width.
+	if(self.imagePosition == TUIControlImagePositionLeft || self.imagePosition == TUIControlImagePositionRight)
+		totalSize.width += imageWidth + titleWidth;
+	else if(self.imagePosition == TUIControlImagePositionNone)
+		totalSize.width += titleWidth;
+	else if(self.imagePosition == TUIControlImagePositionOnly)
+		totalSize.width += imageWidth;
+	else
+		totalSize.width += MAX(imageWidth, titleWidth);
+	
+	// If we show a menu arrow, add 18px for the arrow, or 6px for the edges.
 	if(self.menuType == TUIButtonMenuTypePullDown || self.menuType == TUIButtonMenuTypePopUp)
-		totalSize.width += 16.0f;
+		totalSize.width += 18.0f;
+	else
+		totalSize.width += 6.0f;
 	
-	// Padding of 10px.
-	totalSize.width += 10.0f;
+	// Apply the maximum height and return the total size.
+	totalSize.width += 1.0f;
+	totalSize.height = maximumHeight;
+	
 	return totalSize;
 }
 
@@ -269,6 +310,7 @@
 	// Set the graphics renderer states so CoreUI draws the button for us properly.
 	[renderer setHighlighted:secondaryState];
 	[renderer setEnabled:!backgroundState];
+	[renderer setControlSize:(NSControlSize)self.controlSize];
 	
 	// Configure the menu arrow which is also automatically drawn for us.
 	[renderer setArrowPosition:(self.menuType != TUIButtonMenuTypeNone && self.menuType != TUIButtonMenuTypeHold)];
@@ -281,7 +323,13 @@
 		[renderer drawBezelWithFrame:drawingRect inView:self.nsView];
 		
 	} else if(self.buttonType == TUIButtonTypeInline) {
-		CGFloat radius = self.bounds.size.height / 2;
+		drawingRect = ABRectCenteredInRect((CGRect) {
+			.origin = drawingRect.origin,
+			.size.width = drawingRect.size.width,
+			.size.height = 22.0f
+		}, drawingRect);
+		CGFloat radius = drawingRect.size.height / 2;
+		
 		NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:drawingRect xRadius:radius yRadius:radius];
 		
 		if(secondaryState) {
@@ -392,22 +440,24 @@
 }
 
 - (void)displayMenu:(NSTimer *)timer {
+	BOOL needsPlaceholder = (self.menuType == TUIButtonMenuTypePullDown || self.menuType == TUIButtonMenuTypeHold);
 	NSPopUpButtonCell *renderer = [TUIButton sharedGraphicsRenderer];
 	NSEvent *event = timer.userInfo;
 	
 	// If we don't synchronize titles, the shared graphics renderer
 	// "swallows" the first item when in pull-down mode, so fake it.
 	NSMenuItem *placeholderItem = [[NSMenuItem alloc] initWithTitle:@"" action:nil keyEquivalent:@""];
-	if(!self.synchronizeMenuTitle && self.menuType == TUIButtonMenuTypePullDown)
+	if(!self.synchronizeMenuTitle && needsPlaceholder)
 		[self.menu insertItem:placeholderItem atIndex:0];
 	
 	// Allow NSPopUpButtonCell to handle menu semantics for us: smarter!
 	[renderer setMenu:self.menu];
 	[renderer setPreferredEdge:self.preferredMenuEdge];
+	[renderer setControlSize:(NSControlSize)self.controlSize];
 	[renderer performClickWithFrame:self.frameInNSView inView:self.nsView];
 	
 	// Once the menu has been displayed, remove this fake item.
-	if(!self.synchronizeMenuTitle && self.menuType == TUIButtonMenuTypePullDown)
+	if(!self.synchronizeMenuTitle && needsPlaceholder)
 		[self.menu removeItemAtIndex:0];
 	placeholderItem = nil;
 	
