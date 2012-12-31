@@ -16,7 +16,7 @@
 
 #import <CoreServices/CoreServices.h>
 #import "TUIScrollView+Private.h"
-#import "TUIKit.h"
+#import "TUINSView.h"
 #import "TUIScroller.h"
 
 #define KNOB_Z_POSITION 6000
