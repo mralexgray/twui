@@ -1007,7 +1007,7 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
 		
 		_tableFlags.layoutSubviewsReentrancyGuard = 0;
 	} else {
-//		NSLog(@"trying to nest...");
+		NSLog(@"trying to nest...");
 	}
 }
 

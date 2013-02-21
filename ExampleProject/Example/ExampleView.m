@@ -33,10 +33,18 @@
 		ExampleTableViewController *tableViewController = [[ExampleTableViewController alloc] initWithNibName:nil bundle:nil];
 		_navigationController = [[TUINavigationController alloc] initWithRootViewController:tableViewController];
 		[self addSubview:_navigationController.view];
-		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeWidth relativeTo:@"superview" attribute:TUILayoutConstraintAttributeWidth]];
-		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeHeight relativeTo:@"superview" attribute:TUILayoutConstraintAttributeHeight offset:-TAB_HEIGHT]];
-		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeMinX relativeTo:@"superview" attribute:TUILayoutConstraintAttributeMinX]];
-		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeMinY relativeTo:@"superview" attribute:TUILayoutConstraintAttributeMinY offset:TAB_HEIGHT]];
+//		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeWidth relativeTo:@"superview" attribute:TUILayoutConstraintAttributeWidth]];
+//		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeHeight relativeTo:@"superview" attribute:TUILayoutConstraintAttributeHeight offset:-TAB_HEIGHT]];
+//		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeMinX relativeTo:@"superview" attribute:TUILayoutConstraintAttributeMinX]];
+//		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeMinY relativeTo:@"superview" attribute:TUILayoutConstraintAttributeMinY offset:TAB_HEIGHT]];
+        _navigationController.view.layout = ^(TUIView *v) {
+            TUIView *superview = v.superview;
+            CGRect rect = superview.bounds;
+            rect.origin.y = TAB_HEIGHT;
+            rect.size.height -= TAB_HEIGHT;
+            
+            return rect;
+        };
 		
 		/*
 		 Note by default scroll views (and therefore table views) don't

@@ -68,4 +68,12 @@
   
 }
 
+//- (void)setFrame:(CGRect)frame;
+//{
+//    if ([[[self.labelRenderer attributedString] string] hasSuffix:@"5"]) {
+//        NSLog(@"cll %@ fr: %@", [self.labelRenderer.attributedString string], NSStringFromRect(frame));
+//    }
+//    [super setFrame:frame];
+//}
+
 @end

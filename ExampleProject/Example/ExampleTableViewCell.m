@@ -79,7 +79,7 @@
 		
 		self.textFieldContainer = [[TUIViewNSViewContainer alloc] initWithNSView:textField];
 		self.textFieldContainer.backgroundColor = [NSColor blueColor];
-		[self addSubview:self.textFieldContainer];
+//		[self addSubview:self.textFieldContainer];
 	}
 	
 	return self;

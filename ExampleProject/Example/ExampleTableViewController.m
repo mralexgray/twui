@@ -17,10 +17,11 @@
 }
 
 - (void)viewDidLoad {
-	self.tableView = [[TUITableView alloc] initWithFrame:self.view.frame];
+	self.tableView = [[TUITableOulineView alloc] initWithFrame:self.view.frame];
 	self.tableView.alwaysBounceVertical = YES;
 	self.tableView.dataSource = self;
 	self.tableView.delegate = self;
+    self.tableView.backgroundColor = [NSColor blueColor];
 	[self.tableView reloadData];
 	self.tableView.maintainContentOffsetAfterReload = YES;
 	self.tableView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
@@ -31,16 +32,36 @@
 	footerLabel.font = [NSFont fontWithName:@"HelveticaNeue-Bold" size:15];
 	footerLabel.text = @"Example Footer View";
 	self.tableView.footerView = footerLabel;
+    self.tableView.footerView.backgroundColor = [NSColor redColor];
+    
+    TUIButton *reloadButton = [TUIButton buttonWithType:TUIButtonTypeStandard];
+    [reloadButton addActionForControlEvents:TUIControlEventMouseUpInside block:^{
+        [self.tableView reloadData];
+    }];
+    [reloadButton setImage:[NSImage imageNamed:NSImageNameRefreshTemplate] forState:TUIControlStateNormal];
+    reloadButton.frame = CGRectMake(10, 10, 24, 24);
+    
+    [self.tableView.footerView addSubview:reloadButton];
 	
 	[self.view addSubview:self.tableView];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(TUITableView *)tableView {
-	return 8;
+	return 18;
 }
 
 - (NSInteger)tableView:(TUITableView *)table numberOfRowsInSection:(NSInteger)section {
-	return 25;
+//    return 5;
+//    NSLog(@"RQ NUMS");
+ 	if ([(TUITableOulineView *)table sectionIsOpened:section] ) {
+        switch (section) {
+            case 0:     return 10;
+            case 1:     return 4;
+            case 3:     return 20;
+            default:    return 5;
+        }
+    }
+    return 0;
 }
 
 - (CGFloat)tableView:(TUITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -77,18 +98,39 @@
 	indicator.layer.shadowOffset = CGSizeMake(0, -1);
 	indicator.layer.shadowOpacity = 1.0f;
 	indicator.layer.shadowRadius = 1.0f;
+    indicator.layoutName = @"indicator";
 	
 	// We then add it as a subview and tell it to start animating.
 	[header	addSubview:indicator];
-	[indicator startAnimating];
-	
+//	[indicator startAnimating];
+
+	TUIButton *displayButton = [TUIButton buttonWithType:TUIButtonTypeTextured];
+    displayButton.imageEdgeInsets = TUIEdgeInsetsMake(0, 0, 0, 1);
+    [displayButton setImage:[NSImage imageNamed:NSImageNameQuickLookTemplate] forState:TUIControlStateNormal];
+    displayButton.frame = CGRectMake(0, 4, 24, 24);
+    [displayButton addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeMaxX relativeTo:@"indicator"
+                                                                          attribute:TUILayoutConstraintAttributeMinX offset:-8]];
+    
+    [displayButton addActionForControlEvents:TUIControlEventMouseUpInside block:^{
+        [[self tableView] toggleSection:section];
+        return;
+        
+        [TUIView beginAnimations:nil context:nil];
+        [[self tableView] scrollToSection:section];
+        [TUIView commitAnimations];
+        return;
+        
+    }];
+    
+	[header addSubview:displayButton];
+
 	return header;
 }
 
 - (TUITableViewCell *)tableView:(TUITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	ExampleTableViewCell *cell = reusableTableCellOfClass(tableView, ExampleTableViewCell);
 	
-	TUIAttributedString *s = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"example cell %d", (int)indexPath.row]];
+	TUIAttributedString *s = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"example cell %d/%d", (int)indexPath.section, (int)indexPath.row]];
 	s.color = [NSColor blackColor];
 	s.font = [NSFont fontWithName:@"HelveticaNeue" size:15];;
 	[s setFont:[NSFont fontWithName:@"HelveticaNeue-Bold" size:15] inRange:NSMakeRange(8, 4)]; // make the word "cell" bold
