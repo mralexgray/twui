@@ -56,7 +56,7 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset) {
 {
     self = [super initWithFrame:frame];
     if (self) {
-        _openedSection = 0;
+        _openedSection = NSIntegerMin;
     }
     return self;
 }
@@ -80,7 +80,6 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset) {
     
     [topSections removeIndex:section];
     [bottomSections removeIndex:section];
-    NSLog(@"vr: %@", NSStringFromRect(visibleRect));
 
     _openning = YES;
     _openningSection = section;
@@ -100,17 +99,24 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset) {
     CGFloat headerHeight    = CGRectGetHeight(headerRect);
     CGFloat newHeight = (_contentHeight - openedSectionHeight) + headerHeight;
     
-    if (haveOpened && previousTop && sectionHeight < openedSectionHeight) {
-        _bottomOffset = openedSectionHeight - sectionHeight;
-    } else if (_openedSection != section) {
 #warning This is not proper height and needs to be improved
+    if (haveOpened && topSections) {
+        _topOffset = openedSectionHeight;
+        _bottomOffset = sectionHeight;
+    } else if (haveOpened) {
+        _bottomOffset = openedSectionHeight;
+        _topOffset =sectionHeight;
+    } else {
         _topOffset = sectionHeight;
         _bottomOffset = sectionHeight;
+    }
+    
+    if (_openedSection != section) {
     } else {
         // Append indexes
         [topSections addIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, section)]];
-        _topOffset = sectionHeight;
-        _bottomOffset = sectionHeight;
+//        _topOffset = sectionHeight;
+//        _bottomOffset = sectionHeight;
     }
     
     _transitionOffset = (sectionHeight - headerHeight);
@@ -490,12 +496,12 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset) {
     
     [self enumerateIndexPathsFromIndexPath:from toIndexPath:to withOptions:0 usingBlock:^(NSIndexPath *indexPath, BOOL *stop) {
         TUITableViewCell *cell = [self cellForRowAtIndexPath:indexPath];
-        if (!cell)
-            NSLog(@"no cell: %@", indexPath);
-        
-        NSLog(@"c %@ was %@", indexPath, NSStringFromRect([cell frame]));
+//        if (!cell)
+//            NSLog(@"no cell: %@", indexPath);
+//        
+//        NSLog(@"c %@ was %@", indexPath, NSStringFromRect([cell frame]));
         cell.frame = [self rectForRowAtIndexPath:indexPath];
-        NSLog(@"c %@ com %@", indexPath, NSStringFromRect([cell frame]));
+//        NSLog(@"c %@ com %@", indexPath, NSStringFromRect([cell frame]));
     }];
     
 }
@@ -505,25 +511,23 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset) {
 {
     CGRect vr = [super visibleRect];
     if (_openning) {
-//        NSLog(@"vr was: %@", NSStringFromRect(self.bounds));
         vr.size.height += (_topOffset + _transitionOffset + _bottomOffset);
         vr.origin.y -= _bottomOffset;
-//        NSLog(@"VR:%@ TO:%@ BO:%@ TrO:%@", NSStringFromRect(vr), @(_topOffset), @(_bottomOffset), @(_transitionOffset));
     }
     
     return vr;
 }
 
-- (void)setContentOffset:(CGPoint)contentOffset
-{
-    NSLog(@"CO: %@", NSStringFromPoint(contentOffset));
-    [super setContentOffset:contentOffset];
-}
-
-- (void)setContentSize:(CGSize)contentSize
-{
-    NSLog(@"CS: %@", NSStringFromSize(contentSize));
-    [super setContentSize:contentSize];
-}
+//- (void)setContentOffset:(CGPoint)contentOffset
+//{
+//    NSLog(@"CO: %@", NSStringFromPoint(contentOffset));
+//    [super setContentOffset:contentOffset];
+//}
+//
+//- (void)setContentSize:(CGSize)contentSize
+//{
+//    NSLog(@"CS: %@", NSStringFromSize(contentSize));
+//    [super setContentSize:contentSize];
+//}
 
 @end
