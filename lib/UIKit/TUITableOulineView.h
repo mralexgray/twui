@@ -6,7 +6,7 @@
 //
 //
 
-#import <TUIKit.h>
+#import "TUITableView.h"
 
 @interface TUITableOulineView : TUITableView
 
@@ -16,3 +16,4 @@
 - (void)scrollToSection:(NSInteger)section;
 
 @end
+    

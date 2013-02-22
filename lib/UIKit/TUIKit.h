@@ -55,6 +55,7 @@
 #import "TUITableViewCell.h"
 #import "TUITableViewController.h"
 #import "TUITableViewSectionHeader.h"
+#import "TUITableOulineView.h"
 #import "TUITextEditor.h"
 #import "TUITextField.h"
 #import "TUITextView.h"
