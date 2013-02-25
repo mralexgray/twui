@@ -24,12 +24,12 @@
 		// Set up the alternating row "look". Very slick, clean look. Just by
 		// setting up a few colors (and optionally a few styles, and if we
 		// need more, overridable methods) we can achieve whatever look we want.
-		self.backgroundColor = [NSColor colorWithCalibratedWhite:0.97 alpha:1.0f];
+		self.backgroundColor = [NSColor clearColor];// [NSColor colorWithCalibratedWhite:0.97 alpha:1.0f];
 		self.highlightColor = [NSColor colorWithCalibratedWhite:0.87 alpha:1.0f];
 		self.selectionColor = [NSColor colorWithCalibratedWhite:0.77 alpha:1.0f];
-		self.alternateBackgroundColor = [NSColor colorWithCalibratedWhite:0.92 alpha:1.0f];
-		self.alternateHighlightColor = [NSColor colorWithCalibratedWhite:0.82 alpha:1.0f];
-		self.alternateSelectionColor = [NSColor colorWithCalibratedWhite:0.72 alpha:1.0f];
+//		self.alternateBackgroundColor = [NSColor colorWithCalibratedWhite:0.92 alpha:1.0f];
+//		self.alternateHighlightColor = [NSColor colorWithCalibratedWhite:0.82 alpha:1.0f];
+//		self.alternateSelectionColor = [NSColor colorWithCalibratedWhite:0.72 alpha:1.0f];
 		
 		// Instead of using a TUILabel or TUITextField, let's take a little
 		// course in the art of using a TUITextRenderer. It acts as a simple
