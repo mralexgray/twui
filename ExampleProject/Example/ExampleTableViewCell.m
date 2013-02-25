@@ -27,6 +27,7 @@
 		self.backgroundColor = [NSColor clearColor];// [NSColor colorWithCalibratedWhite:0.97 alpha:1.0f];
 		self.highlightColor = [NSColor colorWithCalibratedWhite:0.87 alpha:1.0f];
 		self.selectionColor = [NSColor colorWithCalibratedWhite:0.77 alpha:1.0f];
+        self.alternateBackgroundColor = [NSColor colorWithDeviceRed:33./255. green:36./255. blue:41./255. alpha:1.0];
 //		self.alternateBackgroundColor = [NSColor colorWithCalibratedWhite:0.92 alpha:1.0f];
 //		self.alternateHighlightColor = [NSColor colorWithCalibratedWhite:0.82 alpha:1.0f];
 //		self.alternateSelectionColor = [NSColor colorWithCalibratedWhite:0.72 alpha:1.0f];
@@ -38,9 +39,10 @@
 		_textRenderer = [[TUITextRenderer alloc] init];
 		_textRenderer.verticalAlignment = TUITextVerticalAlignmentMiddle;
 		_textRenderer.shouldRefuseFirstResponder = YES;
-		_textRenderer.shadowBlur = 1.0f;
-		_textRenderer.shadowColor = [NSColor whiteColor];
-		_textRenderer.shadowOffset = CGSizeMake(0, 1);
+        _textRenderer.backgroundDrawingEnabled = YES;
+//		_textRenderer.shadowBlur = 1.0f;
+//		_textRenderer.shadowColor = [NSColor whiteColor];
+//		_textRenderer.shadowOffset = CGSizeMake(0, 1);
 		
 		self.slider = [[TUISlider alloc] initWithFrame:CGRectMake(0, 0, 150, self.bounds.size.height)];
 		[self addSubview:self.slider];
@@ -124,9 +126,31 @@
 // Note that we only override the drawRect: to add in a call to
 // let the text renderer draw as well. For TUITableView, customization
 // is preferrably left to the overridable drawing methods - not this.
-- (void)drawRect:(CGRect)rect {
-	[super drawRect:rect];
-	[_textRenderer draw];
+- (void)drawInBackround:(CGRect)rect
+{
+    
+    NSLog(@"CUR CTX %@", TUIGraphicsGetCurrentContext());
+    [super drawRect:rect];
+    [_textRenderer draw];
+    
 }
+
+- (void)drawRect:(CGRect)rect {
+//    if (self.backgroundView)
+//        return;
+    NSLog(@"CUR CTX %@", TUIGraphicsGetCurrentContext());
+    [super drawRect:rect];
+    [_textRenderer draw];
+}
+
+//- (void)drawBackground:(CGRect)rect
+//{
+//    if (self.backgroundView) {
+//        CGRect convertRect = [self.superview convertRect:self.frame toView:self.backgroundView];
+//        NSLog(@"was %@ come %@", NSStringFromRect(self.frame), NSStringFromRect(convertRect));
+////        [self.backgroundView drawRect:convertRect];
+//    }
+//    
+//}
 
 @end

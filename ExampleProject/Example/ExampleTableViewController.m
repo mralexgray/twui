@@ -9,6 +9,7 @@
 #import "ExampleTableViewController.h"
 #import "ExampleSectionHeaderView.h"
 #import "ExampleTableViewCell.h"
+#import "TUICGAdditions.h"
 
 @implementation ExampleTableViewController
 
@@ -131,12 +132,32 @@
 	ExampleTableViewCell *cell = reusableTableCellOfClass(tableView, ExampleTableViewCell);
 	
 	TUIAttributedString *s = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"example cell %d/%d", (int)indexPath.section, (int)indexPath.row]];
-	s.color = [NSColor blackColor];
+	s.color = [NSColor grayColor];
 	s.font = [NSFont fontWithName:@"HelveticaNeue" size:15];;
 	[s setFont:[NSFont fontWithName:@"HelveticaNeue-Bold" size:15] inRange:NSMakeRange(8, 4)]; // make the word "cell" bold
+    
 	cell.attributedString = s;
 	
 	return cell;
+}
+- (void)tableView:(TUITableOulineView *)tableView willDisplayCell:(ExampleTableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if ([tableView sectionIsOpened:indexPath.section]) {
+        cell.backgroundView = tableView.openedSectionBackgroundView;
+        cell.drawBackground = ^(TUIView *v, CGRect r)
+        {
+            [TUIGraphicsGetImageForView(tableView.openedSectionBackgroundView) drawInRect:r
+                                                                                 fromRect:[tableView convertRect:v.frame toView:tableView.openedSectionBackgroundView]
+                                                                                operation:NSCompositeSourceOver
+                                                                                 fraction:1.0];
+            
+        };
+        
+        return;
+    }
+    
+    cell.backgroundView = nil;;
+    cell.drawBackground = nil;
 }
 
 - (void)tableView:(TUITableView *)tableView didClickRowAtIndexPath:(NSIndexPath *)indexPath withEvent:(NSEvent *)event {

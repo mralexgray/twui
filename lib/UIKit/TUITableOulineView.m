@@ -9,7 +9,8 @@
 #import "TUITableOulineView.h"
 #import "TUILayoutConstraint.h"
 
-CG_INLINE CGRect CGRectWithPoints(CGPoint s, CGPoint e) {
+CG_INLINE CGRect CGRectWithPoints(CGPoint s, CGPoint e)
+{
     CGRect res = CGRectZero;
     
     res.size.width = e.x - s.x;
@@ -19,15 +20,18 @@ CG_INLINE CGRect CGRectWithPoints(CGPoint s, CGPoint e) {
     return res;
 };
 
-CG_INLINE CGPoint CGRectGetTopPoint(CGRect rect) {
+CG_INLINE CGPoint CGRectGetTopPoint(CGRect rect)
+{
     return CGPointMake(CGRectGetMidX(rect), CGRectGetMaxY(rect));
 }
 
-CG_INLINE CGPoint CGRectGetBottomPoint(CGRect rect) {
+CG_INLINE CGPoint CGRectGetBottomPoint(CGRect rect)
+{
     return CGPointMake(CGRectGetMidX(rect), CGRectGetMinY(rect));
 }
 
-CG_INLINE CGFloat durationForOffset(CGFloat offset) {
+CG_INLINE CGFloat durationForOffset(CGFloat offset)
+{
     return 0.5;
     return 1.0/300.0 * ABS(offset);
 }
@@ -126,8 +130,6 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset) {
     } else {
         // Append indexes
         [topSections addIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, section)]];
-//        _topOffset = sectionHeight;
-//        _bottomOffset = sectionHeight;
     }
     
     _transitionOffset = (sectionHeight - headerHeight);
@@ -135,16 +137,7 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset) {
     
     // In case not closing section - needs to create background that will apear under cells
     if (section != _openedSection) {
-        self.layoutName = @"section";
         self.openedSectionBackgroundView = [[TUIView alloc] initWithFrame:sectionRect];
-
-        self.openedSectionBackgroundView.drawRect = ^(TUIView *v, CGRect r) {
-            NSGradient *gr = [[NSGradient alloc] initWithStartingColor:[NSColor greenColor] endingColor:[NSColor whiteColor]];
-            [gr drawInRect:v.bounds angle:-90];
-//            [gr drawInRect:r relativeCenterPosition:NSMakePoint(NSMaxX(r), NSMaxY(r))];
-        };
-        
-//        [self insertSubview:self.openedSectionBackgroundView belowSubview:[self headerViewForSection:section]];
         [self addSubview:self.openedSectionBackgroundView];
     }
     
@@ -158,7 +151,6 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset) {
     [self _layoutSectionHeaders:YES];
     [self _layoutCells:YES];
     
-    NSLog(@"TUIAnimation: %@", @([TUIView isInAnimationContext]));
     
     if(!_tableFlags.layoutSubviewsReentrancyGuard) {
         _tableFlags.layoutSubviewsReentrancyGuard = 1;
@@ -517,7 +509,6 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset) {
         self.openedSectionBackgroundView.frame = CGRectOffset(self.openedSectionBackgroundView.frame, 0, offset);
     }
     if (_openning && _openedSection == section && _oldBackgroundView) {
-        NSLog(@"OLD %@ NEW %@", _oldBackgroundView, _openedSectionBackgroundView);
         _oldBackgroundView.frame = CGRectOffset(_oldBackgroundView.frame, 0, offset);
     }
     
