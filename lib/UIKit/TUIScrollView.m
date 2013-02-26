@@ -1142,7 +1142,7 @@ static float clampBounce(float x) {
 
 - (void)scrollWheel:(NSEvent *)event
 {
-	if (_contentSize.height <= CGRectGetHeight(self.bounds)) {
+	if (_contentSize.height <= CGRectGetHeight(self.bounds) || ABS(event.scrollingDeltaX) > ABS(event.scrollingDeltaY)) {
 		[super scrollWheel:event];
 	}
 	

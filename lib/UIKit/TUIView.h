@@ -122,6 +122,7 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView*);
 		unsigned int delegateMouseEntered:1;
 		unsigned int delegateMouseExited:1;
 		unsigned int delegateWillDisplayLayer:1;
+        unsigned int delegateScrollWheel:1;
 	} _viewFlags;
 
 	BOOL isAccessibilityElement;
@@ -493,6 +494,7 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView*);
 
 - (void)view:(TUIView *)v mouseEntered:(NSEvent *)event;
 - (void)view:(TUIView *)v mouseExited:(NSEvent *)event;
+- (void)view:(TUIView *)v scrollWheel:(NSEvent *)event;
 - (void)viewWillDisplayLayer:(TUIView *)v;
 
 @end

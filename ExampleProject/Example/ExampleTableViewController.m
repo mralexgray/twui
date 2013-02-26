@@ -163,8 +163,12 @@
 - (void)tableView:(TUITableView *)tableView didClickRowAtIndexPath:(NSIndexPath *)indexPath withEvent:(NSEvent *)event {
 	if([event clickCount] == 1) {
 		// do something cool
-		ExampleTableViewController *pushed = [[ExampleTableViewController alloc] initWithNibName:nil bundle:nil];
-		[self.navigationController pushViewController:pushed animated:YES];
+        if ([self.navigationController.viewControllers count] > 1) {
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        } else {
+            ExampleTableViewController *pushed = [[ExampleTableViewController alloc] initWithNibName:nil bundle:nil];
+            [self.navigationController pushViewController:pushed animated:YES];
+        }
 	}
 	
 	if(event.type == NSRightMouseUp){

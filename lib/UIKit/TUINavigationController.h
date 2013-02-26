@@ -15,6 +15,8 @@
 
 - (void)navigationController:(TUINavigationController *)navigationController willShowViewController:(TUIViewController *)viewController animated:(BOOL)animated;
 - (void)navigationController:(TUINavigationController *)navigationController didShowViewController:(TUIViewController *)viewController animated:(BOOL)animated;
+- (void)navigationController:(TUINavigationController *)navigationController cancelShowViewController:(TUIViewController *)viewController animated:(BOOL)animated;
+- (TUIViewController *)viewControllerForSlideInNavigationController:(TUINavigationController *)navigationController;
 
 @end
 
@@ -24,6 +26,8 @@
 @property (nonatomic, readonly) NSArray *viewControllers;
 
 @property (nonatomic, assign) id <TUINavigationControllerDelegate> delegate;
+@property (nonatomic, assign) BOOL needsBlurWhenSlide;
+@property (nonatomic, assign) BOOL couldUseSlideEvent;
 
 - (id)initWithRootViewController:(TUIViewController *)viewController;
 

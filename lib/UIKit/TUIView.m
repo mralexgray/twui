@@ -263,6 +263,7 @@ static pthread_key_t TUICurrentContextScaleFactorTLSKey;
 	_viewFlags.delegateMouseEntered = [_viewDelegate respondsToSelector:@selector(view:mouseEntered:)];
 	_viewFlags.delegateMouseExited = [_viewDelegate respondsToSelector:@selector(view:mouseExited:)];
 	_viewFlags.delegateWillDisplayLayer = [_viewDelegate respondsToSelector:@selector(viewWillDisplayLayer:)];
+    _viewFlags.delegateScrollWheel = [_viewDelegate respondsToSelector:@selector(view:scrollWheel:)];
 }
 
 /*

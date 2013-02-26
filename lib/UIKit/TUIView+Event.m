@@ -194,6 +194,10 @@
 - (void)scrollWheel:(NSEvent *)event
 {
 	[self.superview scrollWheel:event];
+
+	if(_viewFlags.delegateScrollWheel){
+		[_viewDelegate view:self scrollWheel:event];
+	}
 }
 
 - (void)beginGestureWithEvent:(NSEvent *)event

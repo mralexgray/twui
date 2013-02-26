@@ -37,6 +37,8 @@
 //		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeHeight relativeTo:@"superview" attribute:TUILayoutConstraintAttributeHeight offset:-TAB_HEIGHT]];
 //		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeMinX relativeTo:@"superview" attribute:TUILayoutConstraintAttributeMinX]];
 //		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeMinY relativeTo:@"superview" attribute:TUILayoutConstraintAttributeMinY offset:TAB_HEIGHT]];
+        _navigationController.couldUseSlideEvent = YES;
+        
         _navigationController.view.layout = ^(TUIView *v) {
             TUIView *superview = v.superview;
             CGRect rect = superview.bounds;
