@@ -32,6 +32,7 @@
 		
 		ExampleTableViewController *tableViewController = [[ExampleTableViewController alloc] initWithNibName:nil bundle:nil];
 		_navigationController = [[TUINavigationController alloc] initWithRootViewController:tableViewController];
+        _navigationController.delegate = self;
 		[self addSubview:_navigationController.view];
 //		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeWidth relativeTo:@"superview" attribute:TUILayoutConstraintAttributeWidth]];
 //		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeHeight relativeTo:@"superview" attribute:TUILayoutConstraintAttributeHeight offset:-TAB_HEIGHT]];
@@ -125,5 +126,11 @@
 	  [self.navigationController popViewControllerAnimated:YES];
 	}
 }
+
+- (TUIViewController *)viewControllerForSlideInNavigationController:(TUINavigationController *)navigationController;
+{
+    return [[ExampleTableViewController alloc] initWithNibName:nil bundle:nil];;
+}
+
 
 @end

@@ -300,17 +300,13 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
                 dampenAmountThresholdMin:-1 max:1
                             usingHandler:^(CGFloat gestureAmount, NSEventPhase phase, BOOL isComplete, BOOL *stop) {
                                 if (animationCancelled) {
-                                    
                                     *stop = YES;
-                                    [TUIView animateWithDuration:duration animations:^{
-                                        last.view.frame = self.view.bounds;
-                                        viewController.view.frame = isPushing ? TUINavigationOffscreenRightFrame(self.view.bounds) : TUINavigationOffscreenLeftFrame(self.view.bounds);
-                                    } completion:^(BOOL finished) {
+                                    void (^compleationBlock)(BOOL) = ^(BOOL finished) {
                                         
                                         if ([self.delegate respondsToSelector:@selector(navigationController:cancelShowViewController:animated:)]) {
                                             [self.delegate navigationController:self cancelShowViewController:viewController animated:animated];
                                         }
-
+                                        
                                         [viewController.view removeFromSuperview];
                                         if (isPushing) {
                                             [_stack removeObject:viewController];
@@ -319,8 +315,18 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
                                         
                                         [viewController viewDidDisappear:animated];
                                         [last viewDidAppear:animated];
-
-                                    }];
+                                        
+                                    };
+                                    
+                                        CGRect lastRect = self.view.bounds;
+                                        CGRect nextRect = isPushing ? TUINavigationOffscreenRightFrame(self.view.bounds) : TUINavigationOffscreenLeftFrame(self.view.bounds);
+                                        if (!CGRectEqualToRect(last.view.frame, lastRect) && !CGRectEqualToRect(viewController.view.frame, nextRect)) {
+                                            [TUIView animateWithDuration:duration animations:^{
+                                            last.view.frame = lastRect;
+                                            viewController.view.frame = nextRect;
+                                            } completion:compleationBlock];
+                                        } else
+                                            compleationBlock(YES);
                                     return;
                                 }
                                 
@@ -393,10 +399,15 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
                                         nextRect.origin.x = (-1 + ABS(gestureAmount)) * CGRectGetWidth(self.view.bounds);
                                     }
                                     
-                                    [TUIView setAnimationsEnabled:NO block:^{
+                                    nextRect = CGRectIntegral(nextRect);
+                                    lastRect = CGRectIntegral(lastRect);
+                                    
+                                    if (!CGRectEqualToRect(viewController.view.frame, nextRect) && !CGRectEqualToRect(lastRect, last.view.frame)) {
+                                        [TUIView setAnimationsEnabled:NO];
+                                        [CATransaction setDisableActions:YES];
                                         viewController.view.frame = nextRect;
                                         last.view.frame = lastRect;
-                                    }];
+                                    }
                                     
                                 }
                             }];
