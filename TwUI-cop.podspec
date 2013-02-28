@@ -21,7 +21,7 @@ Pod::Spec.new do |s|
 
   s.subspec 'UIKit' do |ss|
     ss.source_files = FileList['lib/UIKit/*.{h,m}'].exclude(/NSColor\+TUIExtensions/, /TUIAccessibilityElement/)
-    ss.dependency 'TwUI/Support'
+    ss.dependency 'TwUI-cop/Support'
 
     ss.subspec 'NSColorExtensions' do |sss|
       sss.source_files = 'lib/UIKit/NSColor+TUIExtensions.{h,m}'
