@@ -145,7 +145,7 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
 		viewController.view.frame = self.view.bounds;
         
         if (_needsBlurWhenSlide) {
-            [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithControlPoints: 0:1 : 1:1]];
+//            [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithControlPoints: 0:1 : 1:1]];
 
             TUIApplyBlurForLayer(viewController.view.layer);
             TUIApplyBlurForLayer(last.view.layer);
@@ -232,7 +232,7 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
 		viewController.view.frame = self.view.bounds;
 
         if (_needsBlurWhenSlide) {
-            [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithControlPoints: 0:1 : 1:1]];
+//            [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithControlPoints: 0:1 : 1:1]];
             TUIApplyBlurForLayer(viewController.view.layer);
             TUIApplyBlurForLayer(last.view.layer);
         }
@@ -378,6 +378,7 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
                                         [self.delegate navigationController:self didShowViewController:viewController animated:animated];
                                     }
                                     
+                                    [last.view removeFromSuperview];
                                     [last viewDidDisappear:animated];
                                     if (!isPushing) {
                                         last.navigationController = nil;
