@@ -279,8 +279,8 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
     TUIViewController *last = [_stack lastObject];
     TUIViewController *viewController = nil;
     
-    if (isPushing && [self.delegate respondsToSelector:@selector(viewControllerForSlideInNavigationController:)]) {
-        viewController = [self.delegate viewControllerForSlideInNavigationController:self];
+    if (isPushing && [self.delegate respondsToSelector:@selector(viewControllerForSlideInNavigationController:)] &&
+        (viewController = [self.delegate viewControllerForSlideInNavigationController:self])) {
         [_stack addObject:viewController];
         viewController.navigationController = self;
     } else if (!isPushing && _stack.count > 1) {
@@ -403,10 +403,12 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
                                     lastRect = CGRectIntegral(lastRect);
                                     
                                     if (!CGRectEqualToRect(viewController.view.frame, nextRect) && !CGRectEqualToRect(lastRect, last.view.frame)) {
-                                        [TUIView setAnimationsEnabled:NO];
+                                        [CATransaction begin];
                                         [CATransaction setDisableActions:YES];
                                         viewController.view.frame = nextRect;
                                         last.view.frame = lastRect;
+                                        [CATransaction flush];
+                                        [CATransaction commit];
                                     }
                                     
                                 }

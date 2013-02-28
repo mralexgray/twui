@@ -129,7 +129,7 @@
 
 - (TUIViewController *)viewControllerForSlideInNavigationController:(TUINavigationController *)navigationController;
 {
-    return [[ExampleTableViewController alloc] initWithNibName:nil bundle:nil];;
+    return ([[navigationController viewControllers] count] < 2 ? [[ExampleTableViewController alloc] initWithNibName:nil bundle:nil] : nil);
 }
 
 

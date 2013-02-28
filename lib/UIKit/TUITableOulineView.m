@@ -156,15 +156,15 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
         _tableFlags.layoutSubviewsReentrancyGuard = 1;
         
         
-        [TUIView setAnimationsEnabled:NO block:^{
+        if (section != _openedSection) {
+            [CATransaction begin];
             [CATransaction setDisableActions:YES];
-            if (section != _openedSection) {
-                [self _moveSections:topSections forOffset: -_transitionOffset];
-                [self _moveSection:section forOffset: -_transitionOffset];
-                [self sendSubviewToBack:self.openedSectionBackgroundView];
-            }
-        }];
-        
+            [self _moveSections:topSections forOffset: -_transitionOffset];
+            [self _moveSection:section forOffset: -_transitionOffset];
+            [self sendSubviewToBack:self.openedSectionBackgroundView];
+            [CATransaction flush];
+            [CATransaction commit];
+        }
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [TUIView beginAnimations:NSStringFromSelector(_cmd) context:NULL];
