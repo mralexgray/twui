@@ -388,9 +388,9 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
                                     lastRect.origin.x = gestureAmount * CGRectGetWidth(self.view.bounds);
                                     
                                     if (isPushing) {
-                                        nextRect.origin.x = (1 - gestureAmount) * CGRectGetWidth(self.view.bounds);
+                                        nextRect.origin.x = (1 - ABS(gestureAmount)) * CGRectGetWidth(self.view.bounds);
                                     } else {
-                                        nextRect.origin.x = (-1 + gestureAmount) * CGRectGetWidth(self.view.bounds);
+                                        nextRect.origin.x = (-1 + ABS(gestureAmount)) * CGRectGetWidth(self.view.bounds);
                                     }
                                     
                                     [TUIView setAnimationsEnabled:NO block:^{
