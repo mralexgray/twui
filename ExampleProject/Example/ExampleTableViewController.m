@@ -62,7 +62,7 @@
             default:    return 5;
         }
     }
-    return 0;
+    return 1;
 }
 
 - (CGFloat)tableView:(TUITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -70,6 +70,7 @@
 }
 
 - (TUIView *)tableView:(TUITableView *)tableView headerViewForSection:(NSInteger)section {
+    return nil;
 	ExampleSectionHeaderView *header = [[ExampleSectionHeaderView alloc] initWithFrame:CGRectMake(0, 0, 100, 32)];
 	TUIAttributedString *title = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"Example Section %d", (int)section]];
 	title.color = [NSColor blackColor];
@@ -142,6 +143,11 @@
 }
 - (void)tableView:(TUITableOulineView *)tableView willDisplayCell:(ExampleTableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (indexPath.row == 0) {
+        cell.backgroundColor = [NSColor controlColor];
+    } else {
+        cell.backgroundColor = [NSColor clearColor];
+    }
     if ([tableView sectionIsOpened:indexPath.section]) {
         cell.backgroundView = tableView.openedSectionBackgroundView;
         cell.drawBackground = ^(TUIView *v, CGRect r)
@@ -161,6 +167,9 @@
 }
 
 - (void)tableView:(TUITableView *)tableView didClickRowAtIndexPath:(NSIndexPath *)indexPath withEvent:(NSEvent *)event {
+    if (indexPath.row == 0) {
+        [(TUITableOulineView *)tableView toggleSection:indexPath.section];
+    } else
 	if([event clickCount] == 1) {
 		// do something cool
         if ([self.navigationController.viewControllers count] > 1) {

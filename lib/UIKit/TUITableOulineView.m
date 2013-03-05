@@ -78,6 +78,11 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
     CGRect openedHeader         = [self rectForHeaderOfSection:_openedSection];
     CGFloat openedHeaderHeight  = CGRectGetHeight(openedHeader);
     
+    if (![self headerViewForSection:section]) {
+        openedHeader = [self rectForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:section]];
+        openedHeaderHeight = CGRectGetHeight(openedHeader);
+    }
+    
     NSMutableIndexSet *topSections = (NSMutableIndexSet *)[self indexesOfSectionsInRect:
                                                            CGRectWithPoints(CGRectGetTopPoint(currentSectionRect), CGRectGetTopPoint(visibleRect))];
     
@@ -108,6 +113,9 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
 
     // Calculate section size and header size to find out fix sizes
     CGRect headerRect   = [self rectForHeaderOfSection:section];
+    if (![self headerViewForSection:section]) {
+        headerRect = [self rectForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:section]];
+    }
     CGRect sectionRect  = [self rectForSection:section];
     
     CGFloat sectionHeight   = CGRectGetHeight(sectionRect);
