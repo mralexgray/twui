@@ -10,6 +10,12 @@
 		07342D9316D7737C00A72F52 /* TUITableOulineView.h in Headers */ = {isa = PBXBuildFile; fileRef = 07342D9116D7737B00A72F52 /* TUITableOulineView.h */; };
 		07342D9416D7737C00A72F52 /* TUITableOulineView.h in Headers */ = {isa = PBXBuildFile; fileRef = 07342D9116D7737B00A72F52 /* TUITableOulineView.h */; };
 		07342D9516D7737C00A72F52 /* TUITableOulineView.h in Headers */ = {isa = PBXBuildFile; fileRef = 07342D9116D7737B00A72F52 /* TUITableOulineView.h */; };
+		07933D9416F2128C0041A13F /* TUITableViewMultiselection+Cell.h in Headers */ = {isa = PBXBuildFile; fileRef = 07933D9216F2128C0041A13F /* TUITableViewMultiselection+Cell.h */; };
+		07933D9516F2128C0041A13F /* TUITableViewMultiselection+Cell.h in Headers */ = {isa = PBXBuildFile; fileRef = 07933D9216F2128C0041A13F /* TUITableViewMultiselection+Cell.h */; };
+		07933D9616F2128C0041A13F /* TUITableViewMultiselection+Cell.h in Headers */ = {isa = PBXBuildFile; fileRef = 07933D9216F2128C0041A13F /* TUITableViewMultiselection+Cell.h */; };
+		07933D9716F2128C0041A13F /* TUITableViewMultiselection+Cell.m in Sources */ = {isa = PBXBuildFile; fileRef = 07933D9316F2128C0041A13F /* TUITableViewMultiselection+Cell.m */; };
+		07933D9816F2128C0041A13F /* TUITableViewMultiselection+Cell.m in Sources */ = {isa = PBXBuildFile; fileRef = 07933D9316F2128C0041A13F /* TUITableViewMultiselection+Cell.m */; };
+		07933D9916F2128C0041A13F /* TUITableViewMultiselection+Cell.m in Sources */ = {isa = PBXBuildFile; fileRef = 07933D9316F2128C0041A13F /* TUITableViewMultiselection+Cell.m */; };
 		30D399C9156D8ADD006ECDAE /* TUIProgressBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D399C7156D8ADD006ECDAE /* TUIProgressBar.m */; };
 		30D39A0D156D8F71006ECDAE /* TUIProgressBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 30D399C6156D8ADD006ECDAE /* TUIProgressBar.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		482011071659749900CFDC11 /* NSFont+TUIExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 887C227915C1C7BB006EC31D /* NSFont+TUIExtensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -56,8 +62,6 @@
 		48A10E8915B778E8007F9EE3 /* TUIView+Layout.m in Sources */ = {isa = PBXBuildFile; fileRef = 48A10E8715B778E8007F9EE3 /* TUIView+Layout.m */; };
 		48A10E8B15B77A46007F9EE3 /* TUIView+Layout.h in Headers */ = {isa = PBXBuildFile; fileRef = 48A10E8A15B77A46007F9EE3 /* TUIView+Layout.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5000874016524B1C0067ED42 /* TUINavigationController.h in Headers */ = {isa = PBXBuildFile; fileRef = 5000873F16524B1C0067ED42 /* TUINavigationController.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		5000874916524B1F0067ED42 /* TUINavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5000874816524B1F0067ED42 /* TUINavigationController.m */; };
-		5000874A1652C4380067ED42 /* TUINavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5000874816524B1F0067ED42 /* TUINavigationController.m */; };
 		5E6ECEB313BE791600109598 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EE9839C13BE7650005F430D /* ApplicationServices.framework */; };
 		5E6ECEB413BE791600109598 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB5E31B613BE6F49004B7899 /* QuartzCore.framework */; };
 		5E6ECEB613BE791C00109598 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EE9839C13BE7650005F430D /* ApplicationServices.framework */; };
@@ -447,6 +451,8 @@
 /* Begin PBXFileReference section */
 		07342D9116D7737B00A72F52 /* TUITableOulineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TUITableOulineView.h; sourceTree = "<group>"; };
 		07342D9216D7737B00A72F52 /* TUITableOulineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TUITableOulineView.m; sourceTree = "<group>"; };
+		07933D9216F2128C0041A13F /* TUITableViewMultiselection+Cell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TUITableViewMultiselection+Cell.h"; sourceTree = "<group>"; };
+		07933D9316F2128C0041A13F /* TUITableViewMultiselection+Cell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TUITableViewMultiselection+Cell.m"; sourceTree = "<group>"; };
 		30D399C6156D8ADD006ECDAE /* TUIProgressBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TUIProgressBar.h; sourceTree = "<group>"; };
 		30D399C7156D8ADD006ECDAE /* TUIProgressBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TUIProgressBar.m; sourceTree = "<group>"; };
 		48373DF4160EAE9400322CA7 /* TUITextRenderer+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TUITextRenderer+Private.h"; sourceTree = "<group>"; };
@@ -862,6 +868,8 @@
 				CBB74C6E13BE6E1900C85CB5 /* TUITableView+Additions.m */,
 				88D25F5313F5D96500CFAAA9 /* TUITableView+Cell.h */,
 				88D25F5413F5D96500CFAAA9 /* TUITableView+Cell.m */,
+				07933D9216F2128C0041A13F /* TUITableViewMultiselection+Cell.h */,
+				07933D9316F2128C0041A13F /* TUITableViewMultiselection+Cell.m */,
 				CBB74C6F13BE6E1900C85CB5 /* TUITableView+Derepeater.h */,
 				CBB74C7013BE6E1900C85CB5 /* TUITableView+Derepeater.m */,
 				CBB74C7113BE6E1900C85CB5 /* TUITableView.h */,
@@ -979,6 +987,7 @@
 				482011081659749A00CFDC11 /* NSFont+TUIExtensions.h in Headers */,
 				48886B381682AA550026426D /* TUISlider.h in Headers */,
 				07342D9516D7737C00A72F52 /* TUITableOulineView.h in Headers */,
+				07933D9616F2128C0041A13F /* TUITableViewMultiselection+Cell.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1056,6 +1065,7 @@
 				48694D8D165832B800BE65BF /* NSBezierPath+TUIExtensions.h in Headers */,
 				48886B361682AA550026426D /* TUISlider.h in Headers */,
 				07342D9316D7737C00A72F52 /* TUITableOulineView.h in Headers */,
+				07933D9416F2128C0041A13F /* TUITableViewMultiselection+Cell.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1096,6 +1106,7 @@
 				482011071659749900CFDC11 /* NSFont+TUIExtensions.h in Headers */,
 				48886B371682AA550026426D /* TUISlider.h in Headers */,
 				07342D9416D7737C00A72F52 /* TUITableOulineView.h in Headers */,
+				07933D9516F2128C0041A13F /* TUITableViewMultiselection+Cell.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1373,12 +1384,12 @@
 				D05D23A515BF7239000ED14F /* NSImage+TUIExtensions.m in Sources */,
 				D0EA12F615C34FEA00FAA603 /* NSColor+TUIExtensions.m in Sources */,
 				488A5838162FBE9B006CBF8B /* TUITableViewController.m in Sources */,
-				5000874A1652C4380067ED42 /* TUINavigationController.m in Sources */,
 				48694D7A1658318000BE65BF /* NSAffineTransform+TUIExtensions.m in Sources */,
 				48694D801658318000BE65BF /* NSShadow+TUIExtensions.m in Sources */,
 				48694D92165832B800BE65BF /* NSBezierPath+TUIExtensions.m in Sources */,
 				4820110A165974A400CFDC11 /* NSFont+TUIExtensions.m in Sources */,
 				48886B3B1682AA550026426D /* TUISlider.m in Sources */,
+				07933D9916F2128C0041A13F /* TUITableViewMultiselection+Cell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1450,11 +1461,11 @@
 				887C227C15C1C7BB006EC31D /* NSFont+TUIExtensions.m in Sources */,
 				D0EA12F415C34FEA00FAA603 /* NSColor+TUIExtensions.m in Sources */,
 				488A5836162FBE9B006CBF8B /* TUITableViewController.m in Sources */,
-				5000874916524B1F0067ED42 /* TUINavigationController.m in Sources */,
 				48694D781658318000BE65BF /* NSAffineTransform+TUIExtensions.m in Sources */,
 				48694D7E1658318000BE65BF /* NSShadow+TUIExtensions.m in Sources */,
 				48694D90165832B800BE65BF /* NSBezierPath+TUIExtensions.m in Sources */,
 				48886B391682AA550026426D /* TUISlider.m in Sources */,
+				07933D9716F2128C0041A13F /* TUITableViewMultiselection+Cell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1536,6 +1547,7 @@
 				48694D91165832B800BE65BF /* NSBezierPath+TUIExtensions.m in Sources */,
 				48201109165974A300CFDC11 /* NSFont+TUIExtensions.m in Sources */,
 				48886B3A1682AA550026426D /* TUISlider.m in Sources */,
+				07933D9816F2128C0041A13F /* TUITableViewMultiselection+Cell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

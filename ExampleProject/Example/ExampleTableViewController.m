@@ -22,6 +22,7 @@
 	self.tableView.alwaysBounceVertical = YES;
 	self.tableView.dataSource = self;
 	self.tableView.delegate = self;
+    self.tableView.allowsMultipleSelection = YES;
     self.tableView.backgroundColor = [NSColor blueColor];
 	[self.tableView reloadData];
 	self.tableView.maintainContentOffsetAfterReload = YES;
@@ -172,12 +173,12 @@
     } else
 	if([event clickCount] == 1) {
 		// do something cool
-        if ([self.navigationController.viewControllers count] > 1) {
-            [self.navigationController popToRootViewControllerAnimated:YES];
-        } else {
-            ExampleTableViewController *pushed = [[ExampleTableViewController alloc] initWithNibName:nil bundle:nil];
-            [self.navigationController pushViewController:pushed animated:YES];
-        }
+//        if ([self.navigationController.viewControllers count] > 1) {
+//            [self.navigationController popToRootViewControllerAnimated:YES];
+//        } else {
+//            ExampleTableViewController *pushed = [[ExampleTableViewController alloc] initWithNibName:nil bundle:nil];
+//            [self.navigationController pushViewController:pushed animated:YES];
+//        }
 	}
 	
 	if(event.type == NSRightMouseUp){
@@ -203,6 +204,12 @@
 	// update the model to reflect the changed index paths; since this example isn't backed by
 	// a "real" model, after dropping a cell the table will revert to it's previous state
 	NSLog(@"Move dragged row: %@ => %@", fromIndexPath, toIndexPath);
+}
+
+- (void)tableView:(TUITableView *)tableView moveRows:(NSArray *)arrayOfIdexes toIndexPath:(NSIndexPath *)toIndexPath
+{
+	NSLog(@"MULTI : Move dragged row: %@ => %@", arrayOfIdexes, toIndexPath);
+    
 }
 
 -(NSIndexPath *)tableView:(TUITableView *)tableView targetIndexPathForMoveFromRowAtIndexPath:(NSIndexPath *)fromPath toProposedIndexPath:(NSIndexPath *)proposedPath {

@@ -16,6 +16,9 @@
 
 #import "TUIScrollView.h"
 
+extern NSUInteger const TUIExtendSelectionKey;
+extern NSUInteger const TUIAddSelectionKey;
+
 typedef NS_ENUM(NSUInteger, TUITableViewStyle) {
 	TUITableViewStylePlain,              // regular table view
 	TUITableViewStyleGrouped, // grouped table view—headers stick to the top of the table view and scroll with it
@@ -77,7 +80,13 @@ typedef NS_ENUM(NSInteger, TUITableViewInsertionMethod) {
 	NSMutableIndexSet           * _visibleSectionHeaders;
 	NSMutableDictionary         * _visibleItems;
 	NSMutableDictionary         * _reusableTableCells;
-	
+	TUIView                     * _multiDragableView;
+    // additions for multipleSelections
+    NSMutableArray              * _arrayOfSelectedIndexes;
+    BOOL                        _multipleSelectionKeyIsPressed;
+    BOOL                        _extendMultipleSelectionKeyIsPressed;
+    NSUInteger                  _iterationCount;
+    
 	NSIndexPath            * _selectedIndexPath;
 	NSIndexPath            * _indexPathShouldBeFirstResponder;
 	NSInteger                     _futureMakeFirstResponderToken;
@@ -111,7 +120,8 @@ typedef NS_ENUM(NSInteger, TUITableViewInsertionMethod) {
 @property (nonatomic,unsafe_unretained) id <TUITableViewDataSource>  dataSource;
 @property (nonatomic,unsafe_unretained) id <TUITableViewDelegate>    delegate;
 
-@property (readwrite, assign) BOOL                        animateSelectionChanges;
+@property (readwrite, assign) BOOL animateSelectionChanges;
+@property (readwrite, assign) BOOL allowsMultipleSelection;
 @property (nonatomic, assign) BOOL maintainContentOffsetAfterReload;
 
 - (void)reloadData;
@@ -156,6 +166,7 @@ typedef NS_ENUM(NSInteger, TUITableViewInsertionMethod) {
 - (NSIndexPath *)indexPathForFirstRow;
 - (NSIndexPath *)indexPathForLastRow;
 
+- (void)justSelectRowAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated scrollPosition:(TUITableViewScrollPosition)scrollPosition;
 - (void)selectRowAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated scrollPosition:(TUITableViewScrollPosition)scrollPosition;
 - (void)deselectRowAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated;
 
@@ -191,6 +202,9 @@ typedef NS_ENUM(NSInteger, TUITableViewInsertionMethod) {
 // the following are required to support row reordering
 - (BOOL)tableView:(TUITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath;
 - (void)tableView:(TUITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath;
+
+// the following are required to support row reordering for multiselection
+- (void)tableView:(TUITableView *)tableView moveRows:(NSArray*)arrayOfIdexes toIndexPath:(NSIndexPath *)toIndexPath;
 
 /**
  Default is 1 if not implemented

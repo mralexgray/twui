@@ -17,6 +17,7 @@
 #import "TUITableViewCell+Private.h"
 #import "TUINSWindow.h"
 #import "TUITableView+Cell.h"
+#import "TUITableViewMultiselection+Cell.h"
 #import "TUICGAdditions.h"
 
 #define TUITableViewCellEtchTopColor		[NSColor colorWithCalibratedWhite:1.00f alpha:0.80f]
@@ -208,7 +209,10 @@ static inline void tui_viewAnimateRedrawConditionally(TUIView *view, BOOL condit
 	// Note the initial mouse location to determine dragging,
 	// and notify the table view we were dragged.
 	_mouseOffset = [self localPointForLocationInWindow:[event locationInWindow]];
-	[self.tableView __mouseDownInCell:self offset:_mouseOffset event:event];
+    if ([self.tableView allowsMultipleSelection])
+        [self.tableView __mouseDownInMultipleCells:self offset:_mouseOffset event:event];
+    else
+        [self.tableView __mouseDownInCell:self offset:_mouseOffset event:event];
 	
 	// May make text renderers become first responder so we
 	// notify the table view earlier to avoid this.
@@ -226,15 +230,23 @@ static inline void tui_viewAnimateRedrawConditionally(TUIView *view, BOOL condit
 	[super mouseDragged:event];
 	
 	// Notify the table view of the drag event.
-	[self.tableView __mouseDraggedCell:self offset:_mouseOffset event:event];
+    if ([self.tableView allowsMultipleSelection])
+        [self.tableView __mouseDraggedMultipleCells:self offset:_mouseOffset event:event];
+    else
+        [self.tableView __mouseDraggedCell:self offset:_mouseOffset event:event];    
 }
 
 - (void)mouseUp:(NSEvent *)event {
-	[super mouseUp:event];
-	
 	// Notify the table view of the mouse up event.
-	[self.tableView __mouseUpInCell:self offset:_mouseOffset event:event];
-	
+    if ([self.tableView allowsMultipleSelection])
+        [self.tableView __mouseUpInMultipleCells:self offset:_mouseOffset event:event];
+    else
+        [self.tableView __mouseUpInCell:self offset:_mouseOffset event:event];
+
+    [self.nsWindow makeFirstResponder:self.tableView];
+	[self.tableView selectRowAtIndexPath:self.indexPath animated:YES scrollPosition:TUITableViewScrollPositionNone];
+	[super mouseUp:event];
+
 	// We were selected, so we are no longer highlighted.
 	[self setHighlighted:NO animated:self.animatesAppearanceChanges];
 	
