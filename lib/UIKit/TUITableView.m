@@ -1325,8 +1325,13 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
 			return YES;
 		}
 	}
-	
-	return [super performKeyAction:event];
+	if ([_delegate respondsToSelector:@selector(tableView:performKeyActionWithEvent:)]) {
+        if ([_delegate tableView:self performKeyActionWithEvent:event]) {
+            return YES;
+        }
+    }
+    return [super performKeyAction:event];
+    
 }
 
 - (BOOL)maintainContentOffsetAfterReload

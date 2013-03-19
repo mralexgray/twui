@@ -23,7 +23,7 @@
 	self.tableView.dataSource = self;
 	self.tableView.delegate = self;
     self.tableView.allowsMultipleSelection = YES;
-    self.tableView.backgroundColor = [NSColor blueColor];
+    self.tableView.backgroundColor = [NSColor grayColor];
 	[self.tableView reloadData];
 	self.tableView.maintainContentOffsetAfterReload = YES;
 	self.tableView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
@@ -185,6 +185,12 @@
 		// show context menu
 	}
 }
+
+-(BOOL)tableView:(TUITableView *)tableView performKeyActionWithEvent:(NSEvent *)event {
+    NSLog(@"Key down event %@", event);
+    return YES;
+}
+
 - (BOOL)tableView:(TUITableView *)tableView shouldSelectRowAtIndexPath:(NSIndexPath *)indexPath forEvent:(NSEvent *)event{
 	switch (event.type) {
 		case NSRightMouseDown:

@@ -27,7 +27,7 @@
 		self.backgroundColor = [NSColor clearColor];// [NSColor colorWithCalibratedWhite:0.97 alpha:1.0f];
 		self.highlightColor = [NSColor colorWithCalibratedWhite:0.87 alpha:1.0f];
 		self.selectionColor = [NSColor colorWithCalibratedWhite:0.77 alpha:1.0f];
-        self.alternateBackgroundColor = [NSColor colorWithDeviceRed:33./255. green:36./255. blue:41./255. alpha:1.0];
+//        self.alternateBackgroundColor = [NSColor colorWithDeviceRed:33./255. green:36./255. blue:41./255. alpha:1.0];
 //		self.alternateBackgroundColor = [NSColor colorWithCalibratedWhite:0.92 alpha:1.0f];
 //		self.alternateHighlightColor = [NSColor colorWithCalibratedWhite:0.82 alpha:1.0f];
 //		self.alternateSelectionColor = [NSColor colorWithCalibratedWhite:0.72 alpha:1.0f];
