@@ -894,6 +894,8 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
 				[_delegate tableView:self willDisplayCell:cell forRowAtIndexPath:i];
 			}
 			
+            [_visibleItems setObject:cell forKey:i];
+            
 			[self addSubview:cell];
 			
 			if([_indexPathShouldBeFirstResponder isEqual:i]) {
@@ -904,7 +906,6 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
 				_indexPathShouldBeFirstResponder = nil;
 			}
 			
-			[_visibleItems setObject:cell forKey:i];
 		}
 	}
 	
