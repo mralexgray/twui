@@ -218,11 +218,11 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
         return;
     }
     
-    BOOL isSlideToTheRight = [theEvent scrollingDeltaX] < 0;
+    BOOL isSlideToTheLeft = [theEvent scrollingDeltaX] < 0;
     BOOL animated = YES;
     
     TUIViewController *currentController = self.currentController;
-    TUIViewController *newController = isSlideToTheRight ? self.prevViewController : self.nextViewController;
+    TUIViewController *newController = isSlideToTheLeft ? self.nextViewController : self.prevViewController;
 
     if (!newController) {
 //        NSLog(@"There is no viewController to slide");
@@ -256,7 +256,7 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
                                     };
                                     
                                     CGRect lastRect = self.view.bounds;
-                                    CGRect nextRect = isSlideToTheRight ? TUINavigationOffscreenRightFrame(self.view.bounds) : TUINavigationOffscreenLeftFrame(self.view.bounds);
+                                    CGRect nextRect = isSlideToTheLeft ? TUINavigationOffscreenRightFrame(self.view.bounds) : TUINavigationOffscreenLeftFrame(self.view.bounds);
                                     if (!CGRectEqualToRect(currentController.view.frame, lastRect) && !CGRectEqualToRect(newController.view.frame, nextRect)) {
                                         [TUIView animateWithDuration:duration animations:^{
                                             currentController.view.frame = lastRect;
@@ -281,7 +281,7 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
                                     
                                     //Make sure the app draws the frame offscreen instead of just 'popping' it in
                                     [CATransaction begin];
-                                    newController.view.frame = isSlideToTheRight ? TUINavigationOffscreenRightFrame(self.view.bounds) : TUINavigationOffscreenLeftFrame(self.view.bounds);
+                                    newController.view.frame = isSlideToTheLeft ? TUINavigationOffscreenRightFrame(self.view.bounds) : TUINavigationOffscreenLeftFrame(self.view.bounds);
                                     [CATransaction flush];
                                     [CATransaction commit];
                                 }
@@ -333,7 +333,7 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
                                     CGRect nextRect = self.view.bounds;
                                     lastRect.origin.x = gestureAmount * CGRectGetWidth(self.view.bounds);
                                     
-                                    if (isSlideToTheRight) {
+                                    if (isSlideToTheLeft) {
                                         nextRect.origin.x = (1 - ABS(gestureAmount)) * CGRectGetWidth(self.view.bounds);
                                     } else {
                                         nextRect.origin.x = (-1 + ABS(gestureAmount)) * CGRectGetWidth(self.view.bounds);
