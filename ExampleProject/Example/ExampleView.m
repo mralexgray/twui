@@ -31,7 +31,9 @@
 		b.size.height -= TAB_HEIGHT;
 		
 		ExampleTableViewController *tableViewController = [[ExampleTableViewController alloc] initWithNibName:nil bundle:nil];
-		_navigationController = [[TUINavigationController alloc] initWithRootViewController:tableViewController];
+        ExampleTableViewController *tableViewController1 = [[ExampleTableViewController alloc] initWithNibName:nil bundle:nil];
+		_navigationController = [[TUICarouselNavigationController alloc] initWithRootViewController:tableViewController];
+        [_navigationController setViewControllers:@[tableViewController, tableViewController1] animated:YES];
         _navigationController.delegate = self;
 		[self addSubview:_navigationController.view];
 //		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeWidth relativeTo:@"superview" attribute:TUILayoutConstraintAttributeWidth]];
@@ -63,7 +65,7 @@
 			rect.size.height = TAB_HEIGHT; // only take up the bottom 60px
 			return rect;
 		};
-		[self addSubview:_tabBar];
+//		[self addSubview:_tabBar];
 		
 		// setup individual tabs
 		for(TUIView *tabView in _tabBar.tabViews) {
@@ -121,15 +123,10 @@
 - (void)tabBar:(ExampleTabBar *)tabBar didSelectTab:(NSInteger)index
 {
 	NSLog(@"selected tab %ld", index);
-	if(index == [[tabBar tabViews] count] - 1){
-	  NSLog(@"popping nav controller...");
-	  [self.navigationController popViewControllerAnimated:YES];
-	}
-}
-
-- (TUIViewController *)viewControllerForSlideInNavigationController:(TUINavigationController *)navigationController;
-{
-    return ([[navigationController viewControllers] count] < 2 ? [[ExampleTableViewController alloc] initWithNibName:nil bundle:nil] : nil);
+//	if(index == [[tabBar tabViews] count] - 1){
+//	  NSLog(@"popping nav controller...");
+//	  [self.navigationController slideToViewController:self.navigationController.nextViewController animated:YES];
+//	}
 }
 
 

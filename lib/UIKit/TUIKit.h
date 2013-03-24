@@ -38,6 +38,7 @@
 #import "TUILabel.h"
 #import "TUILayoutConstraint.h"
 #import "TUINavigationController.h"
+#import "TUICarouselNavigationController.h"
 #import "TUINSView.h"
 #import "TUINSView+Hyperfocus.h"
 #import "TUINSView+NSTextInputClient.h"

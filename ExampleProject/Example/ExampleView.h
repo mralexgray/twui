@@ -20,6 +20,6 @@
 @interface ExampleView : TUIView <ExampleTabBarDelegate>
 
 @property (nonatomic, strong) ExampleTabBar *tabBar;
-@property (nonatomic, strong) TUINavigationController *navigationController;
+@property (nonatomic, strong) TUICarouselNavigationController *navigationController;
 
 @end

@@ -366,6 +366,8 @@
 		D0EA12F415C34FEA00FAA603 /* NSColor+TUIExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = D0EA12F015C34FEA00FAA603 /* NSColor+TUIExtensions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		D0EA12F515C34FEA00FAA603 /* NSColor+TUIExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = D0EA12F015C34FEA00FAA603 /* NSColor+TUIExtensions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		D0EA12F615C34FEA00FAA603 /* NSColor+TUIExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = D0EA12F015C34FEA00FAA603 /* NSColor+TUIExtensions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		D491662116FE76AD001A8CFD /* TUICarouselNavigationController.h in Headers */ = {isa = PBXBuildFile; fileRef = D491661F16FE76AD001A8CFD /* TUICarouselNavigationController.h */; };
+		D491662216FE76AD001A8CFD /* TUICarouselNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = D491662016FE76AD001A8CFD /* TUICarouselNavigationController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -619,6 +621,8 @@
 		D0C7657015B6341800E7AC2C /* TUICAAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TUICAAction.m; sourceTree = "<group>"; };
 		D0EA12EF15C34FEA00FAA603 /* NSColor+TUIExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSColor+TUIExtensions.h"; sourceTree = "<group>"; };
 		D0EA12F015C34FEA00FAA603 /* NSColor+TUIExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSColor+TUIExtensions.m"; sourceTree = "<group>"; };
+		D491661F16FE76AD001A8CFD /* TUICarouselNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TUICarouselNavigationController.h; sourceTree = "<group>"; };
+		D491662016FE76AD001A8CFD /* TUICarouselNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TUICarouselNavigationController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -834,6 +838,8 @@
 				48A10E8015B7769A007F9EE3 /* TUILayoutManager.m */,
 				5000873F16524B1C0067ED42 /* TUINavigationController.h */,
 				5000874816524B1F0067ED42 /* TUINavigationController.m */,
+				D491661F16FE76AD001A8CFD /* TUICarouselNavigationController.h */,
+				D491662016FE76AD001A8CFD /* TUICarouselNavigationController.m */,
 				8819794A13E26E5800AA39EB /* TUINSView+Accessibility.h */,
 				8819794B13E26E5800AA39EB /* TUINSView+Accessibility.m */,
 				CBB74C5E13BE6E1900C85CB5 /* TUINSView+Hyperfocus.h */,
@@ -1066,6 +1072,7 @@
 				48886B361682AA550026426D /* TUISlider.h in Headers */,
 				07342D9316D7737C00A72F52 /* TUITableOulineView.h in Headers */,
 				07933D9416F2128C0041A13F /* TUITableViewMultiselection+Cell.h in Headers */,
+				D491662116FE76AD001A8CFD /* TUICarouselNavigationController.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1466,6 +1473,7 @@
 				48694D90165832B800BE65BF /* NSBezierPath+TUIExtensions.m in Sources */,
 				48886B391682AA550026426D /* TUISlider.m in Sources */,
 				07933D9716F2128C0041A13F /* TUITableViewMultiselection+Cell.m in Sources */,
+				D491662216FE76AD001A8CFD /* TUICarouselNavigationController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

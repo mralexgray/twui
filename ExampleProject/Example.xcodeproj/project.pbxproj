@@ -30,6 +30,7 @@
 		5C782FD713A556A900CF69EF /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C782FD613A556A800CF69EF /* QuartzCore.framework */; };
 		5ED56678139DC30300031CDF /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5ED56677139DC30300031CDF /* Cocoa.framework */; };
 		D01D9CF4146F54BC00147234 /* TwUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D01D9CEB146F54B300147234 /* TwUI.framework */; };
+		D491662516FE8360001A8CFD /* TUICarouselNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = D491662416FE8360001A8CFD /* TUICarouselNavigationController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -87,7 +88,7 @@
 		0726D92716DB8D4D003DAC87 /* TUITableOulineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TUITableOulineView.h; path = ../../lib/UIKit/TUITableOulineView.h; sourceTree = "<group>"; };
 		0726D92816DB8D4D003DAC87 /* TUITableOulineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TUITableOulineView.m; path = ../lib/UIKit/TUITableOulineView.m; sourceTree = SOURCE_ROOT; };
 		0726D94116DCD186003DAC87 /* TUINavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TUINavigationController.m; path = ../../lib/UIKit/TUINavigationController.m; sourceTree = "<group>"; };
-		0726D94316DCD19F003DAC87 /* TUINavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = TUINavigationController.h; path = ../../lib/UIKit/TUINavigationController.h; sourceTree = "<group>"; };
+		0726D94316DCD19F003DAC87 /* TUINavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TUINavigationController.h; path = ../../lib/UIKit/TUINavigationController.h; sourceTree = "<group>"; };
 		484C207315F445EB00B3104E /* clock.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clock.png; sourceTree = "<group>"; };
 		484C207415F445EB00B3104E /* clock@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "clock@2x.png"; sourceTree = "<group>"; };
 		484C207615F445EB00B3104E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
@@ -119,6 +120,8 @@
 		5ED5667B139DC30300031CDF /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		5ED5667C139DC30300031CDF /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D01D9CE0146F54B300147234 /* TwUI.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TwUI.xcodeproj; path = ../TwUI.xcodeproj; sourceTree = "<group>"; };
+		D491662316FE8360001A8CFD /* TUICarouselNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TUICarouselNavigationController.h; path = ../../lib/UIKit/TUICarouselNavigationController.h; sourceTree = "<group>"; };
+		D491662416FE8360001A8CFD /* TUICarouselNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TUICarouselNavigationController.m; path = ../../lib/UIKit/TUICarouselNavigationController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -143,6 +146,8 @@
 				0726D92816DB8D4D003DAC87 /* TUITableOulineView.m */,
 				0726D94316DCD19F003DAC87 /* TUINavigationController.h */,
 				0726D94116DCD186003DAC87 /* TUINavigationController.m */,
+				D491662316FE8360001A8CFD /* TUICarouselNavigationController.h */,
+				D491662416FE8360001A8CFD /* TUICarouselNavigationController.m */,
 				484C207D15F445EB00B3104E /* ExampleAppDelegate.h */,
 				484C207E15F445EB00B3104E /* ExampleAppDelegate.m */,
 				484C208115F445EB00B3104E /* ExampleSectionHeaderView.h */,
@@ -345,6 +350,7 @@
 				0726D92F16DB8E9B003DAC87 /* TUITableOulineView.m in Sources */,
 				0726D94216DCD186003DAC87 /* TUINavigationController.m in Sources */,
 				500088B2165362E60067ED42 /* ExampleTableViewController.m in Sources */,
+				D491662516FE8360001A8CFD /* TUICarouselNavigationController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
