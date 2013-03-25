@@ -32,10 +32,10 @@
 		
 		ExampleTableViewController *tableViewController = [[ExampleTableViewController alloc] initWithNibName:nil bundle:nil];
         ExampleTableViewController *tableViewController1 = [[ExampleTableViewController alloc] initWithNibName:nil bundle:nil];
-		_navigationController = [[TUICarouselNavigationController alloc] initWithRootViewController:tableViewController];
-        [_navigationController setViewControllers:@[tableViewController, tableViewController1] animated:YES];
+		_navigationController = [[TUICarouselNavigationController alloc] initWithViewControllera:@[tableViewController, tableViewController1]];
         _navigationController.delegate = self;
 		[self addSubview:_navigationController.view];
+        
 //		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeWidth relativeTo:@"superview" attribute:TUILayoutConstraintAttributeWidth]];
 //		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeHeight relativeTo:@"superview" attribute:TUILayoutConstraintAttributeHeight offset:-TAB_HEIGHT]];
 //		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeMinX relativeTo:@"superview" attribute:TUILayoutConstraintAttributeMinX]];
