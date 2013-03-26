@@ -203,6 +203,12 @@ static NSTimeInterval const TUIScrollerDisplayDuration = 0.75f;
 	
 	// Allow the scroll indicator to "rubber band" squish if we overscroll.
 	CGFloat modifier = self.vertical ? self.bounds.size.height : self.bounds.size.width;
+    
+    // We can't layout zero-sized view
+    if (modifier == 0) {
+        return;
+    }
+    
 	CGFloat pullFactor = 1.25f * (1.0f - ((modifier - knobLength) / modifier));
 	
 	// If we're at the base of the scroller track, don't offset the knob.
