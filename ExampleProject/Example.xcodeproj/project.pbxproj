@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0726D92916DB8D4D003DAC87 /* TUITableOulineView.h in Resources */ = {isa = PBXBuildFile; fileRef = 0726D92716DB8D4D003DAC87 /* TUITableOulineView.h */; };
-		0726D92E16DB8D6D003DAC87 /* TUITableOulineView.m in Resources */ = {isa = PBXBuildFile; fileRef = 0726D92816DB8D4D003DAC87 /* TUITableOulineView.m */; };
-		0726D92F16DB8E9B003DAC87 /* TUITableOulineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726D92816DB8D4D003DAC87 /* TUITableOulineView.m */; };
+		0726D92916DB8D4D003DAC87 /* TUITableOutlineView.h in Resources */ = {isa = PBXBuildFile; fileRef = 0726D92716DB8D4D003DAC87 /* TUITableOutlineView.h */; };
+		0726D92E16DB8D6D003DAC87 /* TUITableOutlineView.m in Resources */ = {isa = PBXBuildFile; fileRef = 0726D92816DB8D4D003DAC87 /* TUITableOutlineView.m */; };
+		0726D92F16DB8E9B003DAC87 /* TUITableOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726D92816DB8D4D003DAC87 /* TUITableOutlineView.m */; };
 		0726D94216DCD186003DAC87 /* TUINavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726D94116DCD186003DAC87 /* TUINavigationController.m */; };
 		07342D8416D677BF00A72F52 /* TwUI.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = D01D9CEB146F54B300147234 /* TwUI.framework */; };
 		484C208B15F445EB00B3104E /* clock.png in Resources */ = {isa = PBXBuildFile; fileRef = 484C207315F445EB00B3104E /* clock.png */; };
@@ -85,8 +85,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0726D92716DB8D4D003DAC87 /* TUITableOulineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TUITableOulineView.h; path = ../../lib/UIKit/TUITableOulineView.h; sourceTree = "<group>"; };
-		0726D92816DB8D4D003DAC87 /* TUITableOulineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TUITableOulineView.m; path = ../lib/UIKit/TUITableOulineView.m; sourceTree = SOURCE_ROOT; };
+		0726D92716DB8D4D003DAC87 /* TUITableOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TUITableOutlineView.h; path = ../../lib/UIKit/TUITableOutlineView.h; sourceTree = "<group>"; };
+		0726D92816DB8D4D003DAC87 /* TUITableOutlineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TUITableOutlineView.m; path = ../lib/UIKit/TUITableOutlineView.m; sourceTree = SOURCE_ROOT; };
 		0726D94116DCD186003DAC87 /* TUINavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TUINavigationController.m; path = ../../lib/UIKit/TUINavigationController.m; sourceTree = "<group>"; };
 		0726D94316DCD19F003DAC87 /* TUINavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TUINavigationController.h; path = ../../lib/UIKit/TUINavigationController.h; sourceTree = "<group>"; };
 		484C207315F445EB00B3104E /* clock.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clock.png; sourceTree = "<group>"; };
@@ -142,8 +142,8 @@
 		484C207215F445EB00B3104E /* Example */ = {
 			isa = PBXGroup;
 			children = (
-				0726D92716DB8D4D003DAC87 /* TUITableOulineView.h */,
-				0726D92816DB8D4D003DAC87 /* TUITableOulineView.m */,
+				0726D92716DB8D4D003DAC87 /* TUITableOutlineView.h */,
+				0726D92816DB8D4D003DAC87 /* TUITableOutlineView.m */,
 				0726D94316DCD19F003DAC87 /* TUINavigationController.h */,
 				0726D94116DCD186003DAC87 /* TUINavigationController.m */,
 				D491662316FE8360001A8CFD /* TUICarouselNavigationController.h */,
@@ -328,8 +328,8 @@
 				484C208E15F445EB00B3104E /* InfoPlist.strings in Resources */,
 				484C208F15F445EB00B3104E /* MainMenu.xib in Resources */,
 				484C209715F445EB00B3104E /* large-image.jpeg in Resources */,
-				0726D92916DB8D4D003DAC87 /* TUITableOulineView.h in Resources */,
-				0726D92E16DB8D6D003DAC87 /* TUITableOulineView.m in Resources */,
+				0726D92916DB8D4D003DAC87 /* TUITableOutlineView.h in Resources */,
+				0726D92E16DB8D6D003DAC87 /* TUITableOutlineView.m in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -347,7 +347,7 @@
 				484C209515F445EB00B3104E /* ExampleTableViewCell.m in Sources */,
 				484C209615F445EB00B3104E /* ExampleView.m in Sources */,
 				484C209815F445EB00B3104E /* main.m in Sources */,
-				0726D92F16DB8E9B003DAC87 /* TUITableOulineView.m in Sources */,
+				0726D92F16DB8E9B003DAC87 /* TUITableOutlineView.m in Sources */,
 				0726D94216DCD186003DAC87 /* TUINavigationController.m in Sources */,
 				500088B2165362E60067ED42 /* ExampleTableViewController.m in Sources */,
 				D491662516FE8360001A8CFD /* TUICarouselNavigationController.m in Sources */,

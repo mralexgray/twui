@@ -6,7 +6,7 @@
 //
 //
 
-#import "TUITableOulineView.h"
+#import "TUITableOutlineView.h"
 #import "TUILayoutConstraint.h"
 
 CG_INLINE CGRect CGRectWithPoints(CGPoint s, CGPoint e)
@@ -37,7 +37,7 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
 }
 
 
-@interface TUITableOulineView (Private)
+@interface TUITableOutlineView (Private)
 
 - (void)_updateSectionInfo;
 - (BOOL)_preLayoutCells;
@@ -46,7 +46,7 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
 
 @end
 
-@implementation TUITableOulineView
+@implementation TUITableOutlineView
 {
     CGFloat _transitionOffset;
     CGFloat _topOffset, _bottomOffset;

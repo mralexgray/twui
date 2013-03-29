@@ -7,10 +7,10 @@
 //
 
 #import "TUIKit.h"
-#import "TUITableOulineView.h"
+#import "TUITableOutlineView.h"
 
 @interface ExampleTableViewController : TUIViewController <TUITableViewDelegate, TUITableViewDataSource>
 
-@property (nonatomic, strong) TUITableOulineView *tableView;
+@property (nonatomic, strong) TUITableOutlineView *tableView;
 
 @end

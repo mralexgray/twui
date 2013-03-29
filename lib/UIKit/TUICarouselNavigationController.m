@@ -20,7 +20,7 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
 
 @implementation TUICarouselNavigationController
 
-- (id)initWithViewControllera:(NSArray *)viewControllers {
+- (id)initWithViewControllers:(NSArray *)viewControllers {
 	self = [super init];
 	if (self) {
 		_controllers = [viewControllers mutableCopy];

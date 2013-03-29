@@ -18,7 +18,7 @@
 }
 
 - (void)viewDidLoad {
-	self.tableView = [[TUITableOulineView alloc] initWithFrame:self.view.frame];
+	self.tableView = [[TUITableOutlineView alloc] initWithFrame:self.view.frame];
 	self.tableView.alwaysBounceVertical = YES;
 	self.tableView.dataSource = self;
 	self.tableView.delegate = self;
@@ -55,7 +55,7 @@
 - (NSInteger)tableView:(TUITableView *)table numberOfRowsInSection:(NSInteger)section {
 //    return 5;
 //    NSLog(@"RQ NUMS");
- 	if ([(TUITableOulineView *)table sectionIsOpened:section] ) {
+ 	if ([(TUITableOutlineView *)table sectionIsOpened:section] ) {
         switch (section) {
             case 0:     return 10;
             case 1:     return 4;
@@ -142,7 +142,7 @@
 	
 	return cell;
 }
-- (void)tableView:(TUITableOulineView *)tableView willDisplayCell:(ExampleTableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)tableView:(TUITableOutlineView *)tableView willDisplayCell:(ExampleTableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.row == 0) {
         cell.backgroundColor = [NSColor controlColor];
@@ -169,7 +169,7 @@
 
 - (void)tableView:(TUITableView *)tableView didClickRowAtIndexPath:(NSIndexPath *)indexPath withEvent:(NSEvent *)event {
     if (indexPath.row == 0) {
-        [(TUITableOulineView *)tableView toggleSection:indexPath.section];
+        [(TUITableOutlineView *)tableView toggleSection:indexPath.section];
     } else
 	if([event clickCount] == 1) {
 		// do something cool

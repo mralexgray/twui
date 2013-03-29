@@ -1292,9 +1292,9 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
 					}
 				}
 				
+                _iterationCount = 0;
 				return [NSIndexPath indexPathForRow:row inSection:section];
 			});
-            _iterationCount = 0;
 			
             
 			return YES;
