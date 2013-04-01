@@ -1116,7 +1116,7 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
 - (void)justSelectRowAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated scrollPosition:(TUITableViewScrollPosition)scrollPosition
 {
     [self selectRowAtIndexPath:indexPath animated:animated scrollPosition:scrollPosition];
-    _iterationCount = 0;
+//    _iterationCount = 0;
 }
 
 
@@ -1129,13 +1129,13 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
      */
     
 	NSIndexPath *oldIndexPath = [self indexPathForSelectedRow];
-    if([indexPath isEqual:oldIndexPath] && _iterationCount != 0)
-    {
-        _iterationCount = 0;
-	}
-    else if (_iterationCount == 0)
-    {
-        
+//    if([indexPath isEqual:oldIndexPath] && _iterationCount != 0)
+//    {
+//        _iterationCount = 0;
+//	}
+//    else if (_iterationCount == 0)
+//    {
+    
         /*!
          * check for the current event only if the multiple selection
          * is enabled to avoid uselesss computations.
@@ -1150,8 +1150,8 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
         // grab the tableview cell
         TUITableViewCell *cell = [self cellForRowAtIndexPath:indexPath]; // may be nil
         
-        _iterationCount++;
-        
+//        _iterationCount++;
+    
         // if it allows multiple selection
         if (_allowsMultipleSelection)
         {
@@ -1187,7 +1187,7 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
 		if([self.delegate respondsToSelector:@selector(tableView:didSelectRowAtIndexPath:)]){
 			[self.delegate tableView:self didSelectRowAtIndexPath:indexPath];
 		}
-	}
+//	}
     
     NSResponder *firstResponder = [self.nsWindow firstResponder];
     if(firstResponder == self || firstResponder == [self cellForRowAtIndexPath:oldIndexPath]) {
@@ -1292,7 +1292,7 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
 					}
 				}
 				
-                _iterationCount = 0;
+//                _iterationCount = 0;
 				return [NSIndexPath indexPathForRow:row inSection:section];
 			});
 			
@@ -1319,7 +1319,7 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
 					}
 				}
 				
-                _iterationCount = 0;
+//                _iterationCount = 0;
 				return [NSIndexPath indexPathForRow:row inSection:section];
 			});
             

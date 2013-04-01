@@ -244,7 +244,7 @@ static inline void tui_viewAnimateRedrawConditionally(TUIView *view, BOOL condit
         [self.tableView __mouseUpInCell:self offset:_mouseOffset event:event];
 
     [self.nsWindow makeFirstResponder:self.tableView];
-	[self.tableView selectRowAtIndexPath:self.indexPath animated:YES scrollPosition:TUITableViewScrollPositionNone];
+//	[self.tableView selectRowAtIndexPath:self.indexPath animated:YES scrollPosition:TUITableViewScrollPositionNone];
 	[super mouseUp:event];
 
 	// We were selected, so we are no longer highlighted.
