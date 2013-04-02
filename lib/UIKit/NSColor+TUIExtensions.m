@@ -33,6 +33,9 @@ static void releasePatternInfo (void *info) {
     if (!color)
         return nil;
 
+    if ([self respondsToSelector:@selector(colorWithCGColor:)])
+        return [NSColor colorWithCGColor:color];
+    
     CGColorSpaceRef colorSpaceRef = CGColorGetColorSpace(color);
 
     NSColorSpace *colorSpace = [[NSColorSpace alloc] initWithCGColorSpace:colorSpaceRef];
@@ -43,6 +46,12 @@ static void releasePatternInfo (void *info) {
 }
 
 - (CGColorRef)tui_CGColor; {
+    //
+    // 10.8 Support NSColor 2 CGColorRef transofrmation. Lets use it
+    //
+    if ([self respondsToSelector:@selector(CGColor)]) {
+        return [self CGColor];
+    }
     if ([self.colorSpaceName isEqualToString:NSPatternColorSpace]) {
         CGImageRef patternImage = self.patternImage.tui_CGImage;
         if (!patternImage)
@@ -50,12 +59,15 @@ static void releasePatternInfo (void *info) {
 
         size_t width = CGImageGetWidth(patternImage);
         size_t height = CGImageGetHeight(patternImage);
+        
+        // If will running on retina screen, needs to adjust pattern context.
+        CGFloat scale = [NSScreen instancesRespondToSelector:@selector(backingScaleFactor)] ? [[NSScreen mainScreen] backingScaleFactor] : 1.0;
 
         CGRect patternBounds = CGRectMake(0, 0, width, height);
         CGPatternRef pattern = CGPatternCreate(
             (void *)CFRetain(patternImage),
             patternBounds,
-            CGAffineTransformIdentity,
+            CGAffineTransformMakeScale(1.0/scale, 1.0/scale),
             width,
             height,
             kCGPatternTilingConstantSpacingMinimalDistortion,

@@ -14,12 +14,13 @@
  limitations under the License.
  */
 
-#import "TUIView.h"
 #import <pthread.h>
 #import "NSColor+TUIExtensions.h"
 #import "TUICGAdditions.h"
+#import "TUIView.h"
 #import "TUILayoutManager.h"
 #import "TUINSView.h"
+#import "TUINSView+Private.h"
 #import "TUINSWindow.h"
 #import "TUITextRenderer.h"
 #import "TUIViewController.h"
@@ -128,8 +129,10 @@ static pthread_key_t TUICurrentContextScaleFactorTLSKey;
 
 - (void)dealloc
 {
-    [[TUILayoutManager sharedLayoutManager] removeLayoutConstraintsFromView:self];
-    [[TUILayoutManager sharedLayoutManager] setLayoutName:nil forView:self];
+	[[TUILayoutManager sharedLayoutManager] removeLayoutConstraintsFromView:self];
+	[[TUILayoutManager sharedLayoutManager] setLayoutName:nil forView:self];
+
+	if (self.nsView.trackingView == self) self.nsView.trackingView = nil;
     
 	[self setTextRenderers:nil];
 	_layer.delegate = nil;
@@ -235,18 +238,16 @@ static pthread_key_t TUICurrentContextScaleFactorTLSKey;
 
 - (void)windowDidBecomeKey
 {
-	if(self.needsDisplayWhenWindowsKeyednessChanges) {
+	if(self.needsDisplayWhenWindowsKeyednessChanges)
 		[self setNeedsDisplay];
-	}
 	
 	[self.subviews makeObjectsPerformSelector:@selector(windowDidBecomeKey)];
 }
 
 - (void)windowDidResignKey
 {
-	if(self.needsDisplayWhenWindowsKeyednessChanges) {
+	if(self.needsDisplayWhenWindowsKeyednessChanges)
 		[self setNeedsDisplay];
-	}
 	
 	[self.subviews makeObjectsPerformSelector:@selector(windowDidResignKey)];
 }
@@ -262,6 +263,7 @@ static pthread_key_t TUICurrentContextScaleFactorTLSKey;
 	_viewFlags.delegateMouseEntered = [_viewDelegate respondsToSelector:@selector(view:mouseEntered:)];
 	_viewFlags.delegateMouseExited = [_viewDelegate respondsToSelector:@selector(view:mouseExited:)];
 	_viewFlags.delegateWillDisplayLayer = [_viewDelegate respondsToSelector:@selector(viewWillDisplayLayer:)];
+    _viewFlags.delegateScrollWheel = [_viewDelegate respondsToSelector:@selector(view:scrollWheel:)];
 }
 
 /*
@@ -386,8 +388,8 @@ static void TUISetCurrentContextScaleFactor(CGFloat s)
 			CGContextSetRGBFillColor(context, 0, 1, 0, 0.3);
 		} else {
 			CGContextSetRGBFillColor(context, 1, 0, 0, 0.3);
-			CGContextFillRect(context, rectToDraw);
 		}
+		CGContextFillRect(context, rectToDraw);
 		#endif
 
 		layer.contents = TUIGraphicsGetImageFromCurrentImageContext();
@@ -511,7 +513,7 @@ static void TUISetCurrentContextScaleFactor(CGFloat s)
 	} else if(contentMode == TUIViewContentModeScaleAspectFill) {
 		_layer.contentsGravity = kCAGravityResizeAspectFill;
 	} else {
-		NSAssert1(NO, @"%u is not a valid contentMode.", contentMode);
+		NSAssert1(NO, @"%lu is not a valid contentMode.", (unsigned long)contentMode);
 	}
 }
 

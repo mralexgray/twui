@@ -16,13 +16,10 @@
 
 #import "TUIView.h"
 
-enum _TUIProgressBarStyle
-{
-	TUIProgressBarStyleBlue = 0, //default
+typedef enum TUIProgressBarStyle : NSUInteger {
+	TUIProgressBarStyleBlue, //default
 	TUIProgressBarStyleGray
-};
-
-typedef NSUInteger TUIProgressBarStyle;
+} TUIProgressBarStyle;
 
 @interface TUIProgressBar : TUIView
 

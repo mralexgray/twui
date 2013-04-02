@@ -28,4 +28,14 @@
 	return cell;
 }
 
+- (void)willChange;
+{
+    _tableFlags.layoutSubviewsReentrancyGuard = 1;
+}
+
+- (void)didChange;
+{
+    _tableFlags.layoutSubviewsReentrancyGuard = 0;
+}
+
 @end

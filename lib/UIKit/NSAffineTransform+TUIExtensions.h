@@ -14,8 +14,14 @@
  limitations under the License.
  */
 
-#import "TUIView+NSTextInputClient.h"
+#import <Foundation/Foundation.h>
 
-@implementation TUIView (NSTextInputClient)
+@interface NSAffineTransform (TUIExtensions)
+
+// Creates an NSAffineTransform object with the passed CGAffineTransform.
++ (NSAffineTransform *)tui_transformWithCGAffineTransform:(CGAffineTransform)transform;
+
+// Creates an CGAffineTransform struct with the transform of the reciever.
+- (CGAffineTransform)tui_CGAffineTransform;
 
 @end

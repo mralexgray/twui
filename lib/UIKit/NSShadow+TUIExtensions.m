@@ -14,4 +14,17 @@
  limitations under the License.
  */
 
-BOOL AtLeastLion = NO;
+#import "NSShadow+TUIExtensions.h"
+
+@implementation NSShadow (TUIExtensions)
+
++ (NSShadow *)tui_shadowWithRadius:(CGFloat)radius offset:(CGSize)offset color:(NSColor *)color {
+	NSShadow *shadow = [[self.class alloc] init];
+	shadow.shadowBlurRadius = radius;
+	shadow.shadowOffset = offset;
+	shadow.shadowColor = color;
+	
+	return shadow;
+}
+
+@end

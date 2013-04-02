@@ -1,3 +1,10 @@
+**This fork of TwUI is feature-frozen.** Our feature work is focusing on
+[Rebel](https://github.com/blog/1300-rebel-a-framework-for-improving-appkit)
+instead.
+
+You might be able to find a more active fork of TwUI by checking out the
+[network graph](https://github.com/twitter/twui/network).
+
 # TwUI
 
 TwUI is a hardware accelerated UI framework for Mac, inspired by UIKit.  It enables:
@@ -33,14 +40,6 @@ TwUI is currently shipping in Twitter for Mac and GitHub for Mac, in use 24/7 by
 This project follows the [SemVer](http://semver.org/) standard. The API may change in backwards-incompatible ways between major releases.
 
 The goal of TwUI is to build a high-quality UI framework designed specifically for the Mac.  Much inspiration comes from UIKit, but diverging to try new things (i.e. block-based layout and drawRect), and optimizing for Mac-specific interactions is encouraged.
-
-# Contributing
-
-We will happily accept pull requests that meet one of the following criteria:
-
- 1. It fixes some functionality that is already in TwUI. This might be a bug, or something not working as expected.
- 2. It's something so basic or important that TwUI really should have it.
- 3. It has to integrate with TwUI internals, and so can't easily be done outside of the framework. This one is the most ambiguous, because interesting things may match this criterion, but still be way out of scope. In some cases, a fork might be more appropriate. Use your best judgment.
 
 # Community
 

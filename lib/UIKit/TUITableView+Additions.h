@@ -21,6 +21,8 @@ typedef void (^TUITableViewInitializationBlock)(id cell);
 @interface TUITableView (Additions)
 
 - (TUITableViewCell *)ab_reusableCellOfClass:(Class)cellClass identifier:(NSString *)identifier initializationBlock:(TUITableViewInitializationBlock)block;
+- (void)willChange;
+- (void)didChange;
 
 @end
 

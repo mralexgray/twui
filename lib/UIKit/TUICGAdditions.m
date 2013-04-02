@@ -59,15 +59,15 @@ CGImageRef TUICreateCGImageFromBitmapContext(CGContextRef ctx) // autoreleased
 }
 
 CGPathRef TUICGPathCreateRoundedRect(CGRect rect, CGFloat radius) {
-	return TUICGPathCreateRoundedRectWithCorners(rect, radius, TUICGRoundedRectCornerAll);
+	return TUICGPathCreateRoundedRectWithCorners(rect, radius, TUIRectCornerAll);
 }
 
-CGPathRef TUICGPathCreateRoundedRectWithCorners(CGRect rect, CGFloat radius, TUICGRoundedRectCorner corners) {
+CGPathRef TUICGPathCreateRoundedRectWithCorners(CGRect rect, CGFloat radius, TUIRectCorner corners) {
 	CGMutablePathRef path = CGPathCreateMutable();
 	CGPathMoveToPoint(path, NULL, rect.origin.x, rect.origin.y + radius);
 	CGPathAddLineToPoint(path, NULL, rect.origin.x, rect.origin.y + rect.size.height - radius);
 	
-	if((corners & TUICGRoundedRectCornerTopLeft) != 0) {
+	if((corners & TUIRectCornerTopLeft) != 0) {
 		CGPathAddArc(path, NULL, rect.origin.x + radius, rect.origin.y + rect.size.height - radius, radius, M_PI, M_PI / 2, 1);
 	} else {
 		CGPathAddLineToPoint(path, NULL, rect.origin.x, rect.origin.y + rect.size.height);
@@ -75,7 +75,7 @@ CGPathRef TUICGPathCreateRoundedRectWithCorners(CGRect rect, CGFloat radius, TUI
 	
 	CGPathAddLineToPoint(path, NULL, rect.origin.x + rect.size.width - radius, rect.origin.y + rect.size.height);
 	
-	if((corners & TUICGRoundedRectCornerTopRight) != 0) {
+	if((corners & TUIRectCornerTopRight) != 0) {
 		CGPathAddArc(path, NULL, rect.origin.x + rect.size.width - radius, rect.origin.y + rect.size.height - radius, radius, M_PI / 2, 0.0f, 1);
 	} else {
 		CGPathAddLineToPoint(path, NULL, rect.origin.x + rect.size.width, rect.origin.y + rect.size.height);
@@ -83,7 +83,7 @@ CGPathRef TUICGPathCreateRoundedRectWithCorners(CGRect rect, CGFloat radius, TUI
 	
 	CGPathAddLineToPoint(path, NULL, rect.origin.x + rect.size.width, rect.origin.y + radius);
 	
-	if((corners & TUICGRoundedRectCornerBottomRight) != 0) {
+	if((corners & TUIRectCornerBottomRight) != 0) {
 		CGPathAddArc(path, NULL, rect.origin.x + rect.size.width - radius, rect.origin.y + radius, radius, 0.0f, -M_PI / 2, 1);
 	} else {
 		CGPathAddLineToPoint(path, NULL, rect.origin.x + rect.size.width, rect.origin.y);
@@ -91,7 +91,7 @@ CGPathRef TUICGPathCreateRoundedRectWithCorners(CGRect rect, CGFloat radius, TUI
 	
 	CGPathAddLineToPoint(path, NULL, rect.origin.x + radius, rect.origin.y);
 	
-	if((corners & TUICGRoundedRectCornerBottomLeft) != 0) {
+	if((corners & TUIRectCornerBottomLeft) != 0) {
 		CGPathAddArc(path, NULL, rect.origin.x + radius, rect.origin.y + radius, radius, -M_PI / 2, M_PI, 1);
 	} else {
 		CGPathAddLineToPoint(path, NULL, rect.origin.x, rect.origin.y);
@@ -199,7 +199,7 @@ NSImage *TUIGraphicsContextGetImage(CGContextRef ctx)
 	CGSize size = CGSizeMake(CGImageGetWidth(CGImage), CGImageGetHeight(CGImage));
 	NSImage *image = [[NSImage alloc] initWithCGImage:CGImage size:size];
 	CGImageRelease(CGImage);
-    
+	
 	return image;
 }
 
@@ -208,7 +208,7 @@ void TUIGraphicsBeginImageContextWithOptions(CGSize size, BOOL opaque, CGFloat s
 	if (scale == 0.0) {
 		scale = [NSScreen instancesRespondToSelector:@selector(backingScaleFactor)] ? [[NSScreen mainScreen] backingScaleFactor] : 1.0;
 	}
-    
+	
 	size.width *= scale;
 	size.height *= scale;
 	if(size.width < 1) size.width = 1;
@@ -235,7 +235,7 @@ NSImage *TUIGraphicsGetImageForView(TUIView *view)
 	[view.layer renderInContext:TUIGraphicsGetCurrentContext()];
 	NSImage *image = TUIGraphicsGetImageFromCurrentImageContext();
 	TUIGraphicsEndImageContext();
-    
+	
 	return image;
 }
 
@@ -246,11 +246,12 @@ void TUIGraphicsEndImageContext(void)
 
 NSImage *TUIGraphicsDrawAsImage(CGSize size, void(^draw)(void))
 {
-	TUIGraphicsBeginImageContext(size);
+	TUIGraphicsBeginImageContextWithOptions(size, NO, 0);
 	draw();
 	NSImage *image = TUIGraphicsGetImageFromCurrentImageContext();
 	TUIGraphicsEndImageContext();
-    
+
+	image.size = size;
 	return image;
 }
 

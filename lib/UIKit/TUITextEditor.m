@@ -17,6 +17,7 @@
 #import "TUITextEditor.h"
 #import "TUINSView.h"
 #import "TUINSWindow.h"
+#import "TUITextRenderer+Private.h"
 
 @implementation TUITextEditor
 
@@ -31,13 +32,38 @@
 		backingStore = [[NSMutableAttributedString alloc] initWithString:@""];
 		markedRange = NSMakeRange(NSNotFound, 0);
 		inputContext = [[NSTextInputContext alloc] initWithClient:self];
-		inputContext.acceptsGlyphInfo = YES; // fucker
+		inputContext.acceptsGlyphInfo = YES;
 		
+		_secure = NO;
 		self.attributedString = backingStore;
 	}
 	return self;
 }
 
+- (void)setSecure:(BOOL)secured {
+	if(_secure == secured) {
+		return;
+	}
+	
+	_secure = secured;
+	[self _resetFramesetter];
+}
+
+- (NSAttributedString*)drawingAttributedString {
+	if(_secure) {
+		NSString *placeholder = @"\u2022";
+		NSUInteger backingStoreLength = backingStore.length;
+		NSMutableString *string = [NSMutableString string];
+		for(int i = 0; i < backingStoreLength; i++) {
+			[string appendString:placeholder];
+		}
+		
+		NSAttributedString *securePlaceHolder = [[NSAttributedString alloc] initWithString:string attributes:defaultAttributes];
+		return securePlaceHolder;
+	}
+	
+	return [super drawingAttributedString];
+}
 
 - (NSTextInputContext *)inputContext
 {
@@ -60,6 +86,7 @@
 	[view setNeedsDisplay];
 	return [super becomeFirstResponder];
 }
+
 
 - (BOOL)resignFirstResponder
 {
@@ -92,6 +119,22 @@
 	[self _textDidChange];
 }
 
+- (BOOL)respondsToSelector:(SEL)aSelector
+{
+	if(aSelector == @selector(copy:) || aSelector == @selector(cut:))
+		return !_secure;
+	return [super respondsToSelector:aSelector];
+}
+
+- (void)copy:(id)sender
+{
+	if(_secure) {
+		return;
+	}
+	
+	[super copy:sender];
+}
+
 - (void)cut:(id)sender
 {
 	[self copy:sender];
@@ -103,6 +146,7 @@
 	if (self.editable) {
 		[self insertText:[[NSPasteboard generalPasteboard] stringForType:NSPasteboardTypeString]];
 	}
+	[self _scrollToIndex:MAX(_selectionStart, _selectionEnd)];
 }
 
 - (void)patchMenuWithStandardEditingMenuItems:(NSMenu *)menu
@@ -175,9 +219,8 @@
 	selectedRange.length = 0;
 	self.selectedRange = selectedRange;
 	[self _textDidChange];
+	[self _scrollToIndex:MAX(_selectionStart, _selectionEnd)];
 }
-
-
 
 
 
@@ -237,6 +280,7 @@
 	[self unmarkText];
 	self.selectedRange = selectedRange;
 	[self _textDidChange];
+	[self _scrollToIndex:MAX(_selectionStart, _selectionEnd)];
 }
 
 /* The receiver inserts aString replacing the content specified by replacementRange.

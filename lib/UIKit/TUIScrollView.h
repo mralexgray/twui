@@ -17,16 +17,16 @@
 #import "TUIView.h"
 #import "TUIGeometry.h"
 
-typedef enum {
+typedef enum TUIScrollViewIndicatorStyle : NSUInteger {
   /** Dark scroll indicator style suitable for light background */
   TUIScrollViewIndicatorStyleDark,
   /** Light scroll indicator style suitable for dark backgrounds */
   TUIScrollViewIndicatorStyleLight,
-  /** Default scroll indicator style (dark) */
-  TUIScrollViewIndicatorStyleDefault = TUIScrollViewIndicatorStyleDark
+  /** Dark scroll indicator with a light border style suitable for all backgrounds */
+  TUIScrollViewIndicatorStyleDefault
 } TUIScrollViewIndicatorStyle;
 
-typedef enum {
+typedef enum TUIScrollViewIndicatorVisibility : NSUInteger {
   /** Never show scrollers */
   TUIScrollViewIndicatorVisibleNever,
   /** Show scrollers only during an animated scroll (not particularly useful yet) */
@@ -39,25 +39,25 @@ typedef enum {
   TUIScrollViewIndicatorVisibleDefault = TUIScrollViewIndicatorVisibleAlways
 } TUIScrollViewIndicatorVisibility;
 
-typedef enum {
+typedef enum TUIScrollViewIndicator : NSUInteger {
   TUIScrollViewIndicatorVertical,
   TUIScrollViewIndicatorHorizontal,
 } TUIScrollViewIndicator;
 
 @protocol TUIScrollViewDelegate;
 
-@class TUIScrollKnob;
+@class TUIScroller;
 
 /**
  
- Bouncing is enabled on [REDACTED]+ or if ForceEnableScrollBouncing defaults = YES
+ Bouncing is enabled on 10.7+ or if ForceEnableScrollBouncing defaults = YES
  (Only tested with vertical bouncing)
  
- The physics are different than AppKit on [REDACTED].  Namely:
+ The physics are different than AppKit on 10.7.  Namely:
  
  1. During a rubber band (finger down, pulling outside the allowed bounds)
  the rubber-band-force (force keeping it from pulling too far) isn't a
- fixed multiplier of the offset (iOS and [REDACTED] use 0.5x).  Rather
+ fixed multiplier of the offset (iOS and 10.7 use 0.5x).  Rather
  it's exponential, so the harder you pull the stronger it tugs.
  2. Again, during a rubber band (fingers down): if you push back the other way
  the rubber band doesn't fight you.  On iOS the this behavior makes 
@@ -79,10 +79,7 @@ typedef enum {
 	
 	__unsafe_unretained id _delegate;
 	
-  TUIScrollKnob * _verticalScrollKnob;
-  TUIScrollKnob * _horizontalScrollKnob;
-	
-	NSTimer *scrollTimer;
+	CVDisplayLinkRef displayLink;
 	CGPoint destinationOffset;
 	CGPoint unfixedContentOffset;
 	
@@ -122,28 +119,32 @@ typedef enum {
 	BOOL x;
 	
 	struct {
-		unsigned int didChangeContentInset:1;
-		unsigned int bounceEnabled:1;
-		unsigned int alwaysBounceVertical:1;
-		unsigned int alwaysBounceHorizontal:1;
-		unsigned int mouseInside:1;
-		unsigned int mouseDownInScrollKnob:1;
-		unsigned int ignoreNextScrollPhaseNormal_10_7:1;
-		unsigned int gestureBegan:1;
-		unsigned int animationMode:2;
-		unsigned int scrollDisabled:1;
-		unsigned int scrollIndicatorStyle:2;
-		unsigned int verticalScrollIndicatorVisibility:2;
-		unsigned int horizontalScrollIndicatorVisibility:2;
-		unsigned int verticalScrollIndicatorShowing:1;
-		unsigned int horizontalScrollIndicatorShowing:1;
-		unsigned int delegateScrollViewDidScroll:1;
-		unsigned int delegateScrollViewWillBeginDragging:1;
-		unsigned int delegateScrollViewDidEndDragging:1;
-		unsigned int delegateScrollViewWillShowScrollIndicator:1;
-		unsigned int delegateScrollViewDidShowScrollIndicator:1;
-		unsigned int delegateScrollViewWillHideScrollIndicator:1;
-		unsigned int delegateScrollViewDidHideScrollIndicator:1;
+		unsigned didChangeContentInset:1;
+		unsigned bounceEnabled:1;
+		unsigned alwaysBounceVertical:1;
+		unsigned alwaysBounceHorizontal:1;
+		unsigned mouseInside:1;
+		unsigned mouseDownInScroller:1;
+		unsigned ignoreNextScrollPhaseNormal_10_7:1;
+		unsigned gestureBegan:1;
+		unsigned touchesBegan:1;
+		unsigned animationMode:2;
+		unsigned scrollDisabled:1;
+		unsigned scrollIndicatorStyle:2;
+		unsigned verticalScrollIndicatorVisibility:2;
+		unsigned horizontalScrollIndicatorVisibility:2;
+		unsigned verticalScrollIndicatorShowing:1;
+		unsigned horizontalScrollIndicatorShowing:1;
+		unsigned verticalScrollIndicatorExpanded:1;
+		unsigned horizontalScrollIndicatorExpanded:1;
+		unsigned delegateScrollViewDidScroll:1;
+		unsigned delegateScrollViewWillBeginDragging:1;
+		unsigned delegateScrollViewDidEndDragging:1;
+		unsigned delegateScrollViewDidEndDecelerating:1;
+		unsigned delegateScrollViewWillShowScrollIndicator:1;
+		unsigned delegateScrollViewDidShowScrollIndicator:1;
+		unsigned delegateScrollViewWillHideScrollIndicator:1;
+		unsigned delegateScrollViewDidHideScrollIndicator:1;
 	} _scrollViewFlags;
 }
 
@@ -163,6 +164,21 @@ typedef enum {
 @property (nonatomic) TUIScrollViewIndicatorStyle scrollIndicatorStyle;
 @property (nonatomic) float decelerationRate;
 
+@property (nonatomic, readonly) CGRect visibleRect;
+@property (nonatomic, readonly) TUIEdgeInsets scrollIndicatorInsets;
+
+@property (nonatomic, strong, readonly) TUIScroller *verticalScroller;
+@property (nonatomic, strong, readonly) TUIScroller *horizontalScroller;
+
+@property (nonatomic, readonly) CGPoint pullOffset;
+@property (nonatomic, readonly) CGPoint bounceOffset;
+
+@property (nonatomic, readonly, getter=isTracking) BOOL tracking;
+@property (nonatomic, readonly, getter=isDragging) BOOL dragging;
+@property (nonatomic, readonly, getter=isBouncing) BOOL bouncing;
+@property (nonatomic, readonly, getter=isDecelerating) BOOL decelerating;
+@property (nonatomic, readonly, getter=isScrollingToTop) BOOL scrollingToTop;
+
 - (void)setContentOffset:(CGPoint)contentOffset animated:(BOOL)animated;
 - (void)scrollRectToVisible:(CGRect)rect animated:(BOOL)animated;
 - (void)scrollToTopAnimated:(BOOL)animated;
@@ -171,18 +187,8 @@ typedef enum {
 - (void)beginContinuousScrollForDragAtPoint:(CGPoint)dragLocation animated:(BOOL)animated;
 - (void)endContinuousScrollAnimated:(BOOL)animated;
 
-@property (nonatomic, readonly) CGRect visibleRect;
-@property (nonatomic, readonly) TUIEdgeInsets scrollIndicatorInsets;
-
 - (void)flashScrollIndicators;
-
-- (BOOL)isScrollingToTop;
-
-@property (nonatomic, readonly) CGPoint pullOffset;
-@property (nonatomic, readonly) CGPoint bounceOffset;
-
-@property (nonatomic, readonly, getter=isDragging) BOOL dragging;
-@property (nonatomic, readonly, getter=isDecelerating) BOOL decelerating;
+- (void)stopThrowing;
 
 @end
 
@@ -193,6 +199,7 @@ typedef enum {
 - (void)scrollViewDidScroll:(TUIScrollView *)scrollView;
 - (void)scrollViewWillBeginDragging:(TUIScrollView *)scrollView;
 - (void)scrollViewDidEndDragging:(TUIScrollView *)scrollView;
+- (void)scrollViewDidEndDecelerating:(TUIScrollView *)scrollView;
 
 - (void)scrollView:(TUIScrollView *)scrollView willShowScrollIndicator:(TUIScrollViewIndicator)indicator;
 - (void)scrollView:(TUIScrollView *)scrollView didShowScrollIndicator:(TUIScrollViewIndicator)indicator;

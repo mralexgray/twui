@@ -22,7 +22,7 @@ extern NSString * const TUIViewDidMoveToWindowNotification;
 extern NSString * const TUIViewWindow;
 extern NSString * const TUIViewFrameDidChangeNotification;
 
-enum {
+typedef enum TUIViewAutoresizing : NSUInteger {
 	TUIViewAutoresizingNone                 = 0,
 	TUIViewAutoresizingFlexibleLeftMargin   = 1 << 0,
 	TUIViewAutoresizingFlexibleWidth        = 1 << 1,
@@ -30,23 +30,21 @@ enum {
 	TUIViewAutoresizingFlexibleBottomMargin = 1 << 3,
 	TUIViewAutoresizingFlexibleHeight       = 1 << 4,
 	TUIViewAutoresizingFlexibleTopMargin    = 1 << 5,
-};
-typedef NSUInteger TUIViewAutoresizing;
-
+} TUIViewAutoresizing;
 #define TUIViewAutoresizingFlexibleSize (TUIViewAutoresizingFlexibleWidth | TUIViewAutoresizingFlexibleHeight)
 
-typedef enum {
+typedef enum TUIViewAnimationCurve : NSUInteger {
 	TUIViewAnimationCurveEaseInOut,
 	TUIViewAnimationCurveEaseIn,
 	TUIViewAnimationCurveEaseOut,
 	TUIViewAnimationCurveLinear
 } TUIViewAnimationCurve;
 
-typedef enum {
+typedef enum TUIViewAnimationTransition : NSUInteger {
 	TUIViewAnimationTransitionNone,
 } TUIViewAnimationTransition;
 
-typedef enum {
+typedef enum TUIViewContentMode : NSUInteger {
     TUIViewContentModeCenter,
     TUIViewContentModeTop,
     TUIViewContentModeBottom,
@@ -118,10 +116,13 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView*);
 		unsigned int clearsContextBeforeDrawing:1;
 		unsigned int drawInBackground:1;
 		unsigned int needsDisplayWhenWindowsKeyednessChanges:1;
+		unsigned int acceptsTouchEvents:1;
+		unsigned int wantsRestingTouches:1;
 		
 		unsigned int delegateMouseEntered:1;
 		unsigned int delegateMouseExited:1;
 		unsigned int delegateWillDisplayLayer:1;
+        unsigned int delegateScrollWheel:1;
 	} _viewFlags;
 
 	BOOL isAccessibilityElement;
@@ -493,6 +494,7 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView*);
 
 - (void)view:(TUIView *)v mouseEntered:(NSEvent *)event;
 - (void)view:(TUIView *)v mouseExited:(NSEvent *)event;
+- (void)view:(TUIView *)v scrollWheel:(NSEvent *)event;
 - (void)viewWillDisplayLayer:(TUIView *)v;
 
 @end
