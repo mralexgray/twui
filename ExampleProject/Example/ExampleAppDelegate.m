@@ -11,6 +11,8 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+
+//	NSArray *d = [AtoZ dockSorted];
 	CGRect b = CGRectMake(0, 0, 500, 450);
 	
 	/** Table View */
