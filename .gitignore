@@ -4,3 +4,17 @@ xcuserdata
 *.pbxuser
 build
 *.perspectivev3
+
+ExampleProject/Example.xcodeproj/project.pbxproj
+
+ExampleProject/Example.xcodeproj/project.pbxproj
+
+ExampleProject/Example/ExampleAppDelegate.h
+
+ExampleProject/Example/ExampleAppDelegate.h
+
+ExampleProject/Example/ExampleTableViewCell.h
+
+ExampleProject/Example/ExampleView.m
+
+ExampleProject/Example/ExampleView.m
