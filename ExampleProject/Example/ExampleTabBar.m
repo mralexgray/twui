@@ -1,17 +1,5 @@
 /*
- Copyright 2011 Twitter, Inc.
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this work except in compliance with the License.
- You may obtain a copy of the License in the LICENSE file, or at:
- 
- http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+
  */
 
 #import "ExampleTabBar.h"
@@ -182,14 +170,14 @@
 	
 	// Drawing the bar gradient using CGContextRef functions.
 	CGFloat colorA[] = { 0.85f, 0.85f, 0.85f, 1.0f };
-	CGFloat colorB[] = { 0.71f, 0.71f, 0.71f, 1.0f };
+	CGFloat colorB[] = { 0.2f, 0.223, 0.2f, 1.0f };
 	CGContextDrawLinearGradientBetweenPoints(ctx, CGPointMake(0, CGRectGetHeight(self.bounds)),
 											 colorA, CGPointMake(0, 0), colorB);
 	
 	// Drawing the separator etch using Cocoa Graphics objects.
-	[[NSColor colorWithCalibratedWhite:1.0f alpha:0.5f] set];
+	[[NSColor colorWithCalibratedRed:0.986 green:0.000 blue:0.030 alpha:0.700] set];
 	[[NSBezierPath bezierPathWithRect:CGRectMake(0, CGRectGetHeight(self.bounds) - 2, CGRectGetWidth(self.bounds), 1)] fill];
-	[[NSColor colorWithCalibratedWhite:0.0f alpha:0.25f] set];
+	[[NSColor colorWithCalibratedRed:0.516 green:0.176 blue:0.198 alpha:0.830] set];
 	[[NSBezierPath bezierPathWithRect:CGRectMake(0, CGRectGetHeight(self.bounds) - 1, CGRectGetWidth(self.bounds), 1)] fill];
 }
 
