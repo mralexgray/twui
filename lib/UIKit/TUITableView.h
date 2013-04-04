@@ -164,6 +164,7 @@ typedef NS_ENUM(NSInteger, TUITableViewInsertionMethod) {
 - (void)scrollToRowAtIndexPath:(NSIndexPath *)indexPath atScrollPosition:(TUITableViewScrollPosition)scrollPosition animated:(BOOL)animated;
 
 - (NSIndexPath *)indexPathForSelectedRow;                                       // return nil or index path representing section and row of selection.
+- (NSArray *)indexPathesForSelectedRows;
 - (NSIndexPath *)indexPathForFirstRow;
 - (NSIndexPath *)indexPathForLastRow;
 

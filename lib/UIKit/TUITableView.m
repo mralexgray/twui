@@ -1088,6 +1088,12 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
 	return _selectedIndexPath;
 }
 
+- (NSArray *)indexPathesForSelectedRows
+{
+	return _arrayOfSelectedIndexes;
+}
+
+
 - (NSIndexPath *)indexPathForFirstRow
 {
 	return [NSIndexPath indexPathForRow:0 inSection:0];
