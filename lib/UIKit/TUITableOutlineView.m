@@ -83,30 +83,8 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
     BOOL willCloseSection = (_openedSection == section);
     BOOL willToggleSections = (_openedSection != section);
     
-//    CGRect currentSectionRect = [self rectForSection:section];
-    
     _openning = YES;
     _openningSection = section;
-    
-    
-//    BOOL haveOpened = [topSections containsIndex:_openedSection] || [bottomSections containsIndex:_openedSection];
-    
-    if (willOpenSection) {
-        if (self.delegate && [_delegate respondsToSelector:@selector(tableView:willOpenSection:)]) {
-            [_delegate tableView:self willOpenSection:section];
-        }    
-    } else if (willCloseSection) {
-        if (self.delegate && [_delegate respondsToSelector:@selector(tableView:willCloseSection:)]) {
-            [_delegate tableView:self willCloseSection:section];
-        }    
-    } else if (willToggleSections) {
-        if (self.delegate && [_delegate respondsToSelector:@selector(tableView:willCloseSection:)]) {
-            [_delegate tableView:self willCloseSection:_openedSection];
-        }
-        if (self.delegate && [_delegate respondsToSelector:@selector(tableView:willOpenSection:)]) {
-            [_delegate tableView:self willOpenSection:section];
-        }    
-    }
     
     // Update sections info to get fill up new sections
     [self _updateSectionInfo];
@@ -114,6 +92,30 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
     if (self.openedSectionBackgroundView) {
         [self.openedSectionBackgroundView removeFromSuperview];
         self.openedSectionBackgroundView = nil;
+    }
+    // In case not closing section - needs to create background that will appear under cells
+    if (willOpenSection || willToggleSections) {
+        CGRect sectionRect  = [self rectForSection:section];
+        self.openedSectionBackgroundView = [[TUIView alloc] initWithFrame:sectionRect];
+        [self addSubview:self.openedSectionBackgroundView];
+        [self sendSubviewToBack:self.openedSectionBackgroundView];
+    }
+    
+    if (willOpenSection) {
+        if (self.delegate && [_delegate respondsToSelector:@selector(tableView:willOpenSection:)]) {
+            [_delegate tableView:self willOpenSection:section];
+        }
+    } else if (willCloseSection) {
+        if (self.delegate && [_delegate respondsToSelector:@selector(tableView:willCloseSection:)]) {
+            [_delegate tableView:self willCloseSection:section];
+        }
+    } else if (willToggleSections) {
+        if (self.delegate && [_delegate respondsToSelector:@selector(tableView:willCloseSection:)]) {
+            [_delegate tableView:self willCloseSection:_openedSection];
+        }
+        if (self.delegate && [_delegate respondsToSelector:@selector(tableView:willOpenSection:)]) {
+            [_delegate tableView:self willOpenSection:section];
+        }
     }
     
     if(!_tableFlags.layoutSubviewsReentrancyGuard) {
@@ -124,13 +126,6 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
         
         _openning = NO;
         _openedSection = (willOpenSection || willToggleSections) ? section : NSIntegerMin;
-        
-        // In case not closing section - needs to create background that will apear under cells
-        if (willOpenSection || willToggleSections) {
-            CGRect sectionRect  = [self rectForSection:section];
-            self.openedSectionBackgroundView = [[TUIView alloc] initWithFrame:sectionRect];
-            [self addSubview:self.openedSectionBackgroundView];
-        }
         _openningSection = NSIntegerMin;
     }];
     
@@ -152,9 +147,8 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
             [_delegate tableView:self didOpenSection:section];
         }
     }
-
+    
     [self reloadData];
-
 }
 
 -(void)_toggleSectionWithAnimation:(NSInteger)section
