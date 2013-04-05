@@ -1,5 +1,5 @@
 //
-//  TUITableOulineView.h
+//  ;
 //  Example
 //
 //  Created by Ivan Ablamskyi on 13.02.13.
@@ -22,7 +22,7 @@
 @interface TUITableOutlineView : TUITableView
 @property (strong, nonatomic) TUIView *openedSectionBackgroundView;
 
-- (void)toggleSection:(NSInteger)section;
+- (void)toggleSection:(NSInteger)section animated:(BOOL)animated;
 
 - (BOOL)sectionIsOpened:(NSInteger)section;
 - (void)scrollToSection:(NSInteger)section;

@@ -67,7 +67,11 @@
 }
 
 - (CGFloat)tableView:(TUITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return 50.0;
+	if (indexPath.row == 0) {
+        return 60.0;
+    } else {
+        return 30.0;
+    }
 }
 
 - (TUIView *)tableView:(TUITableView *)tableView headerViewForSection:(NSInteger)section {
@@ -115,7 +119,7 @@
                                                                           attribute:TUILayoutConstraintAttributeMinX offset:-8]];
     
     [displayButton addActionForControlEvents:TUIControlEventMouseUpInside block:^{
-        [[self tableView] toggleSection:section];
+        [[self tableView] toggleSection:section animated:YES];
         return;
         
         [TUIView beginAnimations:nil context:nil];
@@ -145,9 +149,9 @@
 - (void)tableView:(TUITableOutlineView *)tableView willDisplayCell:(ExampleTableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.row == 0) {
-        cell.backgroundColor = [NSColor controlColor];
+        cell.backgroundColor = [NSColor yellowColor];
     } else {
-        cell.backgroundColor = [NSColor clearColor];
+        cell.backgroundColor = [NSColor greenColor];
     }
     if ([tableView sectionIsOpened:indexPath.section]) {
         cell.backgroundView = tableView.openedSectionBackgroundView;
@@ -169,7 +173,7 @@
 
 - (void)tableView:(TUITableView *)tableView didClickRowAtIndexPath:(NSIndexPath *)indexPath withEvent:(NSEvent *)event {
     if (indexPath.row == 0) {
-        [(TUITableOutlineView *)tableView toggleSection:indexPath.section];
+        [(TUITableOutlineView *)tableView toggleSection:indexPath.section animated:NO];
     } else
 	if([event clickCount] == 1) {
 		// do something cool

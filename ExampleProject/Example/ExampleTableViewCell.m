@@ -129,7 +129,7 @@
 - (void)drawInBackround:(CGRect)rect
 {
     
-    NSLog(@"CUR CTX %@", TUIGraphicsGetCurrentContext());
+//    NSLog(@"CUR CTX %@", TUIGraphicsGetCurrentContext());
     [super drawRect:rect];
     [_textRenderer draw];
     
@@ -138,7 +138,7 @@
 - (void)drawRect:(CGRect)rect {
 //    if (self.backgroundView)
 //        return;
-    NSLog(@"CUR CTX %@", TUIGraphicsGetCurrentContext());
+//    NSLog(@"CUR CTX %@", TUIGraphicsGetCurrentContext());
     [super drawRect:rect];
     [_textRenderer draw];
 }
