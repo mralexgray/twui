@@ -21,11 +21,20 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
 @implementation TUICarouselNavigationController
 
 - (id)initWithViewControllers:(NSArray *)viewControllers {
+    return [self initWithViewControllers:viewControllers initialController:viewControllers[0]];
+}
+
+- (id)initWithViewControllers:(NSArray *)viewControllers initialController:(id)initialController {
 	self = [super init];
 	if (self) {
-		_controllers = [viewControllers mutableCopy];
+        
+        NSAssert([viewControllers count] > 0, @"Can't create carousel navigation controller with empty controllers list");
+		
+        _controllers = [viewControllers mutableCopy];
 
-        self.currentController = _controllers[0];
+        NSAssert([viewControllers indexOfObject:initialController] != NSNotFound, @"Initial controller must be present in controllers list");
+        
+        self.currentController = initialController;
 		self.view.clipsToBounds = YES;
 	}
 	return self;

@@ -32,7 +32,7 @@
 		
 		ExampleTableViewController *tableViewController = [[ExampleTableViewController alloc] initWithNibName:nil bundle:nil];
         ExampleTableViewController *tableViewController1 = [[ExampleTableViewController alloc] initWithNibName:nil bundle:nil];
-		_navigationController = [[TUICarouselNavigationController alloc] initWithViewControllers:@[tableViewController, tableViewController1]];
+		_navigationController = [[TUICarouselNavigationController alloc] initWithViewControllers:@[tableViewController, tableViewController1] initialController:tableViewController1];
         _navigationController.delegate = self;
 		[self addSubview:_navigationController.view];
         

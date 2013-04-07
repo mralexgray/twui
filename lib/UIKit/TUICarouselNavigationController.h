@@ -29,6 +29,7 @@
 @property (nonatomic, assign) BOOL needsBlurWhenSlide;
 @property (nonatomic, assign) BOOL couldUseSlideEvent;
 
+- (id)initWithViewControllers:(NSArray *)viewControllers initialController:(id)initialController;
 - (id)initWithViewControllers:(NSArray *)viewControllers;
 
 - (void)setViewControllers:(NSArray *)viewControllers animated:(BOOL)animated;
