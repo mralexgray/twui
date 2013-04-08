@@ -25,6 +25,8 @@
 
 static TUIAttributedString *CurrentTooltipString = nil;
 static NSTimer *FadeOutTimer = nil;
+static TUIToolTipViewDrawing CurrentDrawingBlock = NULL;
+static NSDictionary *CurrentStringInfo = nil;
 
 @interface TUITooltipWindowView : NSView
 @end
@@ -33,25 +35,43 @@ static NSTimer *FadeOutTimer = nil;
 
 - (void)drawRect:(NSRect)r
 {
-	CGRect b = [self frame];
-	b.origin = CGPointZero;
-	
-	CGContextRef ctx = TUIGraphicsGetCurrentContext();
-	
-	CGContextSaveGState(ctx);
-	CGFloat _a[] = {1.0, 1.0, 198/255., 1.0};
-	CGFloat _b[] = {1.0, 1.0, 158/255., 1.0};
-	CGContextClipToRoundRect(ctx, b, 2);
-	CGContextDrawLinearGradientBetweenPoints(ctx, CGPointMake(0, b.size.height), _a, CGPointMake(0, 0), _b);
-	CGContextRestoreGState(ctx);
-	
-	[CurrentTooltipString ab_drawInRect:CGRectMake(0, -2, b.size.width, b.size.height)];
+    if (CurrentDrawingBlock) {
+        CurrentDrawingBlock(self, r, CurrentTooltipString);
+    } else {
+        CGRect b = [self frame];
+        b.origin = CGPointZero;
+        
+        CGContextRef ctx = TUIGraphicsGetCurrentContext();
+        
+        CGContextSaveGState(ctx);
+        CGFloat _a[] = {1.0, 1.0, 198/255., 1.0};
+        CGFloat _b[] = {1.0, 1.0, 158/255., 1.0};
+        CGContextClipToRoundRect(ctx, b, 2);
+        CGContextDrawLinearGradientBetweenPoints(ctx, CGPointMake(0, b.size.height), _a, CGPointMake(0, 0), _b);
+        CGContextRestoreGState(ctx);
+        
+        [CurrentTooltipString ab_drawInRect:CGRectMake(0, -2, b.size.width, b.size.height)];
+    }
 }
 
 @end
 
 
 @implementation TUITooltipWindow
+
++ (void)setToolTipStringAttributes:(NSDictionary *)stringInfo;
+{
+    CurrentStringInfo = stringInfo;
+}
+
++ (void)setDrawingBlock:(TUIToolTipViewDrawing)drawingBlock;
+{
+    if (CurrentDrawingBlock)
+        CurrentDrawingBlock = NULL;
+    
+    if (drawingBlock)
+        CurrentDrawingBlock = [drawingBlock copy];
+}
 
 + (TUITooltipWindow *)sharedTooltipWindow
 {
@@ -139,8 +159,12 @@ static BOOL ShowingTooltip = NO;
 		}
 		
 		CurrentTooltipString = [TUIAttributedString stringWithString:s];
-		CurrentTooltipString.font = [NSFont fontWithName:@"HelveticaNeue" size:11];
-		CurrentTooltipString.kerning = 0.2;
+        if (CurrentStringInfo) {
+            [CurrentTooltipString setAttributes:CurrentStringInfo range:NSMakeRange(0, CurrentTooltipString.length)];
+        } else {
+            CurrentTooltipString.font = [NSFont fontWithName:@"HelveticaNeue" size:11];
+            CurrentTooltipString.kerning = 0.2;
+        }
 		[CurrentTooltipString setAlignment:TUITextAlignmentCenter lineBreakMode:TUILineBreakModeClip];
 	} else {
 		if(ShowingTooltip) {
