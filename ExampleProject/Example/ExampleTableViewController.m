@@ -173,7 +173,7 @@
 
 - (void)tableView:(TUITableView *)tableView didClickRowAtIndexPath:(NSIndexPath *)indexPath withEvent:(NSEvent *)event {
     if (indexPath.row == 0) {
-        [(TUITableOutlineView *)tableView toggleSection:indexPath.section animated:NO];
+        [(TUITableOutlineView *)tableView toggleSection:indexPath.section animated:YES];
     } else
 	if([event clickCount] == 1) {
 		// do something cool
