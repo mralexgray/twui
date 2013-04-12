@@ -16,9 +16,17 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class TUIAttributedString;
+typedef void(^TUIToolTipViewDrawing)(NSView *v, NSRect r, TUIAttributedString *string);
+
 @interface TUITooltipWindow : NSWindow
 
++ (void)setToolTipStringAttributes:(NSDictionary *)stringInfo;
++ (void)setDrawingBlock:(TUIToolTipViewDrawing)drawingBlock;
 + (void)updateTooltip:(NSString *)s delay:(NSTimeInterval)delay; // may pass nil
 + (void)endTooltip; // no animation
+
++ (void)setTooltipHeight:(NSInteger)height;
++ (NSInteger)tooltipHeight;
 
 @end
