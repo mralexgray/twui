@@ -26,4 +26,7 @@ typedef void(^TUIToolTipViewDrawing)(NSView *v, NSRect r, TUIAttributedString *s
 + (void)updateTooltip:(NSString *)s delay:(NSTimeInterval)delay; // may pass nil
 + (void)endTooltip; // no animation
 
++ (void)setTooltipHeight:(NSInteger)height;
++ (NSInteger)tooltipHeight;
+
 @end

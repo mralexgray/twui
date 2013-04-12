@@ -27,6 +27,7 @@ static TUIAttributedString *CurrentTooltipString = nil;
 static NSTimer *FadeOutTimer = nil;
 static TUIToolTipViewDrawing CurrentDrawingBlock = NULL;
 static NSDictionary *CurrentStringInfo = nil;
+static NSInteger    TUItooltipHeight = 18;
 
 @interface TUITooltipWindowView : NSView
 @end
@@ -77,7 +78,7 @@ static NSDictionary *CurrentStringInfo = nil;
 {
 	static TUITooltipWindow *w = nil;
 	if(!w) {
-		NSRect r = NSMakeRect(0, 0, 10, TOOLTIP_HEIGHT);
+		NSRect r = NSMakeRect(0, 0, 10, TUItooltipHeight);
 		w = [[TUITooltipWindow alloc] initWithContentRect:r
 												 styleMask:NSBorderlessWindowMask 
 												   backing:NSBackingStoreBuffered
@@ -95,13 +96,24 @@ static NSDictionary *CurrentStringInfo = nil;
 	return w;
 }
 
++ (void)setTooltipHeight:(NSInteger)height
+{
+    TUItooltipHeight = height;
+}
+
++ (NSInteger)tooltipHeight
+{
+    return TUItooltipHeight;
+}
+
+
 static BOOL ShowingTooltip = NO;
 
 + (CGRect)_tooltipRect
 {
 	CGFloat width = [CurrentTooltipString ab_size].width + 5;
 	NSPoint p = [NSEvent mouseLocation];
-	NSRect r = NSMakeRect(p.x - width*0.5 + 15, p.y - 37, width, TOOLTIP_HEIGHT);
+	NSRect r = NSMakeRect(p.x - width*0.5 + 15, p.y - 37, width, TUItooltipHeight);
 	return r;
 }
 
@@ -110,7 +122,7 @@ static BOOL ShowingTooltip = NO;
 	TUITooltipWindow *tooltipWindow = [self sharedTooltipWindow];
 	NSRect r = [tooltipWindow frame];
 	if(r.origin.y < 50)
-		r.origin.y += 37 + TOOLTIP_HEIGHT;
+		r.origin.y += 37 + TUItooltipHeight;
 	[tooltipWindow setFrameOrigin:r.origin];
 }
 
