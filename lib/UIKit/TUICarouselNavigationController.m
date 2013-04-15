@@ -31,7 +31,10 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
         NSAssert([viewControllers count] > 0, @"Can't create carousel navigation controller with empty controllers list");
 		
         _controllers = [viewControllers mutableCopy];
-
+        [_controllers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [obj setNavigationController:(TUINavigationController *)self];
+        }];
+        
         NSAssert([viewControllers indexOfObject:initialController] != NSNotFound, @"Initial controller must be present in controllers list");
         
         self.currentController = initialController;
