@@ -337,6 +337,7 @@
         if(![targetIndexPath isEqual:cell.indexPath]){
 
             // Restore selection with new pathes
+            /* Not works, becuase something is wrong
             for (int i = 0; i < [_arrayOfSelectedIndexes count]; i++) {
                 NSIndexPath *path  =[NSIndexPath indexPathForRow:targetIndexPath.row + i inSection:targetIndexPath.section];
                 if (i == 0) {
@@ -346,6 +347,7 @@
                     [self addSelectedIndexPath:path];
                 }
             }
+             */
 
             // notify our data source that the row will be reordered
             if(self.dataSource != nil && [self.dataSource respondsToSelector:@selector(tableView:moveRows:toIndexPath:)]){
