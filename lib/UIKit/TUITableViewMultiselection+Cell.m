@@ -24,6 +24,8 @@
 - (BOOL)_preLayoutCells;
 - (void)_layoutSectionHeaders:(BOOL)needLayout;
 - (void)_layoutCells:(BOOL)needLayout;
+- (void)addSelectedIndexPath:(NSIndexPath*)indexPathToAdd;
+- (void)checkEventModifiers:(NSEvent *)event;
 
 @end
 
@@ -63,7 +65,11 @@
  * @brief Begin dragging a cell
  */
 -(void)__beginDraggingMultipleCells:(TUITableViewCell *)cell offset:(CGPoint)offset location:(CGPoint)location {
-    
+    [self checkEventModifiers:[NSApp currentEvent]];
+    if (self.allowsMultipleSelection && ![cell isSelected] && !_multipleSelectionKeyIsPressed && !_extendMultipleSelectionKeyIsPressed) {
+        [self selectRowAtIndexPath:cell.indexPath animated:NO scrollPosition:TUITableViewScrollPositionNone];
+    }
+
     _currentDragToReorderLocation = location;
     _currentDragToReorderMouseOffset = offset;
     
@@ -329,8 +335,19 @@
         // only update the data source if the drag ended on a different index path
         // than it started; otherwise just clean up the view
         if(![targetIndexPath isEqual:cell.indexPath]){
+
+            // Restore selection with new pathes
+            for (int i = 0; i < [_arrayOfSelectedIndexes count]; i++) {
+                NSIndexPath *path  =[NSIndexPath indexPathForRow:targetIndexPath.row + i inSection:targetIndexPath.section];
+                if (i == 0) {
+                    [self selectRowAtIndexPath:path animated:NO scrollPosition:TUITableViewScrollPositionNone];
+                } else {
+                    [[self cellForRowAtIndexPath:path] setSelected:YES animated:NO];
+                    [self addSelectedIndexPath:path];
+                }
+            }
+
             // notify our data source that the row will be reordered
-            
             if(self.dataSource != nil && [self.dataSource respondsToSelector:@selector(tableView:moveRows:toIndexPath:)]){
                 [self.dataSource tableView:self moveRows:_arrayOfSelectedIndexes toIndexPath:targetIndexPath];
             }
