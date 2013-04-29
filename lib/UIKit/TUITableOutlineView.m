@@ -207,7 +207,6 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
     BOOL isOpenedSectionAboveCurrent = [topSections containsIndex:_openedSection];
     
     if (isOpenedSectionVisible && self.delegate && [_delegate respondsToSelector:@selector(tableView:willCloseSection:)]) {
-        NSLog(@"Heree!!!!!");
         [_delegate tableView:self willCloseSection:_openedSection];
     }
     
@@ -392,7 +391,7 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
                 // !******!
                 if (isOpenedSectionAboveCurrent && (openedSectionHeight < newCurSectionHeight || CGRectGetMaxY(curSectionHeaderRect) > CGRectGetMaxY(realVisibleRect))) {
                     
-                    NSLog(@"Opened above, op height < current");
+//                    NSLog(@"Opened above, op height < current");
                     
                     CGFloat firstOffset = MIN(openedSectionHeight - openedSectionHeaderHeight, (CGRectGetMaxY(realVisibleRect) - CGRectGetMinY(newCurSectionRect) - curSectionHeaderHeight));
                     CGFloat secondOffset = _transitionOffset - firstOffset;
@@ -432,9 +431,9 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
                     
                 } else if (isOpenedSectionAboveCurrent) {
                     
-                    NSLog(@"Opened above, op height > current");
+//                    NSLog(@"Opened above, op height > current");
                     
-                    NSLog(@"top sections %@, _opened %@", topSections, @(_openedSection));
+//                    NSLog(@"top sections %@, _opened %@", topSections, @(_openedSection));
                     
                     CGFloat firstOffset = _transitionOffset;
                     CGFloat secondOffset = openedSectionHeight - _transitionOffset - openedSectionHeaderHeight;
@@ -473,7 +472,7 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
                 } else if ( openedSectionHeight <= newCurSectionHeight || CGRectGetMinY(newCurSectionRect) < CGRectGetMinY(realVisibleRect) ) {
                     // Bottom slides;
                     
-                    NSLog(@"Opened below, op height < current");
+//                    NSLog(@"Opened below, op height < current");
                     
                     CGFloat firstOffset =  openedSectionHeight - openedSectionHeaderHeight;
                     CGFloat secondOffset = _transitionOffset - openedSectionHeight + curSectionHeaderHeight;
@@ -508,7 +507,7 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
                         }];
                     }];
                 } else if (openedSectionHeight > newCurSectionHeight) {
-                    NSLog(@"Opened below, op height > current");
+//                    NSLog(@"Opened below, op height > current");
                     CGFloat firstOffset = newCurSectionHeight - curSectionHeaderHeight;
                     CGFloat secondOffset = openedSectionHeight - newCurSectionHeight;
                     
@@ -554,7 +553,7 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
                 // !** Needs to close
                 // !**
                 
-                NSLog(@"Close");
+//                NSLog(@"Close");
                 
                 CGFloat offset = newCurSectionHeight - curSectionHeaderHeight;
                 [self _setZposition:BACK_Z_POSITION ofSectionContents:[NSIndexSet indexSetWithIndex:section]];
