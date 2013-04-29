@@ -972,6 +972,39 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
 	[self reloadData];
 }
 
+- (void)clearData {
+    
+	// need to recycle all visible cells, have them be regenerated on layoutSubviews
+	// because the same cells might have different content
+	for(NSIndexPath *i in _visibleItems) {
+		TUITableViewCell *cell = [_visibleItems objectForKey:i];
+		[self _enqueueReusableCell:cell];
+		[cell removeFromSuperview];
+	}
+	
+	// if we have a dragged cell, clear it
+	_dragToReorderCell = nil;
+	
+	// clear visible cells
+	[_visibleItems removeAllObjects];
+	
+	// remove any visible headers, they should be re-added when the table is laid out
+	for(TUITableViewSection *section in _sectionInfo){
+        TUIView *headerView;
+        if((headerView = [section headerView]) != nil){
+            [headerView removeFromSuperview];
+        }
+	}
+	
+	// clear visible section headers
+	[_visibleSectionHeaders removeAllIndexes];
+	
+	_sectionInfo = nil; // will be regenerated on next layout
+    
+    self.contentSize = CGSizeZero;
+    self.contentOffset = CGPointZero;
+}
+
 - (void)reloadData
 {
     
@@ -1118,6 +1151,32 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
 	}
 }
 
+
+-(void)selectAll:(id)sender {
+    
+    if (_allowsMultipleSelection) {
+        
+        [self clearIndexPaths];
+        
+        [self enumerateIndexPathsUsingBlock:^(NSIndexPath *indexPath, BOOL *stop) {
+            
+            if(![_delegate respondsToSelector:@selector(tableView:shouldSelectRowAtIndexPath:forEvent:)] || [_delegate tableView:self shouldSelectRowAtIndexPath:indexPath forEvent:nil]) {
+                
+                // don't use method -addSelectedIndexPath for better speed
+                // so need to keep proper sort order
+                [_arrayOfSelectedIndexes addObject:indexPath];
+            }
+            
+        }];
+        
+        [_visibleItems enumerateKeysAndObjectsUsingBlock:^(NSIndexPath *key, TUITableViewCell *cell, BOOL *stop) {
+            if ([self indexPathExists:key]) {
+                [cell setSelected:YES animated:NO];
+                [cell setNeedsDisplay];
+            }
+        }];
+    }
+}
 
 - (void)justSelectRowAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated scrollPosition:(TUITableViewScrollPosition)scrollPosition
 {

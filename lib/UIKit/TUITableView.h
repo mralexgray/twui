@@ -125,6 +125,7 @@ typedef NS_ENUM(NSInteger, TUITableViewInsertionMethod) {
 @property (readwrite, assign) BOOL allowsMultipleSelection;
 @property (nonatomic, assign) BOOL maintainContentOffsetAfterReload;
 
+- (void)clearData;
 - (void)reloadData;
 
 /**
@@ -167,6 +168,8 @@ typedef NS_ENUM(NSInteger, TUITableViewInsertionMethod) {
 - (NSArray *)indexPathesForSelectedRows;
 - (NSIndexPath *)indexPathForFirstRow;
 - (NSIndexPath *)indexPathForLastRow;
+
+- (void)selectAll:(id)sender;
 
 - (void)justSelectRowAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated scrollPosition:(TUITableViewScrollPosition)scrollPosition;
 - (void)selectRowAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated scrollPosition:(TUITableViewScrollPosition)scrollPosition;
