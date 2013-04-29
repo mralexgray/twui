@@ -454,7 +454,18 @@
 	[renderer setMenu:self.menu];
 	[renderer setPreferredEdge:self.preferredMenuEdge];
 	[renderer setControlSize:(NSControlSize)self.controlSize];
-	[renderer performClickWithFrame:self.frameInNSView inView:self.nsView];
+
+    // Fix to display menu when can't fit on screen
+    if (![self.nsView.superview isKindOfClass:[TUINSView class]]) {
+        NSRect rect = [self.nsView.superview convertRect:self.frameInNSView toView:self.nsView];
+        NSView *holder = [[NSView alloc] initWithFrame:rect];
+        [self.nsView.superview addSubview:holder];
+        [renderer performClickWithFrame:holder.bounds inView:holder];
+        [holder removeFromSuperview];
+        holder = nil;
+    } else {
+        [renderer performClickWithFrame:self.frameInNSView inView:self.nsView];
+    }
 	
 	// Once the menu has been displayed, remove this fake item.
 	if(!self.synchronizeMenuTitle && needsPlaceholder)
