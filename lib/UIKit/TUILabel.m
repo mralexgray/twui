@@ -65,11 +65,13 @@
 	
 	return m;
 }
+
 - (void)copyText:(id)sender
 {
 	[[NSPasteboard generalPasteboard] clearContents];
 	[[NSPasteboard generalPasteboard] writeObjects:[NSArray arrayWithObjects:[renderer selectedString], nil]];
 }
+
 - (void)drawRect:(CGRect)rect
 {
 	if(renderer.attributedString == nil) {

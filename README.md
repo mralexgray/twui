@@ -1,11 +1,13 @@
-**This fork of TwUI is feature-frozen.** Our feature work is focusing on
-[Rebel](https://github.com/blog/1300-rebel-a-framework-for-improving-appkit)
-instead.
+## Mysterious Trousers Fork
 
-You might be able to find a more active fork of TwUI by checking out the
-[network graph](https://github.com/twitter/twui/network).
+We're currently using TwUI to build [Firhose](https://www.getfirehose.com/). As we fix bugs and make improvements we will list them here. If you have a fix or improvement that you're willing to contribute, please open a pull request and if it done within reason, we'll accept it.
 
-# TwUI
+**Fixed:**
+- TUITextView: now calls super in drawRect. Multiple draws was making the text look thicker and thicker.
+- TUIStretchableImage: capInsets are now scaled based on retina/non-retina.
+
+
+## TwUI
 
 TwUI is a hardware accelerated UI framework for Mac, inspired by UIKit.  It enables:
 
@@ -19,21 +21,21 @@ It differs from UIKit in a few ways:
 * A consistent coordinate system (bottom left origin)
 * Sub-pixel text rendering
 
-# Setup
+## Setup
 
 To use the current development version, include all the files in your project and import TUIKit.h. Set your target to link to the ApplicationServices and QuartzCore frameworks.
 
-# Usage
+## Usage
 
 Your `TUIView`-based view hierarchy is hosted inside an `TUINSView`, which is the bridge between AppKit and TwUI.  You may set a `TUINSView` as the content view of your window, if you'd like to build your whole UI with TwUI.  Or you may opt to have a few smaller `TUINSViews`, using TwUI just where it makes sense and continue to use AppKit everywhere else.
 
 You can also add `NSViews` to a TwUI hierarchy using `TUIViewNSViewContainer`, which bridges back into AppKit from TwUI.
 
-# Example Project
+## Example Project
 
 An included example project shows off the basic construction of a pure TwUI-based app.  A `TUINSView` is added as the content view of the window, and some `TUIView`-based views are hosted in that.  Within the table view cells, some `NSTextFields` are also added using `TUIViewNSViewContainer`.  It includes a table view and a tab bar (which is a good example of how you might build your own custom controls).
 
-# Status
+## Status
 
 TwUI is currently shipping in Twitter for Mac and GitHub for Mac, in use 24/7 by many, many users, and has proven itself very stable.
 
@@ -41,11 +43,11 @@ This project follows the [SemVer](http://semver.org/) standard. The API may chan
 
 The goal of TwUI is to build a high-quality UI framework designed specifically for the Mac.  Much inspiration comes from UIKit, but diverging to try new things (i.e. block-based layout and drawRect), and optimizing for Mac-specific interactions is encouraged.
 
-# Community
+## Community
 
 TwUI has a mailing list, subscribe by sending an email to <twui@librelist.com>.
 
-# Copyright and License
+## Copyright and License
 
 Copyright 2011 Twitter, Inc.
 

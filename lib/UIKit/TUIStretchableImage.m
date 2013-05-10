@@ -35,8 +35,17 @@
 		return;
 	}
 
+    NSLog(@"%@", NSStringFromSize(self.size));
 	CGSize size = CGSizeMake(CGImageGetWidth(image), CGImageGetHeight(image));
 	TUIEdgeInsets insets = self.capInsets;
+
+    BOOL retina = roundf(size.width) == roundf(self.size.width * 2) && roundf(size.height) == roundf(self.size.height * 2);
+    if (retina) {
+        insets.top      *= 2.0;
+        insets.left     *= 2.0;
+        insets.bottom   *= 2.0;
+        insets.right    *= 2.0;
+    }
 
 	// TODO: Cache the nine-part images for this common case of wanting to draw
 	// the whole source image.
@@ -93,33 +102,33 @@
 	if (horizontalEdgeLength > 0) {
 		if (insets.bottom > 0) {
 			CGRect partRect = CGRectMake(insets.left, 0, horizontalEdgeLength, insets.bottom);
-			bottomEdge = imageWithRect(partRect);
+			topEdge = imageWithRect(partRect);
 		}
 
 		if (insets.top > 0) {
 			CGRect partRect = CGRectMake(insets.left, size.height - insets.top, horizontalEdgeLength, insets.top);
-			topEdge = imageWithRect(partRect);
+			bottomEdge = imageWithRect(partRect);
 		}
 	}
 
 	if (insets.left > 0 && insets.top > 0) {
 		CGRect partRect = CGRectMake(0, size.height - insets.top, insets.left, insets.top);
-		topLeft = imageWithRect(partRect);
+		bottomLeft = imageWithRect(partRect);
 	}
 
 	if (insets.left > 0 && insets.bottom > 0) {
 		CGRect partRect = CGRectMake(0, 0, insets.left, insets.bottom);
-		bottomLeft = imageWithRect(partRect);
+		topLeft = imageWithRect(partRect);
 	}
 
 	if (insets.right > 0 && insets.top > 0) {
 		CGRect partRect = CGRectMake(size.width - insets.right, size.height - insets.top, insets.right, insets.top);
-		topRight = imageWithRect(partRect);
+		bottomRight = imageWithRect(partRect);
 	}
 
 	if (insets.right > 0 && insets.bottom > 0) {
 		CGRect partRect = CGRectMake(size.width - insets.right, 0, insets.right, insets.bottom);
-		bottomRight = imageWithRect(partRect);
+		topRight = imageWithRect(partRect);
 	}
 
 	CGRect centerRect = TUIEdgeInsetsInsetRect(CGRectMake(0, 0, size.width, size.height), insets);
@@ -134,14 +143,14 @@
 		flipped = [[NSGraphicsContext currentContext] isFlipped];
 	}
 
-	if (topLeft != nil || bottomRight != nil) {
-		NSDrawNinePartImage(dstRect, bottomLeft, bottomEdge, bottomRight, leftEdge, center, rightEdge, topLeft, topEdge, topRight, op, alpha, flipped);
+	if (bottomLeft != nil || topRight != nil) {
+		NSDrawNinePartImage(dstRect, topLeft, topEdge, topRight, leftEdge, center, rightEdge, bottomLeft, bottomEdge, bottomRight, op, alpha, flipped);
 	} else if (leftEdge != nil) {
 		// Horizontal three-part image.
 		NSDrawThreePartImage(dstRect, leftEdge, center, rightEdge, NO, op, alpha, flipped);
 	} else {
 		// Vertical three-part image.
-		NSDrawThreePartImage(dstRect, topEdge, center, bottomEdge, YES, op, alpha, flipped);
+		NSDrawThreePartImage(dstRect, bottomEdge, center, topEdge, YES, op, alpha, flipped);
 	}
 }
 

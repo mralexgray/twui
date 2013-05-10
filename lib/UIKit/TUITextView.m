@@ -296,6 +296,7 @@ static CAAnimation *ThrobAnimation()
 
 - (void)drawRect:(CGRect)rect
 {
+    [super drawRect:rect];
 	CGContextRef ctx = TUIGraphicsGetCurrentContext();
 	static const CGFloat singleLineWidth = 20000.0f;
 	
