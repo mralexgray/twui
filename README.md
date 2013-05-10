@@ -1,14 +1,4 @@
-## Mysterious Trousers Fork
-
-We're currently using TwUI to build [Firhose](https://www.getfirehose.com/). As we fix bugs and make improvements we will list them here. If you have a fix or improvement that you're willing to contribute, please open a pull request and if it done within reason, we'll accept it.
-
-**Fixed:**
-- TUITextView: now calls super in drawRect. Multiple draws was making the text look thicker and thicker.
-- TUIStretchableImage: capInsets are now scaled based on retina/non-retina.
-- TUIStretchableImage: variable names were wrong, referring to the wrong image slices.
-
-
-## TwUI
+# TwUI
 
 TwUI is a hardware accelerated UI framework for Mac, inspired by UIKit.  It enables:
 
@@ -22,9 +12,23 @@ It differs from UIKit in a few ways:
 * A consistent coordinate system (bottom left origin)
 * Sub-pixel text rendering
 
+## Mysterious Trousers Fork
+
+We're currently using TwUI to build [Firhose](https://www.getfirehose.com/). As we fix bugs and make improvements we will list them here. If you have a fix or improvement that you're willing to contribute, please open a pull request and if it done within reason, we'll accept it.
+
+**Fixed:**
+- TUITextView: now calls super in drawRect. Multiple draws was making the text look thicker and thicker.
+- TUIStretchableImage: capInsets are now scaled based on retina/non-retina.
+- TUIStretchableImage: variable names were wrong, referring to the wrong image slices.
+
+
 ## Setup
 
-To use the current development version, include all the files in your project and import TUIKit.h. Set your target to link to the ApplicationServices and QuartzCore frameworks.
+Add
+
+    pod 'TwUI', git: "https://github.com/mysterioustrousers/twui"
+
+to your Podfile.
 
 ## Usage
 
