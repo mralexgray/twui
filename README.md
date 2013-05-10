@@ -5,6 +5,7 @@ We're currently using TwUI to build [Firhose](https://www.getfirehose.com/). As 
 **Fixed:**
 - TUITextView: now calls super in drawRect. Multiple draws was making the text look thicker and thicker.
 - TUIStretchableImage: capInsets are now scaled based on retina/non-retina.
+- TUIStretchableImage: variable names were wrong, referring to the wrong image slices.
 
 
 ## TwUI
