@@ -37,6 +37,11 @@
 
 - (TUIButtonContent *)_contentForState:(TUIControlState)state
 {
+    // if the state mask has disabled in it, it should just appear disabled
+    if ((state & TUIControlStateDisabled) == TUIControlStateDisabled) {
+        state = TUIControlStateDisabled;
+    }
+
 	id key = @(state);
 	TUIButtonContent *c = [_contentLookup objectForKey:key];
 

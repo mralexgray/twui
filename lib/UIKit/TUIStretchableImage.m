@@ -35,7 +35,6 @@
 		return;
 	}
 
-    NSLog(@"%@", NSStringFromSize(self.size));
 	CGSize size = CGSizeMake(CGImageGetWidth(image), CGImageGetHeight(image));
 	TUIEdgeInsets insets = self.capInsets;
 

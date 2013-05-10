@@ -14,12 +14,13 @@ It differs from UIKit in a few ways:
 
 ## Mysterious Trousers Fork
 
-We're currently using TwUI to build [Firhose](https://www.getfirehose.com/). As we fix bugs and make improvements we will list them here. If you have a fix or improvement that you're willing to contribute, please open a pull request and if it done within reason, we'll accept it.
+We're currently using TwUI to build [Firhose](https://www.getfirehose.com/). As we fix bugs and make improvements we will list them here. If you have a fix or improvement that you'd like to contribute, please open a pull request and we'll merge it in.
 
 **Fixed:**
 - TUITextView: now calls super in drawRect. Multiple draws was making the text look thicker and thicker.
 - TUIStretchableImage: capInsets are now scaled based on retina/non-retina.
 - TUIStretchableImage: variable names were wrong, referring to the wrong image slices.
+- TUIButton: If a button is disabled, it no longer highlights the title on hover.
 
 
 ## Setup
