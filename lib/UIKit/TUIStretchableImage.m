@@ -38,10 +38,8 @@
 	CGSize size = CGSizeMake(CGImageGetWidth(image), CGImageGetHeight(image));
 	TUIEdgeInsets insets = self.capInsets;
 
-    NSLog(@"%@", NSStringFromSize(self.size));
-    NSLog(@"%@", NSStringFromSize(size));
-
-    BOOL retina = roundf(size.width) == roundf(self.size.width * 2) && roundf(size.height) == roundf(self.size.height * 2);
+    BOOL retina =   roundf(size.width)  == roundf(self.size.width   * 2) &&
+                    roundf(size.height) == roundf(self.size.height  * 2);
     if (retina) {
         insets.top      *= 2.0;
         insets.left     *= 2.0;
@@ -82,6 +80,11 @@
 	NSImage *(^imageWithRect)(CGRect) = ^ id (CGRect rect){
 		CGImageRef part = CGImageCreateWithImageInRect(image, rect);
 		if (part == NULL) return nil;
+
+        if (retina) {
+            rect.size.width     /= 2.0;
+            rect.size.height    /= 2.0;
+        }
 
 		NSImage *image = [[NSImage alloc] initWithCGImage:part size:rect.size];
 		CGImageRelease(part);
@@ -152,7 +155,7 @@
 		NSDrawThreePartImage(dstRect, leftEdge, center, rightEdge, NO, op, alpha, flipped);
 	} else {
 		// Vertical three-part image.
-		NSDrawThreePartImage(dstRect, bottomEdge, center, topEdge, YES, op, alpha, flipped);
+		NSDrawThreePartImage(dstRect, topEdge, center, bottomEdge, YES, op, alpha, flipped);
 	}
 }
 
