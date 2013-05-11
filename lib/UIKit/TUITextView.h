@@ -71,6 +71,7 @@
 @property (nonatomic, assign) CGFloat cursorWidth;
 @property (nonatomic, assign) TUITextAlignment textAlignment;
 @property (nonatomic, assign) TUIEdgeInsets contentInset;
+@property (nonatomic, copy) NSNumber *lineSpacing;
 
 @property (nonatomic, assign) NSRange selectedRange;
 @property (nonatomic, assign, getter=isEditable) BOOL editable;
