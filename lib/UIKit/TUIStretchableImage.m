@@ -38,6 +38,9 @@
 	CGSize size = CGSizeMake(CGImageGetWidth(image), CGImageGetHeight(image));
 	TUIEdgeInsets insets = self.capInsets;
 
+    NSLog(@"%@", NSStringFromSize(self.size));
+    NSLog(@"%@", NSStringFromSize(size));
+
     BOOL retina = roundf(size.width) == roundf(self.size.width * 2) && roundf(size.height) == roundf(self.size.height * 2);
     if (retina) {
         insets.top      *= 2.0;
@@ -57,13 +60,13 @@
 
 		// Reduce insets to account for taking only part of the original image.
 		insets.left = fmax(0, insets.left - CGRectGetMinX(srcRect));
-		insets.bottom = fmax(0, insets.bottom - CGRectGetMinY(srcRect));
+		insets.top = fmax(0, insets.top - CGRectGetMinY(srcRect));
 
 		CGFloat srcRightInset = size.width - CGRectGetMaxX(srcRect);
 		insets.right = fmax(0, insets.right - srcRightInset);
 
 		CGFloat srcTopInset = size.height - CGRectGetMaxY(srcRect);
-		insets.top = fmax(0, insets.top - srcTopInset);
+		insets.bottom = fmax(0, insets.bottom - srcTopInset);
 	}
 
 	NSImage *topLeft = nil, *topEdge = nil, *topRight = nil;
@@ -71,7 +74,7 @@
 	NSImage *bottomLeft = nil, *bottomEdge = nil, *bottomRight = nil;
 
 	// Length of sides that run vertically.
-	CGFloat verticalEdgeLength = fmax(0, size.height - insets.top - insets.bottom);
+	CGFloat verticalEdgeLength = fmax(0, size.height - insets.bottom - insets.top);
 
 	// Length of sides that run horizontally.
 	CGFloat horizontalEdgeLength = fmax(0, size.width - insets.left - insets.right);
@@ -88,45 +91,45 @@
 
 	if (verticalEdgeLength > 0) {
 		if (insets.left > 0) {
-			CGRect partRect = CGRectMake(0, insets.bottom, insets.left, verticalEdgeLength);
+			CGRect partRect = CGRectMake(0, insets.top, insets.left, verticalEdgeLength);
 			leftEdge = imageWithRect(partRect);
 		}
 
 		if (insets.right > 0) {
-			CGRect partRect = CGRectMake(size.width - insets.right, insets.bottom, insets.right, verticalEdgeLength);
+			CGRect partRect = CGRectMake(size.width - insets.right, insets.top, insets.right, verticalEdgeLength);
 			rightEdge = imageWithRect(partRect);
 		}
 	}
 
 	if (horizontalEdgeLength > 0) {
-		if (insets.bottom > 0) {
-			CGRect partRect = CGRectMake(insets.left, 0, horizontalEdgeLength, insets.bottom);
+		if (insets.top > 0) {
+			CGRect partRect = CGRectMake(insets.left, 0, horizontalEdgeLength, insets.top);
 			topEdge = imageWithRect(partRect);
 		}
 
-		if (insets.top > 0) {
-			CGRect partRect = CGRectMake(insets.left, size.height - insets.top, horizontalEdgeLength, insets.top);
+		if (insets.bottom > 0) {
+			CGRect partRect = CGRectMake(insets.left, size.height - insets.bottom, horizontalEdgeLength, insets.bottom);
 			bottomEdge = imageWithRect(partRect);
 		}
 	}
 
-	if (insets.left > 0 && insets.top > 0) {
-		CGRect partRect = CGRectMake(0, size.height - insets.top, insets.left, insets.top);
+	if (insets.left > 0 && insets.bottom > 0) {
+		CGRect partRect = CGRectMake(0, size.height - insets.bottom, insets.left, insets.bottom);
 		bottomLeft = imageWithRect(partRect);
 	}
 
-	if (insets.left > 0 && insets.bottom > 0) {
-		CGRect partRect = CGRectMake(0, 0, insets.left, insets.bottom);
+	if (insets.left > 0 && insets.top > 0) {
+		CGRect partRect = CGRectMake(0, 0, insets.left, insets.top);
 		topLeft = imageWithRect(partRect);
 	}
 
-	if (insets.right > 0 && insets.top > 0) {
-		CGRect partRect = CGRectMake(size.width - insets.right, size.height - insets.top, insets.right, insets.top);
+	if (insets.right > 0 && insets.bottom > 0) {
+		CGRect partRect = CGRectMake(size.width - insets.right, size.height - insets.bottom, insets.right, insets.bottom);
 		bottomRight = imageWithRect(partRect);
 	}
 
-	if (insets.right > 0 && insets.bottom > 0) {
-		CGRect partRect = CGRectMake(size.width - insets.right, 0, insets.right, insets.bottom);
+	if (insets.right > 0 && insets.top > 0) {
+		CGRect partRect = CGRectMake(size.width - insets.right, 0, insets.right, insets.top);
 		topRight = imageWithRect(partRect);
 	}
 
