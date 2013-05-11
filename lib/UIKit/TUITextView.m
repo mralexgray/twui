@@ -386,7 +386,6 @@ static CAAnimation *ThrobAnimation()
 	
 	// Ugh. So this seems to be a decent approximation for the height of the cursor. It doesn't always match the native cursor but what ev.
 	CGRect r = CGRectIntegral([renderer firstRectForCharacterRange:ABCFRangeFromNSRange(selection)]);
-//    CGFloat lineHeight = r.size.height;
 	r.size.width = self.cursorWidth;
 	CGRect fontBoundingBox = CTFontGetBoundingBox((__bridge CTFontRef)self.font);
 	r.size.height = round(fontBoundingBox.origin.y + fontBoundingBox.size.height);
