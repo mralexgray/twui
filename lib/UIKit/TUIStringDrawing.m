@@ -81,6 +81,7 @@
 	return [s ab_sizeConstrainedToSize:size];
 }
 
+
 //- (CGSize)drawInRect:(CGRect)rect withFont:(NSFont *)font lineBreakMode:(TUILineBreakMode)lineBreakMode alignment:(TUITextAlignment)alignment
 //{
 //	return [self ab_drawInRect:rect withFont:font lineBreakMode:lineBreakMode alignment:alignment];

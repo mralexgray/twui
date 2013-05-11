@@ -25,6 +25,8 @@ We're currently using TwUI to build [Firehose](https://www.getfirehose.com/). As
 
 **Added**
 - (05/11/13) TUITextView: added `lineSpacing` property.
+- (05/11/13) TUITextField: added `textFieldShouldTabToPrevious` delegate method.
+
 
 
 ## Setup

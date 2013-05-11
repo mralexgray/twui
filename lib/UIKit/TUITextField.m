@@ -33,9 +33,10 @@
 
 - (void)setDelegate:(id <TUITextViewDelegate>)d
 {
-	_textFieldFlags.delegateTextFieldShouldReturn = [d respondsToSelector:@selector(textFieldShouldReturn:)];
-	_textFieldFlags.delegateTextFieldShouldClear = [d respondsToSelector:@selector(textFieldShouldClear:)];
-	_textFieldFlags.delegateTextFieldShouldTabToNext = [d respondsToSelector:@selector(textFieldShouldTabToNext:)];
+	_textFieldFlags.delegateTextFieldShouldReturn           = [d respondsToSelector:@selector(textFieldShouldReturn:)];
+	_textFieldFlags.delegateTextFieldShouldClear            = [d respondsToSelector:@selector(textFieldShouldClear:)];
+	_textFieldFlags.delegateTextFieldShouldTabToNext        = [d respondsToSelector:@selector(textFieldShouldTabToNext:)];
+	_textFieldFlags.delegateTextFieldShouldTabToPrevious    = [d respondsToSelector:@selector(textFieldShouldTabToPrevious:)];
 	[super setDelegate:d];
 }
 
@@ -48,6 +49,12 @@
 {
 	if(_textFieldFlags.delegateTextFieldShouldTabToNext)
 		[(id<TUITextFieldDelegate>)delegate textFieldShouldTabToNext:self];
+}
+
+- (void)_tabToPrevious
+{
+	if(_textFieldFlags.delegateTextFieldShouldTabToPrevious)
+		[(id<TUITextFieldDelegate>)delegate textFieldShouldTabToPrevious:self];
 }
 
 - (void)setRightButton:(TUIButton *)b
@@ -95,6 +102,11 @@ doClear:
 - (void)insertTab:(id)sender
 {
 	[[self _textField] _tabToNext];
+}
+
+- (void)insertBacktab:(id)sender
+{
+    [[self _textField] _tabToPrevious];
 }
 
 - (void)insertNewline:(id)sender
