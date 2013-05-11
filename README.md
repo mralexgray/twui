@@ -21,6 +21,7 @@ We're currently using TwUI to build [Firhose](https://www.getfirehose.com/). As 
 - TUIStretchableImage: capInsets are now scaled based on retina/non-retina.
 - TUIStretchableImage: variable names were wrong, referring to the wrong image slices.
 - TUIButton: If a button is disabled, it no longer highlights the title on hover.
+- TUIStretchableImage: fixed so that 9-slice images display correctly on retina displays.
 
 
 ## Setup
