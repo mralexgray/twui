@@ -23,9 +23,8 @@
 #import "TUITextRenderer.h"
 
 @interface TUIButton ()
-
+@property(nonatomic, readwrite) TUIButtonType buttonType;
 - (void)_update;
-
 @end
 
 @implementation TUIButton
@@ -48,6 +47,21 @@
 	return self;
 }
 
+- (id)initWithType:(TUIButtonType)buttonType
+{
+    self = [self initWithFrame:CGRectZero];
+    if (self) {
+        _buttonFlags.buttonType     = buttonType;
+        if (buttonType == TUIButtonTypePush) {
+            self.titleLabel.alignment   = TUITextAlignmentCenter;
+            self.clipsToBounds          = YES;
+            self.layer.cornerRadius     = 6;
+            self.layer.borderColor      = RGBHex(0x7E7E7E).CGColor;
+            self.layer.borderWidth      = 1;
+        }
+    }
+    return self;
+}
 
 + (id)button
 {
@@ -56,7 +70,7 @@
 
 + (id)buttonWithType:(TUIButtonType)buttonType
 {
-	TUIButton *b = [[self alloc] initWithFrame:CGRectZero];
+	TUIButton *b = [[self alloc] initWithType:buttonType];
 	return b;
 }
 
@@ -180,7 +194,21 @@ static CGRect ButtonRectCenteredInRect(CGRect a, CGRect b)
 	CGFloat alpha = (self.buttonType == TUIButtonTypeCustom ? 1.0 : down?0.7:1.0);
 	if(_buttonFlags.dimsInBackground)
 		alpha = key?alpha:0.5;
-	
+
+    if (self.buttonType == TUIButtonTypePush) {
+        NSColor *c1 = RGBHex(0xF4F4F4);
+        NSColor *c2 = RGBHex(0xBEBEBE);
+        if (down) {
+            NSColor *temp   = c1;
+            c1              = c2;
+            c2              = temp;
+        }
+        [self drawGradientFromPoint:NSMakePoint(0, self.frame.size.height)
+                              color:c1
+                            toPoint:NSMakePoint(0, 0)
+                              color:c2];
+    }
+
 	if(self.backgroundColor != nil) {
 		[self.backgroundColor setFill];
 		CGContextFillRect(TUIGraphicsGetCurrentContext(), self.bounds);

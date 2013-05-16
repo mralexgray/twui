@@ -26,6 +26,7 @@
 @class TUIImageView;
 
 typedef enum TUIButtonType : NSUInteger {
+    TUIButtonTypePush,
     TUIButtonTypeCustom
 } TUIButtonType;
 

@@ -16,6 +16,7 @@
 
 #import "TUIResponder.h"
 #import "TUIAccessibility.h"
+#import "TUIView+ColorHelpers.h"
 
 extern NSString * const TUIViewWillMoveToWindowNotification; // both notification's userInfo will contain the new window under the key TUIViewWindow
 extern NSString * const TUIViewDidMoveToWindowNotification;
@@ -363,6 +364,11 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView*);
 - (void)setEverythingNeedsDisplay;
 
 /**
+ Makes it really easy to draw gradients in views
+ */
+- (void)drawGradientFromPoint:(NSPoint)point1 color:(NSColor *)color1 toPoint:(NSPoint)point2 color:(NSColor *)color2;
+
+/**
  When YES, content and subviews are clipped to the bounds of the view. Default is NO.
  */
 @property (nonatomic) BOOL clipsToBounds;
@@ -391,6 +397,7 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView*);
  default is YES. if set to NO, the view must fill its entire bounds, otherwise the view may contain graphical garbage.
  */
 @property (nonatomic) BOOL clearsContextBeforeDrawing;
+
 
 @end
 

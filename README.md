@@ -29,7 +29,8 @@ We're currently using TwUI to build [Firehose](https://www.getfirehose.com/). As
 - (05/11/13) TUITextView: added `lineSpacing` property.
 - (05/11/13) TUITextField: added `textFieldShouldTabToPrevious` delegate method.
 - (05/11/13) TUIRefreshControl: pulled in `TUIRefreshControl` from githubs branch. (from github.com/galaxas0 & github.com/Sephiroth87)
-- (05/11/13) TUIRefreshControl: added `arrowColor` property.
+- (05/15/13) TUIRefreshControl: added `arrowColor` property.
+- (05/15/13) TUIButton: added `TUIButtonTypePush` to make a `TUIButton` that *kinda* looks like default AppKit button.
 
 
 

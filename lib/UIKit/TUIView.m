@@ -1107,6 +1107,20 @@ static void TUISetCurrentContextScaleFactor(CGFloat s)
 	_viewFlags.clearsContextBeforeDrawing = newValue;
 }
 
+- (void)drawGradientFromPoint:(NSPoint)point1 color:(NSColor *)color1 toPoint:(NSPoint)point2 color:(NSColor *)color2
+{
+    CGContextRef context = [[NSGraphicsContext currentContext] graphicsPort];
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGFloat locations[] = { 0.0, 1.0 };
+    NSArray *colors = @[ (__bridge id)color1.CGColor, (__bridge id)color2.CGColor ];
+
+    CGGradientRef gradient = CGGradientCreateWithColors(colorSpace, (__bridge CFArrayRef)colors, locations);
+    CGContextDrawLinearGradient(context, gradient, point1, point2, 0);
+
+    CFRelease(gradient);
+    CFRelease(colorSpace);
+}
+
 @end
 
 @implementation TUIView (TUIViewAppKit)
