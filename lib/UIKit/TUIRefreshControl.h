@@ -29,6 +29,7 @@
 
 // Set a custom tint color for the refresh control.
 @property (nonatomic, strong) NSColor *tintColor;
+@property (nonatomic, strong) NSColor *arrowColor;
 
 // To use the refresh control, initialize it by  attaching it to a table
 // view passed. Once this has been done, the refresh control will become

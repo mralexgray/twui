@@ -146,11 +146,11 @@ static pthread_key_t TUICurrentContextScaleFactorTLSKey;
 {
 	if((self = [super init]))
 	{
-		_viewFlags.clearsContextBeforeDrawing = 1;
-		self.frame = frame;
-		toolTipDelay = 1.5;
-		self.isAccessibilityElement = YES;
-		accessibilityFrame = CGRectNull; // null rect means we'll just get the view's frame and use that
+		_viewFlags.clearsContextBeforeDrawing   = 1;
+		self.frame                              = frame;
+		toolTipDelay                            = 1.5;
+		self.isAccessibilityElement             = YES;
+		accessibilityFrame                      = CGRectNull; // null rect means we'll just get the view's frame and use that
 	}
 	return self;
 }

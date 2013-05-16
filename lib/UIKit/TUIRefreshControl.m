@@ -77,6 +77,7 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 
 		self.refreshing = NO;
 		self.tintColor = [NSColor colorWithCalibratedRed:155.0 / 255.0 green:162.0 / 255.0 blue:172.0 / 255.0 alpha:1.0];
+        self.arrowColor = [NSColor whiteColor];
 
 		self.shapeLayer = [CAShapeLayer layer];
 		self.shapeLayer.fillColor = [_tintColor tui_CGColor];
@@ -91,7 +92,7 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 		self.arrowLayer = [CAShapeLayer layer];
 		self.arrowLayer.strokeColor = [[[NSColor darkGrayColor] colorWithAlphaComponent:0.5] tui_CGColor];
 		self.arrowLayer.lineWidth = 0.5;
-		self.arrowLayer.fillColor = [[NSColor whiteColor] tui_CGColor];
+		self.arrowLayer.fillColor = [_arrowColor tui_CGColor];
 		[self.shapeLayer addSublayer:self.arrowLayer];
 	}
 
@@ -124,6 +125,12 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 	self.shapeLayer.fillColor = _tintColor.tui_CGColor;
 }
 
+- (void)setArrowColor:(NSColor *)arrowColor
+{
+    _arrowColor = arrowColor;
+    self.arrowLayer.fillColor = _arrowColor.tui_CGColor;
+}
+
 - (void)beginRefreshing {
 	if(!self.refreshing) {
 		CABasicAnimation *alphaAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
@@ -153,27 +160,25 @@ static inline CGFloat lerp(CGFloat a, CGFloat b, CGFloat p) {
 	if(self.refreshing) {
 		self.refreshing = NO;
 
-		[TUIView animateWithDuration:0.4 animations:^{
-			self.activity.alpha = 0.0f;
-			[self.tableView scrollToTopAnimated:YES];
-		} completion:^(BOOL finished) {
-			[self.activity stopAnimating];
-			[self.shapeLayer removeAllAnimations];
-			[self.arrowLayer removeAllAnimations];
+        self.activity.alpha = 0.0f;
+        [self.tableView scrollToTopAnimated:YES];
+        [self.activity stopAnimating];
+        [self.shapeLayer removeAllAnimations];
+        [self.arrowLayer removeAllAnimations];
 
-			TUIEdgeInsets preInset = self.tableView.contentInset;
-			preInset.top = self.bounds.origin.y;
-			self.tableView.contentInset = preInset;
+        TUIEdgeInsets preInset = self.tableView.contentInset;
+        preInset.top = 0;
+        self.tableView.contentInset = preInset;
+        [self.tableView reloadLayout];
 
-			self.shapeLayer.position = CGPointZero;
+        self.shapeLayer.position = CGPointZero;
 
-			self.shapeLayer.path = nil;
-			self.shapeLayer.shadowPath = nil;
-			self.arrowLayer.path = nil;
+        self.shapeLayer.path = nil;
+        self.shapeLayer.shadowPath = nil;
+        self.arrowLayer.path = nil;
 
-			_refreshControlFlags.intentionalRefresh = NO;
-			_refreshControlFlags.drawingRefresh = NO;
-		}];
+        _refreshControlFlags.intentionalRefresh = NO;
+        _refreshControlFlags.drawingRefresh = NO;
 	}
 }
 

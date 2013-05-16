@@ -154,10 +154,11 @@ typedef struct {
 - (id)initWithFrame:(CGRect)frame style:(TUITableViewStyle)style
 {
 	if((self = [super initWithFrame:frame])) {
-		_style = style;
-		_reusableTableCells = [[NSMutableDictionary alloc] init];
-		_visibleSectionHeaders = [[NSMutableIndexSet alloc] init];
-		_visibleItems = [[NSMutableDictionary alloc] init];
+        self.clipsToBounds                  = YES;
+		_style                              = style;
+		_reusableTableCells                 = [[NSMutableDictionary alloc] init];
+		_visibleSectionHeaders              = [[NSMutableIndexSet alloc] init];
+		_visibleItems                       = [[NSMutableDictionary alloc] init];
 		_tableFlags.animateSelectionChanges = 1;
 	}
 	return self;
