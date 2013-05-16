@@ -24,6 +24,7 @@ We're currently using TwUI to build [Firehose](https://www.getfirehose.com/). As
 - (05/11/13) TUIStretchableImage: fixed so that 9-slice images display correctly on retina displays.
 - (05/15/13) TUITableView: Making the table view clip subviews by default
 - (05/15/13) TUIRefreshControl: got rid of dismiss animation until it can be done correctly.
+- (05/15/13) TUIView: making it so that `TUIView` block based draw rect will call it's own draw rect first, then the block.
 
 **Added**
 - (05/11/13) TUITextView: added `lineSpacing` property.
@@ -31,7 +32,7 @@ We're currently using TwUI to build [Firehose](https://www.getfirehose.com/). As
 - (05/11/13) TUIRefreshControl: pulled in `TUIRefreshControl` from githubs branch. (from github.com/galaxas0 & github.com/Sephiroth87)
 - (05/15/13) TUIRefreshControl: added `arrowColor` property.
 - (05/15/13) TUIButton: added `TUIButtonTypePush` to make a `TUIButton` that *kinda* looks like default AppKit button.
-
+- (05/15/13) TUIButton: added `setBackgroundColor:forState:`
 
 
 ## Setup

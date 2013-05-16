@@ -209,8 +209,9 @@ static CGRect ButtonRectCenteredInRect(CGRect a, CGRect b)
                               color:c2];
     }
 
-	if(self.backgroundColor != nil) {
-		[self.backgroundColor setFill];
+    NSColor *bgColor = [self backgroundColorForState:self.state] ?: self.backgroundColor;
+	if (bgColor != nil) {
+		[bgColor setFill];
 		CGContextFillRect(TUIGraphicsGetCurrentContext(), self.bounds);
 	}
 	

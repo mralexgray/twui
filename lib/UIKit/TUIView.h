@@ -64,10 +64,10 @@ typedef enum TUIViewContentMode : NSUInteger {
 @class TUINSWindow;
 @class TUIView;
 
-typedef void(^TUIViewDrawRect)(TUIView *, CGRect);
-typedef CGRect(^TUIViewLayout)(TUIView *);
+typedef void(^TUIViewDrawRect)(TUIView *view, CGRect rect);
+typedef CGRect(^TUIViewLayout)(TUIView *view);
 
-extern CGRect(^TUIViewCenteredLayout)(TUIView*);
+extern CGRect(^TUIViewCenteredLayout)(TUIView *view);
 
 @protocol TUIViewDelegate;
 

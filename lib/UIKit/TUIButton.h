@@ -79,12 +79,14 @@ typedef enum TUIButtonType : NSUInteger {
 - (void)setTitleShadowColor:(NSColor *)color forState:(TUIControlState)state;
 - (void)setImage:(NSImage *)image forState:(TUIControlState)state;
 - (void)setBackgroundImage:(NSImage *)image forState:(TUIControlState)state;
+- (void)setBackgroundColor:(NSColor *)color forState:(TUIControlState)state;
 
 - (NSString *)titleForState:(TUIControlState)state;
 - (NSColor *)titleColorForState:(TUIControlState)state;
 - (NSColor *)titleShadowColorForState:(TUIControlState)state;
 - (NSImage *)imageForState:(TUIControlState)state;
 - (NSImage *)backgroundImageForState:(TUIControlState)state;
+- (NSColor *)backgroundColorForState:(TUIControlState)state;
 
 @property(nonatomic, readonly, strong) NSString *currentTitle;
 @property(nonatomic, readonly, strong) NSColor *currentTitleColor;

@@ -376,6 +376,7 @@ static void TUISetCurrentContextScaleFactor(CGFloat s)
 
 		if (self.drawRect) {
 			// drawRect is implemented via a block
+            [self drawRect:rectToDraw];
 			self.drawRect(self, rectToDraw);
 		} else if ((drawRectIMP != dontCallThisBasicDrawRectIMP) && ![self _disableDrawRect]) {
 			// drawRect is overridden by subclass

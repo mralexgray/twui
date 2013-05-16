@@ -22,6 +22,7 @@
 @property (nonatomic, strong) NSColor *shadowColor;
 @property (nonatomic, strong) NSImage *image;
 @property (nonatomic, strong) NSImage *backgroundImage;
+@property (nonatomic, strong) NSColor *backgroundColor;
 @end
 
 @implementation TUIButtonContent
@@ -30,6 +31,7 @@
 @synthesize shadowColor = shadowColor;
 @synthesize image = image;
 @synthesize backgroundImage = backgroundImage;
+@synthesize backgroundColor = backgroundColor;
 @end
 
 
@@ -98,6 +100,15 @@
 	[self stateDidChange];
 }
 
+- (void)setBackgroundColor:(NSColor *)color forState:(TUIControlState)state
+{
+	[self stateWillChange];
+	[[self _contentForState:state] setBackgroundColor:color];
+	[self setNeedsDisplay];
+	[self stateDidChange];
+}
+
+
 - (NSString *)titleForState:(TUIControlState)state
 {
 	return [[self _contentForState:state] title];
@@ -121,6 +132,11 @@
 - (NSImage *)backgroundImageForState:(TUIControlState)state
 {
 	return [[self _contentForState:state] backgroundImage];
+}
+
+- (NSColor *)backgroundColorForState:(TUIControlState)state
+{
+	return [[self _contentForState:state] backgroundColor];
 }
 
 - (NSString *)currentTitle
