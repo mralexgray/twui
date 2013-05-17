@@ -50,6 +50,7 @@ typedef enum TUITableViewInsertionMethod : NSUInteger {
 - (void)tableView:(TUITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath; // happens on left/right mouse down, key up/down
 - (void)tableView:(TUITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath;
 - (void)tableView:(TUITableView *)tableView didClickRowAtIndexPath:(NSIndexPath *)indexPath withEvent:(NSEvent *)event; // happens on left/right mouse up (can look at clickCount)
+- (void)tableView:(TUITableView *)tableView didPressEnterOnRowAtIndexPath:(NSIndexPath *)indexPath withEvent:(NSEvent *)event; // happens on left/right mouse up (can look at clickCount)
 
 - (BOOL)tableView:(TUITableView*)tableView shouldSelectRowAtIndexPath:(NSIndexPath*)indexPath forEvent:(NSEvent*)event; // YES, if not implemented
 - (NSMenu *)tableView:(TUITableView *)tableView menuForRowAtIndexPath:(NSIndexPath *)indexPath withEvent:(NSEvent *)event;

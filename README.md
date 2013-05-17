@@ -33,6 +33,7 @@ We're currently using TwUI to build [Firehose](https://www.getfirehose.com/). As
 - (05/15/13) TUIRefreshControl: added `arrowColor` property.
 - (05/15/13) TUIButton: added `TUIButtonTypePush` to make a `TUIButton` that *kinda* looks like default AppKit button.
 - (05/15/13) TUIButton: added `setBackgroundColor:forState:`
+- (05/16/13) TUIPopover: added `becomesKeyWindow` as well as `becomeKeyWindow`. This is good if you're using the popover as search autosuggest.
 
 
 ## Setup

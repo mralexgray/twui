@@ -89,6 +89,7 @@ NSTimeInterval const TUIPopoverDefaultFadeoutDuration = 0.3;
     _contentViewController = viewController;
     _backgroundViewClass = [TUIPopoverBackgroundView class];
 	_behaviour = TUIPopoverViewControllerBehaviourApplicationDefined;
+    _becomesKeyWindow = YES;
 	
 	return self;
 }
@@ -238,7 +239,7 @@ NSTimeInterval const TUIPopoverDefaultFadeoutDuration = 0.3;
 	self.popoverWindow.contentView = contentView;
 	self.popoverWindow.alphaValue = 0.0;
 	[positioningView.nsWindow addChildWindow:self.popoverWindow ordered:NSWindowAbove];
-	[self.popoverWindow makeKeyAndOrderFront:self];
+    if (_becomesKeyWindow) [self.popoverWindow makeKeyAndOrderFront:self];
 	[backgroundView updateMaskLayer];
 
 	CABasicAnimation *fadeInAnimation = [CABasicAnimation animationWithKeyPath:@"alphaValue"];
@@ -254,6 +255,11 @@ NSTimeInterval const TUIPopoverDefaultFadeoutDuration = 0.3;
 	self.popoverWindow.animations = [NSDictionary dictionaryWithObject:fadeInAnimation forKey:@"alphaValue"];
 	self.animating = YES;
 	[self.popoverWindow.animator setAlphaValue:1.0];
+}
+
+- (void)becomeKeyWindow
+{
+    [self.popoverWindow makeKeyAndOrderFront:self];
 }
 
 #pragma mark -

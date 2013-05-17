@@ -1180,7 +1180,15 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
 			lastIndexPath = newIndexPath;
 		}
 	};
-	
+
+    // enter key
+    if (event.keyCode == 36) {
+        if ([_delegate respondsToSelector:@selector(tableView:didPressEnterOnRowAtIndexPath:withEvent:)]) {
+            [_delegate tableView:self didPressEnterOnRowAtIndexPath:_selectedIndexPath withEvent:event];
+        }
+        return YES;
+    }
+
 	switch([[event charactersIgnoringModifiers] characterAtIndex:0]) {
 		case NSUpArrowFunctionKey: {
 			selectValidIndexPath([self indexPathForLastVisibleRow], ^(NSIndexPath *lastIndexPath) {

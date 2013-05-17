@@ -36,6 +36,7 @@ typedef void (^TUIPopoverDelegateBlock)(TUIPopover *popover);
 @property (nonatomic, unsafe_unretained) TUIPopoverViewControllerBehaviour behaviour;
 @property (nonatomic, readonly) BOOL shown;
 @property (nonatomic, readonly) CGRect positioningRect;
+@property (nonatomic, assign) BOOL becomesKeyWindow;
 
 //Block callbacks
 @property (nonatomic, copy) TUIPopoverDelegateBlock willCloseBlock;
@@ -47,6 +48,7 @@ typedef void (^TUIPopoverDelegateBlock)(TUIPopover *popover);
 - (id)initWithContentViewController:(TUIViewController *)viewController;
 
 - (void)showRelativeToRect:(CGRect)positioningRect ofView:(TUIView *)positioningView preferredEdge:(CGRectEdge)preferredEdge;
+- (void)becomeKeyWindow;
 
 - (void)close;
 - (void)closeWithFadeoutDuration:(NSTimeInterval)duration;
