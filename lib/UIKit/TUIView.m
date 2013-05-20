@@ -21,6 +21,7 @@
 #import "TUILayoutManager.h"
 #import "TUINSView.h"
 #import "TUINSView+Private.h"
+#import "TUIView+Private.h"
 #import "TUINSWindow.h"
 #import "TUITextRenderer.h"
 #import "TUIViewController.h"

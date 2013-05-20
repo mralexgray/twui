@@ -15,6 +15,7 @@
  */
 
 #import "TUIView.h"
+#import "TUIViewController.h"
 
 typedef void (^TUIMouseDraggedHandler)(NSEvent *dragEvent);
 

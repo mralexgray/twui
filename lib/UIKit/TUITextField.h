@@ -33,6 +33,7 @@
 
 @property (nonatomic, strong) TUIButton *rightButton;
 
++ (void)setClearButtonImage:(NSImage *)clearButtonImage;
 - (TUIButton *)clearButton;
 
 @end

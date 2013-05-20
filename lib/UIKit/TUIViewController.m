@@ -45,8 +45,8 @@
 - (void)setView:(TUIView *)v
 {
 	_view = v;
-	
-	if(!_view) {
+
+	if (!_view) {
 		[self viewDidUnload];
 	}
 }

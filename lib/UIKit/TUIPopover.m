@@ -90,7 +90,7 @@ NSTimeInterval const TUIPopoverDefaultFadeoutDuration = 0.3;
     _backgroundViewClass = [TUIPopoverBackgroundView class];
 	_behaviour = TUIPopoverViewControllerBehaviourApplicationDefined;
     _becomesKeyWindow = YES;
-	
+
 	return self;
 }
 
@@ -310,6 +310,7 @@ NSTimeInterval const TUIPopoverDefaultFadeoutDuration = 0.3;
 	[NSEvent removeMonitor:self.transientEventMonitor];
 	self.transientEventMonitor = nil;
 }
+
 
 @end
 
