@@ -538,7 +538,7 @@ CGFloat const TUIPopoverBackgroundViewArrowWidth = 35.0;
 @implementation TUIPopoverWindowContentView
 
 @synthesize nsView = _nsView;
-@synthesize arrowEdge = _arrowEdge;;
+@synthesize arrowEdge = _arrowEdge;
 
 - (id)initWithFrame:(NSRect)frameRect {
     self = [super initWithFrame:frameRect];

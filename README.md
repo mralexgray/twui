@@ -25,6 +25,9 @@ We're currently using TwUI to build [Firehose](https://www.getfirehose.com/). As
 - (05/15/13) TUITableView: Making the table view clip subviews by default
 - (05/15/13) TUIRefreshControl: got rid of dismiss animation until it can be done correctly.
 - (05/15/13) TUIView: making it so that `TUIView` block based draw rect will call it's own draw rect first, then the block.
+- (05/20/13) TUIButton: making the image view `userInteractionEnabled` NO by default so it doesn't interfere with clicking the button.
+- (05/21/13) TUITextView: can paste URLs. [michaelvillar](https://github.com/michaelvillar/twui/commit/f181f575b1ce5db56b662ccc0d88ffd4e5a990fa)
+- (05/22/13) TUIView: `+new` calls the designated initializer `initWithFrame`
 
 **Added**
 - (05/11/13) TUITextView: added `lineSpacing` property.

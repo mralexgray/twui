@@ -156,6 +156,11 @@ static pthread_key_t TUICurrentContextScaleFactorTLSKey;
 	return self;
 }
 
++ (id)new
+{
+    return [[self alloc] initWithFrame:CGRectZero];
+}
+
 - (CALayer *)layer
 {
 	if(!_layer) {

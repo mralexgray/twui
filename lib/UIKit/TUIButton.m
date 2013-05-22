@@ -124,6 +124,7 @@
 	if(!_imageView) {
 		_imageView = [[TUIImageView alloc] initWithFrame:TUIEdgeInsetsInsetRect(self.bounds, self.imageEdgeInsets)];
 		_imageView.backgroundColor = [NSColor clearColor];
+        _imageView.userInteractionEnabled = NO;
 		[self addSubview:_imageView];
 	}
 	return _imageView;

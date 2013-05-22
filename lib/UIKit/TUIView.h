@@ -146,6 +146,11 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView *view);
 - (id)initWithFrame:(CGRect)frame;
 
 /**
+ Calls alloc and the designated initializer with a zero frame.
+ */
++ (id)new;
+
+/**
  Default is YES. if set to NO, user events (clicks, keys) are ignored and removed from the event queue.
  */
 @property (nonatomic,getter=isUserInteractionEnabled) BOOL userInteractionEnabled;
