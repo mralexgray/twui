@@ -89,6 +89,7 @@ typedef NS_ENUM(NSInteger, TUITableViewInsertionMethod) {
 //    NSUInteger                  _iterationCount;
     
 	NSIndexPath            * _selectedIndexPath;
+	NSIndexPath            * _baseSelectionPath;
 	NSIndexPath            * _indexPathShouldBeFirstResponder;
 	NSInteger                     _futureMakeFirstResponderToken;
 	NSIndexPath            * _keepVisibleIndexPathForReload;

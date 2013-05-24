@@ -1187,72 +1187,62 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
 
 - (void)selectRowAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated scrollPosition:(TUITableViewScrollPosition)scrollPosition
 {
-    /*!
-     * NOTE the selectRowAtIndex is calledTwice
-     * the _iterationCount variable keeps track
-     * of the iteration.
-     */
     
 	NSIndexPath *oldIndexPath = [self indexPathForSelectedRow];
-//    if([indexPath isEqual:oldIndexPath] && _iterationCount != 0)
-//    {
-//        _iterationCount = 0;
-//	}
-//    else if (_iterationCount == 0)
-//    {
     
-        /*!
-         * check for the current event only if the multiple selection
-         * is enabled to avoid uselesss computations.
-         */
-        
-        if (_allowsMultipleSelection)
-        {
-            NSEvent *event = [NSApp currentEvent];
-            [self checkEventModifiers:event];
-        }
-        
-        // grab the tableview cell
-        TUITableViewCell *cell = [self cellForRowAtIndexPath:indexPath]; // may be nil
-        
-//        _iterationCount++;
+    /*!
+     * check for the current event only if the multiple selection
+     * is enabled to avoid uselesss computations.
+     */
     
-        // if it allows multiple selection
-        if (_allowsMultipleSelection)
-        {
-            if (!_multipleSelectionKeyIsPressed && !_extendMultipleSelectionKeyIsPressed)
-            {
-                [self configureCellWithSingleClickNoFlags:cell indexPath:indexPath animated:animated];
-            }
-            else if (!_extendMultipleSelectionKeyIsPressed)
-            {
-                [self configureCellWithSingleClickCommandFlag:cell indexPath:indexPath animated:animated];
-            }
-            else
-            {
-                [self configureCellWithSingleClickShiftFlag:cell indexPath:indexPath animated:animated];
-            }
-            
+    if (_allowsMultipleSelection)
+    {
+        NSEvent *event = [NSApp currentEvent];
+        [self checkEventModifiers:event];
+        if ([event type] != NSKeyDown) {
+            _baseSelectionPath = nil;
         }
-        else if (!_allowsMultipleSelection)
+    }
+    
+    // grab the tableview cell
+    TUITableViewCell *cell = [self cellForRowAtIndexPath:indexPath]; // may be nil
+    
+
+    // if it allows multiple selection
+    if (_allowsMultipleSelection)
+    {
+        if (!_multipleSelectionKeyIsPressed && !_extendMultipleSelectionKeyIsPressed)
         {
-            
-            // do as usual
-            [self deselectRowAtIndexPath:[self indexPathForSelectedRow] animated:animated];
-            [cell setSelected:YES animated:animated];
-            // should already be nil
-            _selectedIndexPath = indexPath;
-            
+            [self configureCellWithSingleClickNoFlags:cell indexPath:indexPath animated:animated];
+        }
+        else if (!_extendMultipleSelectionKeyIsPressed)
+        {
+            [self configureCellWithSingleClickCommandFlag:cell indexPath:indexPath animated:animated];
+        }
+        else
+        {
+            [self configureCellWithSingleClickShiftFlag:cell indexPath:indexPath animated:animated];
         }
         
+    }
+    else if (!_allowsMultipleSelection)
+    {
         
-		[cell setNeedsDisplay];
-		
-		// only notify when the selection actually changes
-		if([self.delegate respondsToSelector:@selector(tableView:didSelectRowAtIndexPath:)]){
-			[self.delegate tableView:self didSelectRowAtIndexPath:indexPath];
-		}
-//	}
+        // do as usual
+        [self deselectRowAtIndexPath:[self indexPathForSelectedRow] animated:animated];
+        [cell setSelected:YES animated:animated];
+        // should already be nil
+        _selectedIndexPath = indexPath;
+        
+    }
+    
+    
+    [cell setNeedsDisplay];
+    
+    // only notify when the selection actually changes
+    if([self.delegate respondsToSelector:@selector(tableView:didSelectRowAtIndexPath:)]){
+        [self.delegate tableView:self didSelectRowAtIndexPath:indexPath];
+    }
     
     NSResponder *firstResponder = [self.nsWindow firstResponder];
     if(firstResponder == self || firstResponder == [self cellForRowAtIndexPath:oldIndexPath]) {
@@ -1357,7 +1347,6 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
 					}
 				}
 				
-//                _iterationCount = 0;
 				return [NSIndexPath indexPathForRow:row inSection:section];
 			});
 			
@@ -1384,7 +1373,6 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
 					}
 				}
 				
-//                _iterationCount = 0;
 				return [NSIndexPath indexPathForRow:row inSection:section];
 			});
             
@@ -1426,15 +1414,33 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
     
     if (_selectedIndexPath)
     {
+        if (!_baseSelectionPath) {
+            if ([self indexPathExists:_selectedIndexPath]) {
+                _baseSelectionPath = _selectedIndexPath;
+            } else if ([self topIndexPath]) {
+                _baseSelectionPath = [self topIndexPath];
+            } else {
+                return;
+            }
+        }
         
         NSMutableArray *arrayOfIndexes = [[NSMutableArray alloc] init];
         [arrayOfIndexes addObjectsFromArray:_arrayOfSelectedIndexes];
-        [arrayOfIndexes addObjectsFromArray:[self arrayOfIndexesOfSectionsFromIndex:_selectedIndexPath to:path]];
+        [arrayOfIndexes removeObjectsInArray:[self arrayOfIndexesOfSectionsFromIndex:_baseSelectionPath to:_selectedIndexPath]];
+        [arrayOfIndexes addObjectsFromArray:[self arrayOfIndexesOfSectionsFromIndex:_baseSelectionPath to:path]];
         
         [self clearIndexPaths];
         
         for (NSIndexPath *indexPath in arrayOfIndexes)
         {
+            // skip already added to selection items
+            if ([self indexPathExists:indexPath]) {
+                continue;
+            }
+            if([_delegate respondsToSelector:@selector(tableView:shouldSelectRowAtIndexPath:forEvent:)] && ![_delegate tableView:self shouldSelectRowAtIndexPath:indexPath forEvent:nil]) {
+                continue;
+            }
+            
             TUITableViewCell *newCell = [self cellForRowAtIndexPath:indexPath]; // may be nil
             [self addSelectedIndexPath:indexPath];
             [newCell setSelected:YES animated:animated];
