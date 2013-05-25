@@ -422,7 +422,7 @@ static CAAnimation *ThrobAnimation()
 
 - (void)_checkSpelling
 {
-	NSTextCheckingType checkingTypes = NSTextCheckingTypeSpelling;
+	NSTextCheckingTypes checkingTypes = (NSTextCheckingTypes)NSTextCheckingTypeSpelling;
 	if(autocorrectionEnabled) checkingTypes |= NSTextCheckingTypeCorrection | NSTextCheckingTypeReplacement;
 	
 	NSRange wholeLineRange = NSMakeRange(0, [self.text length]);
