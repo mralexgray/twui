@@ -149,6 +149,7 @@
 		88EFFB5413F417E200CF91A9 /* TUITextViewEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = 88EFFB5013F417E200CF91A9 /* TUITextViewEditor.m */; };
 		88EFFB5513F417E200CF91A9 /* TUITextViewEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = 88EFFB5013F417E200CF91A9 /* TUITextViewEditor.m */; };
 		88EFFB5613F417E200CF91A9 /* TUITextViewEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = 88EFFB5013F417E200CF91A9 /* TUITextViewEditor.m */; };
+		C241F0231751CFCD00B9AAA5 /* TUIView.h in Headers */ = {isa = PBXBuildFile; fileRef = CBB74C8B13BE6E1900C85CB5 /* TUIView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C29A7DCD17445F3F008BF364 /* TUIView+ColorHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = C29A7DCC17445F3F008BF364 /* TUIView+ColorHelpers.h */; };
 		C29A7DCE17446209008BF364 /* TUIView+ColorHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = C29A7DCC17445F3F008BF364 /* TUIView+ColorHelpers.h */; };
 		C29A7DCF1744620A008BF364 /* TUIView+ColorHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = C29A7DCC17445F3F008BF364 /* TUIView+ColorHelpers.h */; };
@@ -960,6 +961,7 @@
 				D0C7653515B624D900E7AC2C /* NSView+TUIExtensions.h in Headers */,
 				D0C7654815B626E200E7AC2C /* TUIView+TUIBridgedView.h in Headers */,
 				D0C7655415B6294400E7AC2C /* TUIScrollView+TUIBridgedScrollView.h in Headers */,
+				C241F0231751CFCD00B9AAA5 /* TUIView.h in Headers */,
 				D0C7655F15B6297300E7AC2C /* NSClipView+TUIExtensions.h in Headers */,
 				D0C7656515B6297300E7AC2C /* NSScrollView+TUIExtensions.h in Headers */,
 				D039724715B7D7D70092CD26 /* TUIView+Layout.h in Headers */,
