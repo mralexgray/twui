@@ -21,6 +21,7 @@
 #import "TUINSView.h"
 #import "TUIStretchableImage.h"
 #import "TUITextRenderer.h"
+#import "NSColor+TUIExtensions.h"
 
 @interface TUIButton ()
 @property(nonatomic, readwrite) TUIButtonType buttonType;
@@ -56,7 +57,7 @@
             self.titleLabel.alignment   = TUITextAlignmentCenter;
             self.clipsToBounds          = YES;
             self.layer.cornerRadius     = 6;
-            self.layer.borderColor      = RGBHex(0x7E7E7E).CGColor;
+            self.layer.borderColor      = RGBHex(0x7E7E7E).tui_CGColor;
             self.layer.borderWidth      = 1;
         }
     }

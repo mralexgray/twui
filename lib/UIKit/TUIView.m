@@ -1119,7 +1119,7 @@ static void TUISetCurrentContextScaleFactor(CGFloat s)
     CGContextRef context = [[NSGraphicsContext currentContext] graphicsPort];
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
     CGFloat locations[] = { 0.0, 1.0 };
-    NSArray *colors = @[ (__bridge id)color1.CGColor, (__bridge id)color2.CGColor ];
+    NSArray *colors = @[ (__bridge id)color1.tui_CGColor, (__bridge id)color2.tui_CGColor ];
 
     CGGradientRef gradient = CGGradientCreateWithColors(colorSpace, (__bridge CFArrayRef)colors, locations);
     CGContextDrawLinearGradient(context, gradient, point1, point2, 0);
