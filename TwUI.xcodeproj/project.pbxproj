@@ -49,11 +49,8 @@
 		5000874016524B1C0067ED42 /* TUINavigationController.h in Headers */ = {isa = PBXBuildFile; fileRef = 5000873F16524B1C0067ED42 /* TUINavigationController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5000874916524B1F0067ED42 /* TUINavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5000874816524B1F0067ED42 /* TUINavigationController.m */; };
 		5000874A1652C4380067ED42 /* TUINavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5000874816524B1F0067ED42 /* TUINavigationController.m */; };
-		5E6ECEB313BE791600109598 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EE9839C13BE7650005F430D /* ApplicationServices.framework */; };
 		5E6ECEB413BE791600109598 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB5E31B613BE6F49004B7899 /* QuartzCore.framework */; };
-		5E6ECEB613BE791C00109598 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EE9839C13BE7650005F430D /* ApplicationServices.framework */; };
 		5E6ECEB713BE792100109598 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB5B264F13BE6DA200579B1E /* Cocoa.framework */; };
-		5EE9839D13BE7650005F430D /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EE9839C13BE7650005F430D /* ApplicationServices.framework */; };
 		5EE983B813BE7809005F430D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB5B264F13BE6DA200579B1E /* Cocoa.framework */; };
 		5EE983C013BE7834005F430D /* TUIAccessibility.m in Sources */ = {isa = PBXBuildFile; fileRef = CBB74C3F13BE6E1900C85CB5 /* TUIAccessibility.m */; };
 		5EE983C113BE7834005F430D /* TUIActivityIndicatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = CBB74C4113BE6E1900C85CB5 /* TUIActivityIndicatorView.m */; };
@@ -466,7 +463,6 @@
 		48A6234F162C63E900DFA443 /* TUIScrollView+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TUIScrollView+Private.h"; sourceTree = "<group>"; };
 		5000873F16524B1C0067ED42 /* TUINavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TUINavigationController.h; sourceTree = "<group>"; };
 		5000874816524B1F0067ED42 /* TUINavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TUINavigationController.m; sourceTree = "<group>"; };
-		5EE9839C13BE7650005F430D /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
 		5EE983B713BE7809005F430D /* libtwui.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libtwui.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8819794213E26E0200AA39EB /* TUIView+Accessibility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TUIView+Accessibility.h"; sourceTree = "<group>"; };
 		8819794313E26E0200AA39EB /* TUIView+Accessibility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TUIView+Accessibility.m"; sourceTree = "<group>"; };
@@ -622,7 +618,6 @@
 			files = (
 				5EE983B813BE7809005F430D /* Cocoa.framework in Frameworks */,
 				5E6ECEB413BE791600109598 /* QuartzCore.framework in Frameworks */,
-				5E6ECEB313BE791600109598 /* ApplicationServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -632,7 +627,6 @@
 			files = (
 				CB5E327F13BE710C004B7899 /* Cocoa.framework in Frameworks */,
 				CB5E31B713BE6F49004B7899 /* QuartzCore.framework in Frameworks */,
-				5E6ECEB613BE791C00109598 /* ApplicationServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -654,7 +648,6 @@
 			files = (
 				5E6ECEB713BE792100109598 /* Cocoa.framework in Frameworks */,
 				CB5E327613BE70EE004B7899 /* QuartzCore.framework in Frameworks */,
-				5EE9839D13BE7650005F430D /* ApplicationServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -686,7 +679,6 @@
 		CB5B264E13BE6DA200579B1E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				5EE9839C13BE7650005F430D /* ApplicationServices.framework */,
 				CB5B264F13BE6DA200579B1E /* Cocoa.framework */,
 				CB5E31B613BE6F49004B7899 /* QuartzCore.framework */,
 				CB5B266213BE6DA300579B1E /* SenTestingKit.framework */,
