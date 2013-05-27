@@ -20,14 +20,25 @@
 
 @end
 
+typedef NS_ENUM(NSInteger, TUINavigationSlidingDirection) {
+    TUINavigationSlidingHorizontally,
+    TUINavigationSlidingVertically
+};
+
 @interface TUICarouselNavigationController : TUIViewController
 
 @property (unsafe_unretained, nonatomic, readonly) TUIViewController *currentController;
 @property (nonatomic, readonly) NSArray *viewControllers;
 
 @property (nonatomic, assign) id <TUICarouselNavigationControllerDelegate> delegate;
+
 @property (nonatomic, assign) BOOL needsBlurWhenSlide;
-@property (nonatomic, assign) BOOL couldUseSlideEvent;
+
+/** Sliding direction - vertical or horizontal. Horizontal direction is default. */
+@property (nonatomic, assign) TUINavigationSlidingDirection slidingDirection;
+
+/** Should controller use swipe event to change sources */
+@property (nonatomic, assign) BOOL shouldHandleSwipeEvent;
 
 - (id)initWithViewControllers:(NSArray *)viewControllers initialController:(id)initialController;
 - (id)initWithViewControllers:(NSArray *)viewControllers;

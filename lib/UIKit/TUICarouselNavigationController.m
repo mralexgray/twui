@@ -39,6 +39,7 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
         
         self.currentController = initialController;
 		self.view.clipsToBounds = YES;
+        self.slidingDirection = TUINavigationSlidingHorizontally;
 	}
 	return self;
 }
@@ -106,7 +107,7 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
 	[CATransaction begin];
 	//Push if it's not in the stack, pop back if it is
 	[self.view addSubview:viewController.view];
-	viewController.view.frame = (containedAlready ? TUINavigationOffscreenLeftFrame(self.view.bounds) : TUINavigationOffscreenRightFrame(self.view.bounds));
+	viewController.view.frame = (containedAlready ? TUINavOffscreenPrevFrame(self.view.bounds, self.slidingDirection) : TUINavOffscreenNextFrame(self.view.bounds, self.slidingDirection));
 	[CATransaction flush];
 	[CATransaction commit];
     
@@ -122,7 +123,7 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
 //	}
 	
 	[TUIView animateWithDuration:duration animations:^{
-		last.view.frame = (containedAlready ? TUINavigationOffscreenRightFrame(self.view.bounds) : TUINavigationOffscreenLeftFrame(self.view.bounds));
+		last.view.frame = (containedAlready ? TUINavOffscreenNextFrame(self.view.bounds, self.slidingDirection) : TUINavOffscreenPrevFrame(self.view.bounds, self.slidingDirection));
 		viewController.view.frame = self.view.bounds;
 	} completion:^(BOOL finished) {
 		[last.view removeFromSuperview];
@@ -163,7 +164,7 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
 }
 - (void)slideToViewController:(TUIViewController *)newController animated:(BOOL)animated completion:(void (^)(BOOL finished))completion {
 	if (![_controllers containsObject:newController]) {
-		NSLog(@"View controller %@ is not in arrat", newController);
+		NSLog(@"View controller %@ is not in array", newController);
         return;
 	}
 	
@@ -173,7 +174,7 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
 	BOOL isSlideToTheRight = indexOfNewVC < indexOfCurrentVC;
 	
 	[self.view addSubview:newController.view];
-	newController.view.frame = isSlideToTheRight ? TUINavigationOffscreenLeftFrame(self.view.bounds) : TUINavigationOffscreenRightFrame(self.view.bounds);
+	newController.view.frame = isSlideToTheRight ? TUINavOffscreenPrevFrame(self.view.bounds, self.slidingDirection) : TUINavOffscreenNextFrame(self.view.bounds, self.slidingDirection);
     
 	[currentController viewWillDisappear:animated];
 	
@@ -185,13 +186,13 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
     CGFloat duration = (animated ? TUINavigationControllerAnimationDuration : 0);
     
 	[TUIView animateWithDuration:duration animations:^{
-		currentController.view.frame = isSlideToTheRight ? TUINavigationOffscreenRightFrame(self.view.bounds) : TUINavigationOffscreenLeftFrame(self.view.bounds);
+		currentController.view.frame = isSlideToTheRight ? TUINavOffscreenNextFrame(self.view.bounds, self.slidingDirection) : TUINavOffscreenPrevFrame(self.view.bounds, self.slidingDirection);
 		newController.view.frame = self.view.bounds;
         
         if (_needsBlurWhenSlide) {
 //            [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithControlPoints: 0:1 : 1:1]];
-            TUIApplyBlurForLayer(newController.view.layer);
-            TUIApplyBlurForLayer(currentController.view.layer);
+            TUIApplyBlurForLayer(newController.view.layer, self.slidingDirection);
+            TUIApplyBlurForLayer(currentController.view.layer, self.slidingDirection);
         }
         
 	} completion:^(BOOL finished) {
@@ -219,7 +220,7 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
 - (void)view:(TUIView *)v scrollWheel:(NSEvent *)theEvent;
 {
     CGFloat treshold = 10;
-    if (!_couldUseSlideEvent || ![v eventInside:theEvent] ||
+    if (!_shouldHandleSwipeEvent || ![v eventInside:theEvent] || self.slidingDirection == TUINavigationSlidingVertically ||
         [theEvent type] != NSScrollWheel || ![NSEvent isSwipeTrackingFromScrollEventsEnabled] ||
         [theEvent phase] == NSEventPhaseNone ||
         ABS([theEvent scrollingDeltaY]) >= ABS([theEvent scrollingDeltaX]) ||
@@ -267,7 +268,7 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
                                     };
                                     
                                     CGRect lastRect = self.view.bounds;
-                                    CGRect nextRect = isSlideToTheLeft ? TUINavigationOffscreenRightFrame(self.view.bounds) : TUINavigationOffscreenLeftFrame(self.view.bounds);
+                                    CGRect nextRect = isSlideToTheLeft ? TUINavOffscreenNextFrame(self.view.bounds, self.slidingDirection) : TUINavOffscreenPrevFrame(self.view.bounds, self.slidingDirection);
                                     if (!CGRectEqualToRect(currentController.view.frame, lastRect) && !CGRectEqualToRect(newController.view.frame, nextRect)) {
                                         [TUIView animateWithDuration:duration animations:^{
                                             currentController.view.frame = lastRect;
@@ -292,7 +293,7 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
                                     
                                     //Make sure the app draws the frame offscreen instead of just 'popping' it in
                                     [CATransaction begin];
-                                    newController.view.frame = isSlideToTheLeft ? TUINavigationOffscreenRightFrame(self.view.bounds) : TUINavigationOffscreenLeftFrame(self.view.bounds);
+                                    newController.view.frame = isSlideToTheLeft ? TUINavOffscreenNextFrame(self.view.bounds, self.slidingDirection) : TUINavOffscreenPrevFrame(self.view.bounds, self.slidingDirection);
                                     [CATransaction flush];
                                     [CATransaction commit];
                                 }
@@ -369,21 +370,56 @@ static CGFloat const TUINavigationControllerAnimationDuration = 0.25f;
 
 #pragma mark - Private
 
-static inline CGRect TUINavigationOffscreenLeftFrame(CGRect bounds) {
-	CGRect offscreenLeft = bounds;
-	offscreenLeft.origin.x -= bounds.size.width;
-	return offscreenLeft;
+static inline CGRect TUINavOffscreenPrevFrame(CGRect bounds, TUINavigationSlidingDirection slidingDirection) {
+	CGRect offscreenRect = bounds;
+    
+    switch (slidingDirection) {
+        
+        case TUINavigationSlidingVertically:
+            offscreenRect.origin.y += bounds.size.height;
+            break;
+
+        case TUINavigationSlidingHorizontally:
+        default:
+            offscreenRect.origin.x -= bounds.size.width;
+            break;
+    }
+
+	return offscreenRect;
 }
 
-static inline CGRect TUINavigationOffscreenRightFrame(CGRect bounds) {
-	CGRect offscreenRight = bounds;
-	offscreenRight.origin.x += bounds.size.width;
-	return offscreenRight;
+static inline CGRect TUINavOffscreenNextFrame(CGRect bounds, TUINavigationSlidingDirection slidingDirection) {
+	
+    CGRect offscreenRect = bounds;
+    
+    switch (slidingDirection) {
+            
+        case TUINavigationSlidingVertically:
+            offscreenRect.origin.y -= bounds.size.height;
+            break;
+            
+        case TUINavigationSlidingHorizontally:
+        default:
+            offscreenRect.origin.x += bounds.size.width;
+            break;
+    }
+
+	return offscreenRect;
 }
 
-NS_INLINE void TUIApplyBlurForLayer(CALayer *layer)
+NS_INLINE void TUIApplyBlurForLayer(CALayer *layer, TUINavigationSlidingDirection slidingDirection)
 {
-    CIFilter *motionBlur = [CIFilter filterWithName:@"CIMotionBlur" keysAndValues:kCIInputRadiusKey, @(0.0), nil];
+    CGFloat motionBlurAngle;
+    switch (slidingDirection) {
+        case TUINavigationSlidingVertically:
+            motionBlurAngle = M_PI_2;
+            break;
+        case TUINavigationSlidingHorizontally:
+            motionBlurAngle = 0.0;
+        default:
+            break;
+    }
+    CIFilter *motionBlur = [CIFilter filterWithName:@"CIMotionBlur" keysAndValues:kCIInputRadiusKey, @(0.0), kCIInputAngleKey, @(motionBlurAngle), nil];
     [motionBlur setName:@"motionBlur"];
     
     CABasicAnimation *motionBlurAnimation = [CABasicAnimation animation];

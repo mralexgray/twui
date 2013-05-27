@@ -34,13 +34,15 @@
         ExampleTableViewController *tableViewController1 = [[ExampleTableViewController alloc] initWithNibName:nil bundle:nil];
 		_navigationController = [[TUICarouselNavigationController alloc] initWithViewControllers:@[tableViewController, tableViewController1] initialController:tableViewController1];
         _navigationController.delegate = self;
+        _navigationController.slidingDirection = TUINavigationSlidingVertically;
+        _navigationController.needsBlurWhenSlide = YES;
 		[self addSubview:_navigationController.view];
         
 //		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeWidth relativeTo:@"superview" attribute:TUILayoutConstraintAttributeWidth]];
 //		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeHeight relativeTo:@"superview" attribute:TUILayoutConstraintAttributeHeight offset:-TAB_HEIGHT]];
 //		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeMinX relativeTo:@"superview" attribute:TUILayoutConstraintAttributeMinX]];
 //		[_navigationController.view addLayoutConstraint:[TUILayoutConstraint constraintWithAttribute:TUILayoutConstraintAttributeMinY relativeTo:@"superview" attribute:TUILayoutConstraintAttributeMinY offset:TAB_HEIGHT]];
-        _navigationController.couldUseSlideEvent = YES;
+        _navigationController.shouldHandleSwipeEvent = YES;
         
         _navigationController.view.layout = ^(TUIView *v) {
             TUIView *superview = v.superview;
@@ -65,7 +67,7 @@
 			rect.size.height = TAB_HEIGHT; // only take up the bottom 60px
 			return rect;
 		};
-//		[self addSubview:_tabBar];
+		[self addSubview:_tabBar];
 		
 		// setup individual tabs
 		for(TUIView *tabView in _tabBar.tabViews) {
@@ -123,10 +125,9 @@
 - (void)tabBar:(ExampleTabBar *)tabBar didSelectTab:(NSInteger)index
 {
 	NSLog(@"selected tab %ld", index);
-//	if(index == [[tabBar tabViews] count] - 1){
-//	  NSLog(@"popping nav controller...");
-//	  [self.navigationController slideToViewController:self.navigationController.nextViewController animated:YES];
-//	}
+	if (index < [self.navigationController.viewControllers count]){
+	  [self.navigationController slideToViewController:self.navigationController.viewControllers[index] animated:YES];
+	}
 }
 
 
