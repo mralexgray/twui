@@ -147,6 +147,7 @@
 		88EFFB5513F417E200CF91A9 /* TUITextViewEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = 88EFFB5013F417E200CF91A9 /* TUITextViewEditor.m */; };
 		88EFFB5613F417E200CF91A9 /* TUITextViewEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = 88EFFB5013F417E200CF91A9 /* TUITextViewEditor.m */; };
 		C241F0231751CFCD00B9AAA5 /* TUIView.h in Headers */ = {isa = PBXBuildFile; fileRef = CBB74C8B13BE6E1900C85CB5 /* TUIView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C27D918D1753D93B00C622DA /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C27D918C1753D93B00C622DA /* ApplicationServices.framework */; };
 		C29A7DCD17445F3F008BF364 /* TUIView+ColorHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = C29A7DCC17445F3F008BF364 /* TUIView+ColorHelpers.h */; };
 		C29A7DCE17446209008BF364 /* TUIView+ColorHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = C29A7DCC17445F3F008BF364 /* TUIView+ColorHelpers.h */; };
 		C29A7DCF1744620A008BF364 /* TUIView+ColorHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = C29A7DCC17445F3F008BF364 /* TUIView+ColorHelpers.h */; };
@@ -486,6 +487,7 @@
 		88D25F5413F5D96500CFAAA9 /* TUITableView+Cell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TUITableView+Cell.m"; sourceTree = "<group>"; };
 		88EFFB4F13F417E200CF91A9 /* TUITextViewEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TUITextViewEditor.h; sourceTree = "<group>"; };
 		88EFFB5013F417E200CF91A9 /* TUITextViewEditor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TUITextViewEditor.m; sourceTree = "<group>"; };
+		C27D918C1753D93B00C622DA /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
 		C29A7DCC17445F3F008BF364 /* TUIView+ColorHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TUIView+ColorHelpers.h"; sourceTree = "<group>"; };
 		C2E21A1B1741BAC6002A813A /* TUIRefreshControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TUIRefreshControl.h; sourceTree = "<group>"; };
 		C2E21A1C1741BAC6002A813A /* TUIRefreshControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TUIRefreshControl.m; sourceTree = "<group>"; };
@@ -625,6 +627,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C27D918D1753D93B00C622DA /* ApplicationServices.framework in Frameworks */,
 				CB5E327F13BE710C004B7899 /* Cocoa.framework in Frameworks */,
 				CB5E31B713BE6F49004B7899 /* QuartzCore.framework in Frameworks */,
 			);
@@ -679,6 +682,7 @@
 		CB5B264E13BE6DA200579B1E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C27D918C1753D93B00C622DA /* ApplicationServices.framework */,
 				CB5B264F13BE6DA200579B1E /* Cocoa.framework */,
 				CB5E31B613BE6F49004B7899 /* QuartzCore.framework */,
 				CB5B266213BE6DA300579B1E /* SenTestingKit.framework */,
