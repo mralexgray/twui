@@ -8,7 +8,7 @@
 
 #ifndef RGB
 
-#define RGBA(r, g, b, a) [NSColor colorWithCalibratedRed:r/255.0 green:g/255.0 blue:b/255.0 alpha:a]
+#define RGBA(r, g, b, a) [NSColor colorWithSRGBRed:r/255.0 green:g/255.0 blue:b/255.0 alpha:a]
 #define RGB(r, g, b) RGBA(r, g, b, 1.0f)
 
 #define RGBAHex(rgbValue, a) RGBA( \
