@@ -343,7 +343,7 @@ static CVReturn scrollCallback(CVDisplayLinkRef displayLink, const CVTimeStamp *
 	CGSize s = _contentSize;
 	
 	s.height += _contentInset.top;
-	
+
 	CGFloat mx = offset.x + s.width;
 	if (s.width > b.size.width) {
 		if (mx < b.size.width) {
