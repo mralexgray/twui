@@ -59,6 +59,8 @@ typedef enum TUIButtonType : NSUInteger {
 @property(nonatomic,readonly) TUIButtonType buttonType;
 
 @property (nonatomic, strong) NSMenu *popUpMenu;
+@property (nonatomic, strong) NSString *keyEquivalent;
+@property (nonatomic, assign) NSUInteger keyEquivalentModifierMask;
 
 @property(nonatomic,readonly,strong) TUILabel     *titleLabel;
 @property(nonatomic,readonly,strong) TUIImageView *imageView;

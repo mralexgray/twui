@@ -80,6 +80,20 @@
 	return NO;
 }
 
+- (BOOL)performKeyEquivalent:(NSEvent *)theEvent
+{
+    if ([theEvent.characters isEqualToString:_keyEquivalent] && (_keyEquivalentModifierMask & theEvent.modifierFlags)) {
+        for (id target in [self allTargets]) {
+            NSArray *actions = [self actionsForTarget:target forControlEvent:TUIControlEventMouseUpInside];
+            for (NSString *action in actions) {
+                [self tryToPerform:NSSelectorFromString(action) with:target];
+            }
+        }
+        return YES;
+    }
+    return NO;
+}
+
 - (void)setImageEdgeInsets:(TUIEdgeInsets)i
 {
 	_imageEdgeInsets = i;
