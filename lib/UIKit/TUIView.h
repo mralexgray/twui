@@ -175,6 +175,16 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView *view);
 @property (nonatomic, assign) BOOL resizeWindowByDragging;
 
 /**
+ A view, that is currently limited to, becomes the next first repsonder on tab.
+ */
+@property (nonatomic, strong) TUIView *nextKeyView;
+
+/**
+ Like `nextKeyView` but the reverse.
+ */
+@property (nonatomic, strong) TUIView *previousKeyView;
+
+/**
  If set to NO, will disable subpixel antialiasing for text.
  */
 @property (nonatomic, assign) BOOL subpixelTextRenderingEnabled; // defaults to YES

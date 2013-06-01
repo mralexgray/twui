@@ -56,7 +56,7 @@
         if (buttonType == TUIButtonTypePush) {
             self.titleLabel.alignment   = TUITextAlignmentCenter;
             self.clipsToBounds          = YES;
-            self.layer.cornerRadius     = 6;
+            self.layer.cornerRadius     = 4;
             self.layer.borderColor      = RGBHex(0x7E7E7E).tui_CGColor;
             self.layer.borderWidth      = 1;
         }

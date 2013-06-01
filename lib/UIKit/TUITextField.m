@@ -49,14 +49,88 @@ static NSImage *__clearButtonImage = nil;
 
 - (void)_tabToNext
 {
-	if(_textFieldFlags.delegateTextFieldShouldTabToNext)
-		[(id<TUITextFieldDelegate>)delegate textFieldShouldTabToNext:self];
+    void (^tabToNext)() = ^{
+        if (self.nextKeyView) {
+            [self.nextKeyView makeFirstResponder];
+            [self.nextKeyView selectAll:self];
+        }
+        else {
+            CGFloat nexY            = 0;
+            CGFloat maxY            = 0;
+            TUIView *nextCandidate  = nil;
+            TUIView *loopCandidate  = nil;
+            for (TUIView *sibling in [self.superview subviews]) {
+                if (sibling.frame.origin.y > nexY && [sibling acceptsFirstResponder] && sibling.frame.origin.y < self.frame.origin.y) {
+                    nextCandidate   = sibling;
+                    nexY            = sibling.frame.origin.y;
+                }
+                if (sibling.frame.origin.y > maxY && [sibling acceptsFirstResponder]) {
+                    loopCandidate   = sibling;
+                    maxY            = sibling.frame.origin.y;
+                }
+            }
+            if (nextCandidate && nextCandidate != self) {
+                [nextCandidate makeFirstResponder];
+                [nextCandidate selectAll:self];
+            }
+            else if (loopCandidate && loopCandidate != self) {
+                [loopCandidate makeFirstResponder];
+                [loopCandidate selectAll:self];
+            }
+        }
+    };
+
+	if(_textFieldFlags.delegateTextFieldShouldTabToNext) {
+        if ([(id<TUITextFieldDelegate>)delegate textFieldShouldTabToNext:self]) {
+            tabToNext();
+        }
+    }
+    else {
+        tabToNext();
+    }
 }
 
 - (void)_tabToPrevious
 {
-	if(_textFieldFlags.delegateTextFieldShouldTabToPrevious)
-		[(id<TUITextFieldDelegate>)delegate textFieldShouldTabToPrevious:self];
+    void (^tabToPrevious)() = ^{
+        if (self.previousKeyView) {
+            [self.previousKeyView makeFirstResponder];
+            [self.previousKeyView selectAll:self];
+        }
+        else {
+            CGFloat preY            = NSIntegerMax;
+            CGFloat minY            = NSIntegerMax;
+            TUIView *nextCandidate  = nil;
+            TUIView *loopCandidate  = nil;
+            for (TUIView *sibling in [self.superview subviews]) {
+                if (sibling.frame.origin.y < preY && [sibling acceptsFirstResponder] && sibling.frame.origin.y > self.frame.origin.y) {
+                    nextCandidate   = sibling;
+                    preY            = sibling.frame.origin.y;
+                }
+                if (sibling.frame.origin.y < minY && [sibling acceptsFirstResponder]) {
+                    loopCandidate   = sibling;
+                    minY            = sibling.frame.origin.y;
+                }
+            }
+            if (nextCandidate && nextCandidate != self) {
+                [nextCandidate makeFirstResponder];
+                [nextCandidate selectAll:self];
+            }
+            else if (loopCandidate && loopCandidate != self) {
+                [loopCandidate makeFirstResponder];
+                [loopCandidate selectAll:self];
+            }
+        }
+    };
+
+	if(_textFieldFlags.delegateTextFieldShouldTabToPrevious) {
+        if ([(id<TUITextFieldDelegate>)delegate textFieldShouldTabToPrevious:self]) {
+            tabToPrevious();
+        }
+    }
+    else {
+        tabToPrevious();
+    }
 }
 
 - (void)setRightButton:(TUIButton *)b
