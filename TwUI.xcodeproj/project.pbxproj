@@ -148,6 +148,10 @@
 		88EFFB5613F417E200CF91A9 /* TUITextViewEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = 88EFFB5013F417E200CF91A9 /* TUITextViewEditor.m */; };
 		C241F0231751CFCD00B9AAA5 /* TUIView.h in Headers */ = {isa = PBXBuildFile; fileRef = CBB74C8B13BE6E1900C85CB5 /* TUIView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C27D918D1753D93B00C622DA /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C27D918C1753D93B00C622DA /* ApplicationServices.framework */; };
+		C28B7C97175A51D2002A2008 /* NSColor+RGBHex.h in Headers */ = {isa = PBXBuildFile; fileRef = C28B7C95175A51D2002A2008 /* NSColor+RGBHex.h */; };
+		C28B7C98175A51D2002A2008 /* NSColor+RGBHex.m in Sources */ = {isa = PBXBuildFile; fileRef = C28B7C96175A51D2002A2008 /* NSColor+RGBHex.m */; };
+		C28B7C9F175A51DA002A2008 /* NSColor+RGBHex.m in Sources */ = {isa = PBXBuildFile; fileRef = C28B7C96175A51D2002A2008 /* NSColor+RGBHex.m */; };
+		C28B7CA0175A51DA002A2008 /* NSColor+RGBHex.m in Sources */ = {isa = PBXBuildFile; fileRef = C28B7C96175A51D2002A2008 /* NSColor+RGBHex.m */; };
 		C29A7DCD17445F3F008BF364 /* TUIView+ColorHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = C29A7DCC17445F3F008BF364 /* TUIView+ColorHelpers.h */; };
 		C29A7DCE17446209008BF364 /* TUIView+ColorHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = C29A7DCC17445F3F008BF364 /* TUIView+ColorHelpers.h */; };
 		C29A7DCF1744620A008BF364 /* TUIView+ColorHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = C29A7DCC17445F3F008BF364 /* TUIView+ColorHelpers.h */; };
@@ -488,6 +492,8 @@
 		88EFFB4F13F417E200CF91A9 /* TUITextViewEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TUITextViewEditor.h; sourceTree = "<group>"; };
 		88EFFB5013F417E200CF91A9 /* TUITextViewEditor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TUITextViewEditor.m; sourceTree = "<group>"; };
 		C27D918C1753D93B00C622DA /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
+		C28B7C95175A51D2002A2008 /* NSColor+RGBHex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSColor+RGBHex.h"; sourceTree = "<group>"; };
+		C28B7C96175A51D2002A2008 /* NSColor+RGBHex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSColor+RGBHex.m"; sourceTree = "<group>"; };
 		C29A7DCC17445F3F008BF364 /* TUIView+ColorHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TUIView+ColorHelpers.h"; sourceTree = "<group>"; };
 		C2E21A1B1741BAC6002A813A /* TUIRefreshControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TUIRefreshControl.h; sourceTree = "<group>"; };
 		C2E21A1C1741BAC6002A813A /* TUIRefreshControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TUIRefreshControl.m; sourceTree = "<group>"; };
@@ -767,6 +773,8 @@
 				D040611215B6A7CC00F753ED /* NSTextView+TUIExtensions.m */,
 				D0C7656F15B6341800E7AC2C /* TUICAAction.h */,
 				D0C7657015B6341800E7AC2C /* TUICAAction.m */,
+				C28B7C95175A51D2002A2008 /* NSColor+RGBHex.h */,
+				C28B7C96175A51D2002A2008 /* NSColor+RGBHex.m */,
 			);
 			name = Support;
 			path = lib/Support;
@@ -1052,6 +1060,7 @@
 				48694D8D165832B800BE65BF /* NSBezierPath+TUIExtensions.h in Headers */,
 				C2E21A1D1741BAC6002A813A /* TUIRefreshControl.h in Headers */,
 				C29A7DCD17445F3F008BF364 /* TUIView+ColorHelpers.h in Headers */,
+				C28B7C97175A51D2002A2008 /* NSColor+RGBHex.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1374,6 +1383,7 @@
 				48694D801658318000BE65BF /* NSShadow+TUIExtensions.m in Sources */,
 				48694D92165832B800BE65BF /* NSBezierPath+TUIExtensions.m in Sources */,
 				4820110A165974A400CFDC11 /* NSFont+TUIExtensions.m in Sources */,
+				C28B7CA0175A51DA002A2008 /* NSColor+RGBHex.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1451,6 +1461,7 @@
 				48694D7E1658318000BE65BF /* NSShadow+TUIExtensions.m in Sources */,
 				48694D90165832B800BE65BF /* NSBezierPath+TUIExtensions.m in Sources */,
 				C2E21A1E1741BAC6002A813A /* TUIRefreshControl.m in Sources */,
+				C28B7C98175A51D2002A2008 /* NSColor+RGBHex.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1532,6 +1543,7 @@
 				48694D7F1658318000BE65BF /* NSShadow+TUIExtensions.m in Sources */,
 				48694D91165832B800BE65BF /* NSBezierPath+TUIExtensions.m in Sources */,
 				48201109165974A300CFDC11 /* NSFont+TUIExtensions.m in Sources */,
+				C28B7C9F175A51DA002A2008 /* NSColor+RGBHex.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
