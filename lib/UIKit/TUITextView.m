@@ -247,6 +247,16 @@
     [self _updateDefaultAttributes];
 }
 
+- (BOOL)secure
+{
+    return renderer.secure;
+}
+
+- (void)setSecure:(BOOL)secure
+{
+    renderer.secure = secure;
+}
+
 - (BOOL)hasText
 {
 	return [[self text] length] > 0;

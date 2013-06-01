@@ -42,6 +42,7 @@ We're currently using TwUI to build [Firehose](https://www.getfirehose.com/). As
 - (06/01/13) NSColor+RGBHex: added category on `NSColor` for creating colors from Hex values.
 - (06/01/13) TUIView: adding `nextKeyView` to `TUIView` as well as implied tabbing to `TUITextField`.
 - (06/01/13) TUIResponder: added `addAction:forControlEvents:` that just sends the action up the responder chain. This is good for views with controllers.
+- (06/01/13) TUITextView/Field: added `secure` property.
 
 
 ## Setup
