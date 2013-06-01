@@ -219,6 +219,11 @@ typedef enum TUIControlState : NSUInteger {
 - (void)addTarget:(id)target action:(SEL)action forControlEvents:(TUIControlEvents)controlEvents;
 - (void)addActionForControlEvents:(TUIControlEvents)controlEvents block:(void(^)(void))action;
 
+/**
+ Sends the action up the responder chain when the control even occurs
+ */
+- (void)addAction:(SEL)action forControlEvents:(TUIControlEvents)controlEvents;
+
 // Remove the target and action for a set of events. Pass NULL
 // for the action to remove all actions for that target. You
 // may not, however, remove a block target, due to its unidentifiablity.

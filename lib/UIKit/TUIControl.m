@@ -317,6 +317,14 @@
 	}
 }
 
+- (void)addAction:(SEL)action forControlEvents:(TUIControlEvents)controlEvents
+{
+    __block typeof(self) celf = self;
+    [self addActionForControlEvents:controlEvents block:^{
+        [celf tryToPerform:action with:celf];
+    }];
+}
+
 - (void)removeTarget:(id)target action:(SEL)action forControlEvents:(TUIControlEvents)controlEvents {
 	NSMutableArray *targetActionsToRemove = [NSMutableArray array];
 	for (TUIControlTargetAction *t in self.targetActions) {
