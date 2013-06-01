@@ -10,9 +10,9 @@
 
 @interface NSColor (RGBHex)
 
-+ (NSColor *)colorWithR:(NSInteger)r G:(NSInteger)g B:(NSInteger)b;
-+ (NSColor *)colorWithR:(NSInteger)r G:(NSInteger)g B:(NSInteger)b A:(CGFloat)a;
-+ (NSColor *)colorWithHex:(NSInteger)hex alpha:(CGFloat)alpha;
-+ (NSColor *)colorWithHex:(NSInteger)hex;
++ (NSColor *)tui_colorWithR:(NSInteger)r G:(NSInteger)g B:(NSInteger)b;
++ (NSColor *)tui_colorWithR:(NSInteger)r G:(NSInteger)g B:(NSInteger)b A:(CGFloat)a;
++ (NSColor *)tui_colorWithHex:(NSInteger)hex alpha:(CGFloat)alpha;
++ (NSColor *)tui_colorWithHex:(NSInteger)hex;
 
 @end
