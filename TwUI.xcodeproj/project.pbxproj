@@ -148,10 +148,12 @@
 		88EFFB5613F417E200CF91A9 /* TUITextViewEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = 88EFFB5013F417E200CF91A9 /* TUITextViewEditor.m */; };
 		C241F0231751CFCD00B9AAA5 /* TUIView.h in Headers */ = {isa = PBXBuildFile; fileRef = CBB74C8B13BE6E1900C85CB5 /* TUIView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C27D918D1753D93B00C622DA /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C27D918C1753D93B00C622DA /* ApplicationServices.framework */; };
-		C28B7C97175A51D2002A2008 /* NSColor+RGBHex.h in Headers */ = {isa = PBXBuildFile; fileRef = C28B7C95175A51D2002A2008 /* NSColor+RGBHex.h */; };
 		C28B7C98175A51D2002A2008 /* NSColor+RGBHex.m in Sources */ = {isa = PBXBuildFile; fileRef = C28B7C96175A51D2002A2008 /* NSColor+RGBHex.m */; };
 		C28B7C9F175A51DA002A2008 /* NSColor+RGBHex.m in Sources */ = {isa = PBXBuildFile; fileRef = C28B7C96175A51D2002A2008 /* NSColor+RGBHex.m */; };
 		C28B7CA0175A51DA002A2008 /* NSColor+RGBHex.m in Sources */ = {isa = PBXBuildFile; fileRef = C28B7C96175A51D2002A2008 /* NSColor+RGBHex.m */; };
+		C28B7CA5175A54A4002A2008 /* NSColor+RGBHex.h in Headers */ = {isa = PBXBuildFile; fileRef = C28B7C95175A51D2002A2008 /* NSColor+RGBHex.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C28B7CA6175A54A4002A2008 /* NSColor+RGBHex.h in Headers */ = {isa = PBXBuildFile; fileRef = C28B7C95175A51D2002A2008 /* NSColor+RGBHex.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C28B7CA7175A54A4002A2008 /* NSColor+RGBHex.h in Headers */ = {isa = PBXBuildFile; fileRef = C28B7C95175A51D2002A2008 /* NSColor+RGBHex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C29A7DCD17445F3F008BF364 /* TUIView+ColorHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = C29A7DCC17445F3F008BF364 /* TUIView+ColorHelpers.h */; };
 		C29A7DCE17446209008BF364 /* TUIView+ColorHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = C29A7DCC17445F3F008BF364 /* TUIView+ColorHelpers.h */; };
 		C29A7DCF1744620A008BF364 /* TUIView+ColorHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = C29A7DCC17445F3F008BF364 /* TUIView+ColorHelpers.h */; };
@@ -773,8 +775,6 @@
 				D040611215B6A7CC00F753ED /* NSTextView+TUIExtensions.m */,
 				D0C7656F15B6341800E7AC2C /* TUICAAction.h */,
 				D0C7657015B6341800E7AC2C /* TUICAAction.m */,
-				C28B7C95175A51D2002A2008 /* NSColor+RGBHex.h */,
-				C28B7C96175A51D2002A2008 /* NSColor+RGBHex.m */,
 			);
 			name = Support;
 			path = lib/Support;
@@ -791,6 +791,8 @@
 				D0C7655A15B6297200E7AC2C /* NSClipView+TUIExtensions.m */,
 				D0EA12EF15C34FEA00FAA603 /* NSColor+TUIExtensions.h */,
 				D0EA12F015C34FEA00FAA603 /* NSColor+TUIExtensions.m */,
+				C28B7C95175A51D2002A2008 /* NSColor+RGBHex.h */,
+				C28B7C96175A51D2002A2008 /* NSColor+RGBHex.m */,
 				887C227915C1C7BB006EC31D /* NSFont+TUIExtensions.h */,
 				887C227A15C1C7BB006EC31D /* NSFont+TUIExtensions.m */,
 				D05D239E15BF7239000ED14F /* NSImage+TUIExtensions.h */,
@@ -983,6 +985,7 @@
 				48694D8F165832B800BE65BF /* NSBezierPath+TUIExtensions.h in Headers */,
 				482011081659749A00CFDC11 /* NSFont+TUIExtensions.h in Headers */,
 				C29A7DCF1744620A008BF364 /* TUIView+ColorHelpers.h in Headers */,
+				C28B7CA7175A54A4002A2008 /* NSColor+RGBHex.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1060,7 +1063,7 @@
 				48694D8D165832B800BE65BF /* NSBezierPath+TUIExtensions.h in Headers */,
 				C2E21A1D1741BAC6002A813A /* TUIRefreshControl.h in Headers */,
 				C29A7DCD17445F3F008BF364 /* TUIView+ColorHelpers.h in Headers */,
-				C28B7C97175A51D2002A2008 /* NSColor+RGBHex.h in Headers */,
+				C28B7CA5175A54A4002A2008 /* NSColor+RGBHex.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1100,6 +1103,7 @@
 				48694D8E165832B800BE65BF /* NSBezierPath+TUIExtensions.h in Headers */,
 				482011071659749900CFDC11 /* NSFont+TUIExtensions.h in Headers */,
 				C29A7DCE17446209008BF364 /* TUIView+ColorHelpers.h in Headers */,
+				C28B7CA6175A54A4002A2008 /* NSColor+RGBHex.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
