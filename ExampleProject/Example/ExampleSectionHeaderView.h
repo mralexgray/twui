@@ -1,14 +1,7 @@
 #import <Cocoa/Cocoa.h>
-
 #import "TUIKit.h"
-
 @interface ExampleSectionHeaderView : TUITableViewSectionHeader {
-  
-  TUITextRenderer * _labelRenderer;
-  
+	TUITextRenderer *_labelRenderer;
 }
-
-@property (readonly) TUITextRenderer  * labelRenderer;
-
+@property (readonly) TUITextRenderer *labelRenderer;
 @end
-
