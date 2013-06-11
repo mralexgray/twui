@@ -28,6 +28,8 @@ We're currently using TwUI to build [Firehose](https://www.getfirehose.com/). As
 - (05/20/13) TUIButton: making the image view `userInteractionEnabled` NO by default so it doesn't interfere with clicking the button.
 - (05/21/13) TUITextView: can paste URLs. [michaelvillar](https://github.com/michaelvillar/twui/commit/f181f575b1ce5db56b662ccc0d88ffd4e5a990fa)
 - (05/22/13) TUIView: `+new` calls the designated initializer `initWithFrame`
+- (06/03/13) TUITextField: when a text field was secure, no caret would show up. Fixed that.
+- (06/03/13) TUIView: turned off subpixel rendering by default. makes text look ugly.
 
 **Added**
 - (05/11/13) TUITextView: added `lineSpacing` property.

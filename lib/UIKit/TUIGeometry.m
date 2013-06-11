@@ -34,6 +34,16 @@ TUIEdgeInsets TUIEdgeInsetsFromNSString(NSString *string) {
 	return result;
 }
 
+CGRect TUIRectUnion(CGRect r1, CGRect r2) {
+    CGRect r            = CGRectUnion(r1, r2);
+    if (r.origin.y      == INFINITY) r.origin.y     = 0;
+    if (r.origin.x      == INFINITY) r.origin.x     = 0;
+    if (r.size.width    == INFINITY) r.size.width   = 0;
+    if (r.size.height   == INFINITY) r.size.height  = 0;
+    return r;
+}
+
+
 @implementation NSValue (TUIExtensions)
 
 + (NSValue *)tui_valueWithTUIEdgeInsets:(TUIEdgeInsets)insets {
@@ -45,5 +55,7 @@ TUIEdgeInsets TUIEdgeInsetsFromNSString(NSString *string) {
 	[self getValue:&insets];
 	return insets;
 }
+
+
 
 @end

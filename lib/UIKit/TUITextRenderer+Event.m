@@ -21,6 +21,8 @@
 #import "TUINSWindow.h"
 #import "TUITextEditor.h"
 #import "TUITextRenderer+Private.h"
+#import "TUIGeometry.h"
+
 
 @implementation TUITextRenderer (Event)
 
@@ -194,7 +196,7 @@ normal:
 		self.hitRange = hitActiveRange;
 	}
 	
-	CGRect totalRect = CGRectUnion(previousSelectionRect, [self rectForCurrentSelection]);
+	CGRect totalRect = TUIRectUnion(previousSelectionRect, [self rectForCurrentSelection]);
 	[view setNeedsDisplayInRect:totalRect];
 	if([self acceptsFirstResponder])
 		[[view nsWindow] tui_makeFirstResponder:self];
@@ -223,7 +225,7 @@ normal:
 	
 	_selectionAffinity = TUITextSelectionAffinityCharacter; // reset affinity
 	
-	CGRect totalRect = CGRectUnion(previousSelectionRect, [self rectForCurrentSelection]);
+	CGRect totalRect = TUIRectUnion(previousSelectionRect, [self rectForCurrentSelection]);
 	[view setNeedsDisplayInRect:totalRect];
 }
 
@@ -234,7 +236,7 @@ normal:
 	CFIndex i = [self stringIndexForEvent:event];
 	_selectionEnd = i;
 	
-	CGRect totalRect = CGRectUnion(previousSelectionRect, [self rectForCurrentSelection]);
+	CGRect totalRect = TUIRectUnion(previousSelectionRect, [self rectForCurrentSelection]);
 	[view setNeedsDisplayInRect:totalRect];
 }
 
@@ -257,7 +259,7 @@ normal:
 			if(CGRectEqualToRect(totalRect, CGRectNull)) {
 				totalRect = rect;
 			} else {
-				totalRect = CGRectUnion(rect, totalRect);
+				totalRect = TUIRectUnion(rect, totalRect);
 			}
 		}
 	}

@@ -57,11 +57,15 @@
 		for(int i = 0; i < backingStoreLength; i++) {
 			[string appendString:placeholder];
 		}
-		
+
+        // this is because for some reason the secure text field has no blinker if theres no text in it, so we treat it like it's not secure if it's empty.
+        if ([string length] == 0) {
+            return [super drawingAttributedString];
+        }
 		NSAttributedString *securePlaceHolder = [[NSAttributedString alloc] initWithString:string attributes:defaultAttributes];
 		return securePlaceHolder;
 	}
-	
+
 	return [super drawingAttributedString];
 }
 

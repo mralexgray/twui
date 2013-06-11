@@ -187,7 +187,7 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView *view);
 /**
  If set to NO, will disable subpixel antialiasing for text.
  */
-@property (nonatomic, assign) BOOL subpixelTextRenderingEnabled; // defaults to YES
+@property (nonatomic, assign) BOOL subpixelTextRenderingEnabled; // defaults to NO
 
 /**
  Tooltip will pop up if cursor hovers a view for toolTipDelay seconds
@@ -294,6 +294,8 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView *view);
 
 @property (nonatomic, readonly) TUIView *superview;
 @property (nonatomic, readonly, strong) NSArray *subviews;
+
+- (TUIView *)closestSuperviewOfKind:(Class)klass;
 
 /**
  Recursive search, handy for debugging.

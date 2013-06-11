@@ -422,12 +422,15 @@ static CAAnimation *ThrobAnimation()
 
 - (void)_textDidChange
 {
-	if(_textViewFlags.delegateTextViewDidChange)
+	if(_textViewFlags.delegateTextViewDidChange) {
 		[delegate textViewDidChange:self];
-	
+
+    }
+
 	if(spellCheckingEnabled) {
 		[self _checkSpelling];
 	}
+
 }
 
 - (void)_checkSpelling

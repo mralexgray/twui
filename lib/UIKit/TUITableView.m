@@ -169,6 +169,10 @@ typedef struct {
 	return [self initWithFrame:frame style:TUITableViewStylePlain];
 }
 
++ (id)new
+{
+    return [[TUITableView alloc] initWithFrame:CGRectZero style:TUITableViewStylePlain];
+}
 
 - (id<TUITableViewDelegate>)delegate
 {

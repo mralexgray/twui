@@ -64,4 +64,9 @@ static inline CGPoint CGPointConstrainToRect(CGPoint point, CGRect rect) {
 + (NSValue *)tui_valueWithTUIEdgeInsets:(TUIEdgeInsets)insets;
 - (TUIEdgeInsets)tui_TUIEdgeInsetsValue;
 
+/**
+ This prevents a result that includes INF vlaues.
+ */
+extern CGRect TUIRectUnion(CGRect r1, CGRect r2);
+
 @end

@@ -148,6 +148,7 @@ static pthread_key_t TUICurrentContextScaleFactorTLSKey;
 	if((self = [super init]))
 	{
 		_viewFlags.clearsContextBeforeDrawing   = 1;
+        _viewFlags.disableSubpixelTextRendering = 1;
 		self.frame                              = frame;
 		toolTipDelay                            = 1.5;
 		self.isAccessibilityElement             = YES;
@@ -220,6 +221,62 @@ static pthread_key_t TUICurrentContextScaleFactorTLSKey;
 - (void)setResizeWindowByDragging:(BOOL)b
 {
 	_viewFlags.resizeWindowByDragging = b;
+}
+
+- (TUIView *)nextKeyView
+{
+    if (_nextKeyView) return _nextKeyView;
+
+    CGFloat nexY            = 0;
+    CGFloat maxY            = 0;
+    TUIView *nextCandidate  = nil;
+    TUIView *loopCandidate  = nil;
+    for (TUIView *sibling in [self.superview subviews]) {
+        if (sibling.frame.origin.y > nexY && [sibling acceptsFirstResponder] && sibling.frame.origin.y < self.frame.origin.y) {
+            nextCandidate   = sibling;
+            nexY            = sibling.frame.origin.y;
+        }
+        if (sibling.frame.origin.y > maxY && [sibling acceptsFirstResponder]) {
+            loopCandidate   = sibling;
+            maxY            = sibling.frame.origin.y;
+        }
+    }
+    if (nextCandidate && nextCandidate != self) {
+        return nextCandidate;
+    }
+    else if (loopCandidate && loopCandidate != self) {
+        return loopCandidate;
+    }
+
+    return self;
+}
+
+- (TUIView *)previousKeyView
+{
+   if (_previousKeyView) return _previousKeyView;
+
+    CGFloat preY            = NSIntegerMax;
+    CGFloat minY            = NSIntegerMax;
+    TUIView *nextCandidate  = nil;
+    TUIView *loopCandidate  = nil;
+    for (TUIView *sibling in [self.superview subviews]) {
+        if (sibling.frame.origin.y < preY && [sibling acceptsFirstResponder] && sibling.frame.origin.y > self.frame.origin.y) {
+            nextCandidate   = sibling;
+            preY            = sibling.frame.origin.y;
+        }
+        if (sibling.frame.origin.y < minY && [sibling acceptsFirstResponder]) {
+            loopCandidate   = sibling;
+            minY            = sibling.frame.origin.y;
+        }
+    }
+    if (nextCandidate && nextCandidate != self) {
+        return nextCandidate;
+    }
+    else if (loopCandidate && loopCandidate != self) {
+        return loopCandidate;
+    }
+
+    return self;
 }
 
 - (BOOL)subpixelTextRenderingEnabled
@@ -745,6 +802,16 @@ static void TUISetCurrentContextScaleFactor(CGFloat s)
 	return n;
 }
 
+- (TUIView *)closestSuperviewOfKind:(Class)klass
+{
+    TUIView *v = self;
+    while (![v isKindOfClass:klass]) {
+        v = v.superview;
+    }
+    return v;
+}
+
+
 - (void)_cleanupResponderChain // called when a view is about to be removed from the heirarchy
 {
 	[self.subviews makeObjectsPerformSelector:@selector(_cleanupResponderChain)]; // call this first because subviews may pass first responder responsibility up to the superview
@@ -1046,6 +1113,7 @@ static void TUISetCurrentContextScaleFactor(CGFloat s)
 - (void)setNeedsDisplayInRect:(CGRect)rect
 {
 	_context.dirtyRect = rect;
+
 	[self.layer setNeedsDisplayInRect:rect];
 }
 
