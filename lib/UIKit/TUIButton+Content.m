@@ -183,7 +183,10 @@
 {
 	NSImage *image = [self backgroundImageForState:self.state];
 	if(image == nil) {
-		image = [self backgroundImageForState:TUIControlStateNormal];
+        image = [self backgroundImageForState:TUIControlStateSelected];
+        if (image == nil || !self.selected) {
+            image = [self backgroundImageForState:TUIControlStateNormal];
+        }
 	}
 	
 	return image;

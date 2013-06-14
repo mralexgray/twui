@@ -30,6 +30,7 @@ We're currently using TwUI to build [Firehose](https://www.getfirehose.com/). As
 - (05/22/13) TUIView: `+new` calls the designated initializer `initWithFrame`
 - (06/03/13) TUITextField: when a text field was secure, no caret would show up. Fixed that.
 - (06/03/13) TUIView: turned off subpixel rendering by default. makes text look ugly.
+- (06/13/13) TUIButton: image for selected state won't go back to normal state on hover.
 
 **Added**
 - (05/11/13) TUITextView: added `lineSpacing` property.
