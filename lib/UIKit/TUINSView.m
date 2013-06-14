@@ -118,12 +118,25 @@ static NSComparisonResult compareNSViewOrdering (NSView *viewA, NSView *viewB, v
 @synthesize rootView = _rootView;
 @synthesize maskLayer = _maskLayer;
 
+
+#import <objc/runtime.h>
+void Swizzle(Class c, SEL orig, SEL new)
+{
+    Method origMethod = class_getInstanceMethod(c, orig);
+    Method newMethod = class_getInstanceMethod(c, new);
+    if(class_addMethod(c, orig, method_getImplementation(newMethod), method_getTypeEncoding(newMethod)))
+        class_replaceMethod(c, new, method_getImplementation(origMethod), method_getTypeEncoding(origMethod));
+    else
+        method_exchangeImplementations(origMethod, newMethod);
+}
+
+
 - (id)initWithCoder:(NSCoder *)coder
 {
 	self = [super initWithCoder:coder];
 	if (self == nil)
 		return nil;
-	
+
 	[self setUp];
 	return self;
 }
@@ -141,7 +154,7 @@ static NSComparisonResult compareNSViewOrdering (NSView *viewA, NSView *viewB, v
 - (void)dealloc
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	
+
 	_rootView.hostView = nil;
 	_rootView.nsView = nil;
 	[_rootView removeFromSuperview];
@@ -150,7 +163,6 @@ static NSComparisonResult compareNSViewOrdering (NSView *viewA, NSView *viewB, v
 	_hoverView = nil;
 	_trackingView = nil;
 	_trackingArea = nil;
-	
 }
 
 - (void)resetCursorRects
