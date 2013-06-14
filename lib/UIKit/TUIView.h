@@ -485,6 +485,12 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView *view);
  */
 - (void)removeAllAnimations;
 
+/**
+ Prints a recursive view heiercarhy of the view
+ */
+- (NSString *)recursiveDescription;
+
+
 @end
 
 @interface TUIView (TUIViewAppKit)

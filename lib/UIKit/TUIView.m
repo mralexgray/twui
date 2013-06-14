@@ -1266,4 +1266,34 @@ static void TUISetCurrentContextScaleFactor(CGFloat s)
 	return [self pointInside:[self localPointForEvent:event] withEvent:event];
 }
 
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"<%@: %p, frame: %@, bounds: %@>", NSStringFromClass([self class]), (void *)self, NSStringFromRect(self.frame), NSStringFromRect(self.bounds)];
+}
+
+- (NSString *)recursiveDescription
+{
+     return [self recursiveDescriptionAtLevel:0 lines:[NSMutableArray array]];
+}
+
+- (NSString *)recursiveDescriptionAtLevel:(NSInteger)level lines:(NSMutableArray *)lines
+{
+    NSMutableString *tabs = [NSMutableString string];
+    for (NSInteger i = 0; i < level; i++) {
+        [tabs appendString:@"  "];
+    }
+    NSString *line = [NSString stringWithFormat:@"\n%@%@", tabs, [self description]];
+    [lines addObject:line];
+
+    for (TUIView *v in self.subviews) {
+        [v recursiveDescriptionAtLevel:++level lines:lines];
+    }
+    return [lines componentsJoinedByString:@""];
+}
+
+
+
+
+
+
 @end
