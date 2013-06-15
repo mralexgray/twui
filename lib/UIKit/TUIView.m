@@ -1285,8 +1285,9 @@ static void TUISetCurrentContextScaleFactor(CGFloat s)
     NSString *line = [NSString stringWithFormat:@"\n%@%@", tabs, [self description]];
     [lines addObject:line];
 
+    level++;
     for (TUIView *v in self.subviews) {
-        [v recursiveDescriptionAtLevel:++level lines:lines];
+        [v recursiveDescriptionAtLevel:level lines:lines];
     }
     return [lines componentsJoinedByString:@""];
 }
