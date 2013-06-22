@@ -39,9 +39,9 @@ typedef struct {
 	TUITableViewRowInfo  *rowInfo;
 }
 
-@property (strong, readonly) TUIView           *headerView;
-@property (nonatomic, assign) CGFloat   sectionOffset;
-@property (readonly) NSInteger          sectionIndex;
+@property (           strong, readonly) TUIView   *headerView;
+@property (nonatomic, assign          ) CGFloat   sectionOffset;
+@property (                   readonly) NSInteger sectionIndex;
 
 @end
 
@@ -53,10 +53,10 @@ typedef struct {
 - (id)initWithNumberOfRows:(NSUInteger)n sectionIndex:(NSInteger)s tableView:(TUITableView *)t
 {
 	if((self = [super init])){
-		_tableView = t;
-		sectionIndex = s;
-		numberOfRows = n;
-		rowInfo = calloc(n, sizeof(TUITableViewRowInfo));
+        _tableView      = t;
+        sectionIndex    = s;
+        numberOfRows    = n;
+        rowInfo         = calloc(n, sizeof(TUITableViewRowInfo));
 	}
 	return self;
 }
@@ -372,11 +372,9 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
 	}];
 }
 
-#define INDEX_PATHS_FOR_VISIBLE_ROWS [_visibleItems allKeys]
-
 - (NSArray *)indexPathsForVisibleRows
 {
-	return INDEX_PATHS_FOR_VISIBLE_ROWS;
+	return [_visibleItems allKeys];
 }
 
 - (NSIndexPath *)indexPathForCell:(TUITableViewCell *)c
@@ -607,7 +605,7 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
 - (NSIndexPath *)_topVisibleIndexPath
 {
 	NSIndexPath *topVisibleIndex = nil;
-	NSArray *v = [INDEX_PATHS_FOR_VISIBLE_ROWS sortedArrayUsingSelector:@selector(compare:)];
+	NSArray *v = [[_visibleItems allKeys] sortedArrayUsingSelector:@selector(compare:)];
 	if([v count])
 		topVisibleIndex = [v objectAtIndex:0];
 	return topVisibleIndex;
@@ -681,7 +679,7 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
 		} else {
 			if(_tableFlags.forceSaveScrollPosition || resizingOffset) {
 				_tableFlags.forceSaveScrollPosition = 0;
-				NSArray *a = [INDEX_PATHS_FOR_VISIBLE_ROWS sortedArrayUsingSelector:@selector(compare:)];
+				NSArray *a = [[_visibleItems allKeys] sortedArrayUsingSelector:@selector(compare:)];
 				if([a count]) {
 					savedIndexPath = [a objectAtIndex:0];
 					CGRect v = [self visibleRect];
@@ -823,7 +821,7 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
 	// to remove:      0 1
 	// to add:                         8 9
 	
-	NSArray *oldVisibleIndexPaths = INDEX_PATHS_FOR_VISIBLE_ROWS;
+	NSArray *oldVisibleIndexPaths = [_visibleItems allKeys];
 	NSArray *newVisibleIndexPaths = [self indexPathsForRowsInRect:visible];
 	
 	NSMutableArray *indexPathsToRemove = [oldVisibleIndexPaths mutableCopy];

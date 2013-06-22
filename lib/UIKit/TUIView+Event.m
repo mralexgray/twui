@@ -108,7 +108,9 @@
 		_viewFlags.dragDistanceLock = 0;
 	}
 	
-	if(_viewFlags.moveWindowByDragging) {
+	if(_viewFlags.moveWindowByDragging &&
+        (self.nsWindow.styleMask & NSFullScreenWindowMask) != NSFullScreenWindowMask) {
+
 		startDrag = [self localPointForEvent:event];
 		NSWindow *window = [self nsWindow];
 		
