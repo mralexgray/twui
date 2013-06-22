@@ -35,6 +35,17 @@ typedef enum TUITableViewInsertionMethod : NSUInteger {
   TUITableViewInsertionMethodAfterIndex   = NSOrderedDescending
 } TUITableViewInsertionMethod;
 
+typedef NS_ENUM(NSInteger, TUITableViewRowAnimation) {
+    TUITableViewRowAnimationFade,
+    TUITableViewRowAnimationRight,           // slide in from right (or out to right)
+    TUITableViewRowAnimationLeft,
+    TUITableViewRowAnimationTop,
+    TUITableViewRowAnimationBottom,
+    TUITableViewRowAnimationNone,            // available in iOS 3.0
+    TUITableViewRowAnimationMiddle,          // available in iOS 3.2.  attempts to keep cell centered in the space it will/did occupy
+    TUITableViewRowAnimationAutomatic = 100  // available in iOS 5.0.  chooses an appropriate animation style for you
+};
+
 @class TUITableViewCell;
 @protocol TUITableViewDataSource;
 
@@ -84,7 +95,7 @@ typedef enum TUITableViewInsertionMethod : NSUInteger {
 	NSInteger                     _futureMakeFirstResponderToken;
 	NSIndexPath            * _keepVisibleIndexPathForReload;
 	CGFloat                       _relativeOffsetForReload;
-	
+
 	// drag-to-reorder state
   TUITableViewCell            * _dragToReorderCell;
   CGPoint                       _currentDragToReorderLocation;
@@ -159,6 +170,11 @@ typedef enum TUITableViewInsertionMethod : NSUInteger {
 
 - (void)selectRowAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated scrollPosition:(TUITableViewScrollPosition)scrollPosition;
 - (void)deselectRowAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated;
+
+- (void)beginUpdates;
+- (void)endUpdates;
+- (void)insertRowsAtIndexPaths:(NSArray *)indexPaths withRowAnimation:(TUITableViewRowAnimation)animation;
+- (void)deleteRowsAtIndexPaths:(NSArray *)indexPaths withRowAnimation:(TUITableViewRowAnimation)animation;
 
 /**
  Above the top cell, only visible if you pull down (if you have scroll bouncing enabled)

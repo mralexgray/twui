@@ -18,7 +18,9 @@
 #import "TUINSView.h"
 #import "TUINSWindow.h"
 #import "TUITableView+Cell.h"
+#import "TUITableView+Updating.h"
 #import "TUITableViewSectionHeader.h"
+#import <objc/runtime.h>
 
 // header views need to be above the cells at all times
 #define HEADER_Z_POSITION 1000 
@@ -141,6 +143,15 @@ typedef struct {
 }
 
 @end
+
+
+
+
+
+
+
+
+
 
 @interface TUITableView (Private)
 - (void)_updateSectionInfo;
@@ -600,15 +611,6 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
     irow = 0; // ...then use zero for subsequent iterations
   }
   
-}
-
-- (NSIndexPath *)_topVisibleIndexPath
-{
-	NSIndexPath *topVisibleIndex = nil;
-	NSArray *v = [[_visibleItems allKeys] sortedArrayUsingSelector:@selector(compare:)];
-	if([v count])
-		topVisibleIndex = [v objectAtIndex:0];
-	return topVisibleIndex;
 }
 
 - (void)setFrame:(CGRect)f
@@ -1128,8 +1130,29 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
     }
     
 	}
-	
+
 }
+
+- (void)beginUpdates
+{
+    [self __beginUpdates];
+}
+
+- (void)endUpdates
+{
+    [self __endUpdates];
+}
+
+- (void)insertRowsAtIndexPaths:(NSArray *)indexPaths withRowAnimation:(TUITableViewRowAnimation)animation
+{
+    [self __insertRowsAtIndexPaths:indexPaths withRowAnimation:animation];
+}
+
+- (void)deleteRowsAtIndexPaths:(NSArray *)indexPaths withRowAnimation:(TUITableViewRowAnimation)animation
+{
+    [self __deleteRowsAtIndexPaths:indexPaths withRowAnimation:animation];
+}
+
 
 - (NSIndexPath *)indexPathForFirstVisibleRow 
 {

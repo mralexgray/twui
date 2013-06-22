@@ -147,6 +147,12 @@
 		88EFFB5513F417E200CF91A9 /* TUITextViewEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = 88EFFB5013F417E200CF91A9 /* TUITextViewEditor.m */; };
 		88EFFB5613F417E200CF91A9 /* TUITextViewEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = 88EFFB5013F417E200CF91A9 /* TUITextViewEditor.m */; };
 		C241F0231751CFCD00B9AAA5 /* TUIView.h in Headers */ = {isa = PBXBuildFile; fileRef = CBB74C8B13BE6E1900C85CB5 /* TUIView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C25125F51775E68400308A86 /* TUITableView+Updating.h in Headers */ = {isa = PBXBuildFile; fileRef = C25125F31775E68400308A86 /* TUITableView+Updating.h */; settings = {ATTRIBUTES = (); }; };
+		C25125F81775E68400308A86 /* TUITableView+Updating.m in Sources */ = {isa = PBXBuildFile; fileRef = C25125F41775E68400308A86 /* TUITableView+Updating.m */; };
+		C25125F91775E68400308A86 /* TUITableView+Updating.m in Sources */ = {isa = PBXBuildFile; fileRef = C25125F41775E68400308A86 /* TUITableView+Updating.m */; };
+		C25125FA1775E68400308A86 /* TUITableView+Updating.m in Sources */ = {isa = PBXBuildFile; fileRef = C25125F41775E68400308A86 /* TUITableView+Updating.m */; };
+		C25126031775F2C000308A86 /* TUITableView+Updating.h in Headers */ = {isa = PBXBuildFile; fileRef = C25125F31775E68400308A86 /* TUITableView+Updating.h */; };
+		C25126041775F2C100308A86 /* TUITableView+Updating.h in Headers */ = {isa = PBXBuildFile; fileRef = C25125F31775E68400308A86 /* TUITableView+Updating.h */; };
 		C27D918D1753D93B00C622DA /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C27D918C1753D93B00C622DA /* ApplicationServices.framework */; };
 		C28B7C98175A51D2002A2008 /* NSColor+RGBHex.m in Sources */ = {isa = PBXBuildFile; fileRef = C28B7C96175A51D2002A2008 /* NSColor+RGBHex.m */; };
 		C28B7C9F175A51DA002A2008 /* NSColor+RGBHex.m in Sources */ = {isa = PBXBuildFile; fileRef = C28B7C96175A51D2002A2008 /* NSColor+RGBHex.m */; };
@@ -493,6 +499,8 @@
 		88D25F5413F5D96500CFAAA9 /* TUITableView+Cell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TUITableView+Cell.m"; sourceTree = "<group>"; };
 		88EFFB4F13F417E200CF91A9 /* TUITextViewEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TUITextViewEditor.h; sourceTree = "<group>"; };
 		88EFFB5013F417E200CF91A9 /* TUITextViewEditor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TUITextViewEditor.m; sourceTree = "<group>"; };
+		C25125F31775E68400308A86 /* TUITableView+Updating.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TUITableView+Updating.h"; sourceTree = "<group>"; };
+		C25125F41775E68400308A86 /* TUITableView+Updating.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TUITableView+Updating.m"; sourceTree = "<group>"; };
 		C27D918C1753D93B00C622DA /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
 		C28B7C95175A51D2002A2008 /* NSColor+RGBHex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSColor+RGBHex.h"; sourceTree = "<group>"; };
 		C28B7C96175A51D2002A2008 /* NSColor+RGBHex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSColor+RGBHex.m"; sourceTree = "<group>"; };
@@ -869,6 +877,8 @@
 				CBB74C6E13BE6E1900C85CB5 /* TUITableView+Additions.m */,
 				88D25F5313F5D96500CFAAA9 /* TUITableView+Cell.h */,
 				88D25F5413F5D96500CFAAA9 /* TUITableView+Cell.m */,
+				C25125F31775E68400308A86 /* TUITableView+Updating.h */,
+				C25125F41775E68400308A86 /* TUITableView+Updating.m */,
 				CBB74C6F13BE6E1900C85CB5 /* TUITableView+Derepeater.h */,
 				CBB74C7013BE6E1900C85CB5 /* TUITableView+Derepeater.m */,
 				CBB74C7113BE6E1900C85CB5 /* TUITableView.h */,
@@ -986,6 +996,7 @@
 				482011081659749A00CFDC11 /* NSFont+TUIExtensions.h in Headers */,
 				C29A7DCF1744620A008BF364 /* TUIView+ColorHelpers.h in Headers */,
 				C28B7CA7175A54A4002A2008 /* NSColor+RGBHex.h in Headers */,
+				C25126041775F2C100308A86 /* TUITableView+Updating.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1064,6 +1075,7 @@
 				C2E21A1D1741BAC6002A813A /* TUIRefreshControl.h in Headers */,
 				C29A7DCD17445F3F008BF364 /* TUIView+ColorHelpers.h in Headers */,
 				C28B7CA5175A54A4002A2008 /* NSColor+RGBHex.h in Headers */,
+				C25125F51775E68400308A86 /* TUITableView+Updating.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1104,6 +1116,7 @@
 				482011071659749900CFDC11 /* NSFont+TUIExtensions.h in Headers */,
 				C29A7DCE17446209008BF364 /* TUIView+ColorHelpers.h in Headers */,
 				C28B7CA6175A54A4002A2008 /* NSColor+RGBHex.h in Headers */,
+				C25126031775F2C000308A86 /* TUITableView+Updating.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1388,6 +1401,7 @@
 				48694D92165832B800BE65BF /* NSBezierPath+TUIExtensions.m in Sources */,
 				4820110A165974A400CFDC11 /* NSFont+TUIExtensions.m in Sources */,
 				C28B7CA0175A51DA002A2008 /* NSColor+RGBHex.m in Sources */,
+				C25125FA1775E68400308A86 /* TUITableView+Updating.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1466,6 +1480,7 @@
 				48694D90165832B800BE65BF /* NSBezierPath+TUIExtensions.m in Sources */,
 				C2E21A1E1741BAC6002A813A /* TUIRefreshControl.m in Sources */,
 				C28B7C98175A51D2002A2008 /* NSColor+RGBHex.m in Sources */,
+				C25125F81775E68400308A86 /* TUITableView+Updating.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1548,6 +1563,7 @@
 				48694D91165832B800BE65BF /* NSBezierPath+TUIExtensions.m in Sources */,
 				48201109165974A300CFDC11 /* NSFont+TUIExtensions.m in Sources */,
 				C28B7C9F175A51DA002A2008 /* NSColor+RGBHex.m in Sources */,
+				C25125F91775E68400308A86 /* TUITableView+Updating.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
