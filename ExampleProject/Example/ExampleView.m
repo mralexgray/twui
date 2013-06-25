@@ -121,6 +121,10 @@
 	return self;
 }
 
+- (void)layoutSubviews {
+	self.navigationController.view.frame = CGRectMake(0, TAB_HEIGHT, self.bounds.size.width,
+													  self.bounds.size.height - TAB_HEIGHT);
+}
 
 - (void)tabBar:(ExampleTabBar *)tabBar didSelectTab:(NSInteger)index
 {
