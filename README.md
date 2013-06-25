@@ -50,7 +50,6 @@ We're currently using TwUI to build [Firehose](https://www.getfirehose.com/). As
 - (06/14/13) TUIView: added `description` and `recursiveDescription`
 - (06/25/13) MTAnimation: added `MTAnimation` as a submodule so that it's available across the framework and any project that includes it. This is a good thing.
 - (06/25/13) TUIView: added frame convenience accessors. easily change frame values right on the view: e.g. `view.x = 3; view.height = 20`
-- (06/25/13) TUIView: added frame convenience accessors. easily change frame values right on the view: e.g. `view.x = 3; view.height = 20`
 - (06/25/13) TUITableView: added insertion/deletion cell updates. **this is huge**
 
 
