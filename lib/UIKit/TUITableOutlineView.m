@@ -365,6 +365,8 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
                 _topOffset = 0;
                 _bottomOffset = 0;
                 
+                _tableFlags.layoutSubviewsReentrancyGuard = 0;
+                
                 // calculate offset from top for current section
                 CGFloat currentSectionHeaderY = [self cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:section]].frame.origin.y;
                 CGFloat currentSectionHeaderTopOffset = self.contentSize.height - currentSectionHeaderY;
@@ -378,7 +380,6 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
                 // correct content offset to keep current section header top offset (avoid content "jumping")
                 self.contentOffset = CGPointMake(self.contentOffset.x, self.contentOffset.y + (newCurrentSectionTopOffset - currentSectionHeaderTopOffset));
                 
-                _tableFlags.layoutSubviewsReentrancyGuard = 0;
             }];
         };
         
