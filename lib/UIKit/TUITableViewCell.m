@@ -78,6 +78,12 @@ static inline void tui_viewAnimateRedrawConditionally(TUIView *view, BOOL condit
 	[self removeAllAnimations];
 	[self.textRenderers makeObjectsPerformSelector:@selector(resetSelection)];
 	[self setNeedsDisplay];
+
+    _updateEndFrame = CGRectZero;
+    _updateEndAlpha = 1;
+    _updateDeleted  = NO;
+    self.frame      = CGRectZero;
+    self.alpha      = 1;
 }
 
 - (void)prepareForDisplay {
@@ -412,5 +418,8 @@ static inline void tui_viewAnimateRedrawConditionally(TUIView *view, BOOL condit
 	_alternateSelectionColor = alternateColor;
 	tui_viewAnimateRedrawConditionally(self, self.animatesAppearanceChanges);
 }
+
+
+
 
 @end

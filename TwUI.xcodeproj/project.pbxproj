@@ -147,6 +147,21 @@
 		88EFFB5513F417E200CF91A9 /* TUITextViewEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = 88EFFB5013F417E200CF91A9 /* TUITextViewEditor.m */; };
 		88EFFB5613F417E200CF91A9 /* TUITextViewEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = 88EFFB5013F417E200CF91A9 /* TUITextViewEditor.m */; };
 		C241F0231751CFCD00B9AAA5 /* TUIView.h in Headers */ = {isa = PBXBuildFile; fileRef = CBB74C8B13BE6E1900C85CB5 /* TUIView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C24814C21776199A00788D1E /* TUITableView+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = C24814C11776197D00788D1E /* TUITableView+Private.h */; };
+		C24814C31776199A00788D1E /* TUITableView+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = C24814C11776197D00788D1E /* TUITableView+Private.h */; };
+		C24814C41776199F00788D1E /* TUITableView+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = C24814C11776197D00788D1E /* TUITableView+Private.h */; };
+		C24814D017761E7900788D1E /* MTMatrixInterpolation.c in Sources */ = {isa = PBXBuildFile; fileRef = C24814C717761E7900788D1E /* MTMatrixInterpolation.c */; };
+		C24814D117761E7900788D1E /* MTMatrixInterpolation.c in Sources */ = {isa = PBXBuildFile; fileRef = C24814C717761E7900788D1E /* MTMatrixInterpolation.c */; };
+		C24814D217761E7900788D1E /* MTMatrixInterpolation.c in Sources */ = {isa = PBXBuildFile; fileRef = C24814C717761E7900788D1E /* MTMatrixInterpolation.c */; };
+		C24814D617761E7900788D1E /* MTTimingFunctions.c in Sources */ = {isa = PBXBuildFile; fileRef = C24814C917761E7900788D1E /* MTTimingFunctions.c */; };
+		C24814D717761E7900788D1E /* MTTimingFunctions.c in Sources */ = {isa = PBXBuildFile; fileRef = C24814C917761E7900788D1E /* MTTimingFunctions.c */; };
+		C24814D817761E7900788D1E /* MTTimingFunctions.c in Sources */ = {isa = PBXBuildFile; fileRef = C24814C917761E7900788D1E /* MTTimingFunctions.c */; };
+		C24814DF17761E7900788D1E /* UIView+MTAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = C24814CC17761E7900788D1E /* UIView+MTAnimation.m */; };
+		C24814E017761E7900788D1E /* UIView+MTAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = C24814CC17761E7900788D1E /* UIView+MTAnimation.m */; };
+		C24814E117761E7900788D1E /* UIView+MTAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = C24814CC17761E7900788D1E /* UIView+MTAnimation.m */; };
+		C24814E317761E8300788D1E /* MTAnimationTwUIAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = C24814E217761E8300788D1E /* MTAnimationTwUIAdapter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C24814E417761E8300788D1E /* MTAnimationTwUIAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = C24814E217761E8300788D1E /* MTAnimationTwUIAdapter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C24814E517761E8300788D1E /* MTAnimationTwUIAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = C24814E217761E8300788D1E /* MTAnimationTwUIAdapter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C25125F51775E68400308A86 /* TUITableView+Updating.h in Headers */ = {isa = PBXBuildFile; fileRef = C25125F31775E68400308A86 /* TUITableView+Updating.h */; settings = {ATTRIBUTES = (); }; };
 		C25125F81775E68400308A86 /* TUITableView+Updating.m in Sources */ = {isa = PBXBuildFile; fileRef = C25125F41775E68400308A86 /* TUITableView+Updating.m */; };
 		C25125F91775E68400308A86 /* TUITableView+Updating.m in Sources */ = {isa = PBXBuildFile; fileRef = C25125F41775E68400308A86 /* TUITableView+Updating.m */; };
@@ -499,6 +514,15 @@
 		88D25F5413F5D96500CFAAA9 /* TUITableView+Cell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TUITableView+Cell.m"; sourceTree = "<group>"; };
 		88EFFB4F13F417E200CF91A9 /* TUITextViewEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TUITextViewEditor.h; sourceTree = "<group>"; };
 		88EFFB5013F417E200CF91A9 /* TUITextViewEditor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TUITextViewEditor.m; sourceTree = "<group>"; };
+		C24814C11776197D00788D1E /* TUITableView+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TUITableView+Private.h"; sourceTree = "<group>"; };
+		C24814C617761E7900788D1E /* MTAnimationTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MTAnimationTypes.h; path = MTAnimation/MTAnimation/MTAnimationTypes.h; sourceTree = "<group>"; };
+		C24814C717761E7900788D1E /* MTMatrixInterpolation.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = MTMatrixInterpolation.c; path = MTAnimation/MTAnimation/MTMatrixInterpolation.c; sourceTree = "<group>"; };
+		C24814C817761E7900788D1E /* MTMatrixInterpolation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MTMatrixInterpolation.h; path = MTAnimation/MTAnimation/MTMatrixInterpolation.h; sourceTree = "<group>"; };
+		C24814C917761E7900788D1E /* MTTimingFunctions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = MTTimingFunctions.c; path = MTAnimation/MTAnimation/MTTimingFunctions.c; sourceTree = "<group>"; };
+		C24814CA17761E7900788D1E /* MTTimingFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MTTimingFunctions.h; path = MTAnimation/MTAnimation/MTTimingFunctions.h; sourceTree = "<group>"; };
+		C24814CB17761E7900788D1E /* UIView+MTAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIView+MTAnimation.h"; path = "MTAnimation/MTAnimation/UIView+MTAnimation.h"; sourceTree = "<group>"; };
+		C24814CC17761E7900788D1E /* UIView+MTAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIView+MTAnimation.m"; path = "MTAnimation/MTAnimation/UIView+MTAnimation.m"; sourceTree = "<group>"; };
+		C24814E217761E8300788D1E /* MTAnimationTwUIAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MTAnimationTwUIAdapter.h; sourceTree = "<group>"; };
 		C25125F31775E68400308A86 /* TUITableView+Updating.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TUITableView+Updating.h"; sourceTree = "<group>"; };
 		C25125F41775E68400308A86 /* TUITableView+Updating.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TUITableView+Updating.m"; sourceTree = "<group>"; };
 		C27D918C1753D93B00C622DA /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
@@ -673,6 +697,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C24814C517761E4B00788D1E /* MTAnimation */ = {
+			isa = PBXGroup;
+			children = (
+				C24814C617761E7900788D1E /* MTAnimationTypes.h */,
+				C24814C717761E7900788D1E /* MTMatrixInterpolation.c */,
+				C24814C817761E7900788D1E /* MTMatrixInterpolation.h */,
+				C24814C917761E7900788D1E /* MTTimingFunctions.c */,
+				C24814CA17761E7900788D1E /* MTTimingFunctions.h */,
+				C24814CB17761E7900788D1E /* UIView+MTAnimation.h */,
+				C24814CC17761E7900788D1E /* UIView+MTAnimation.m */,
+				C24814E217761E8300788D1E /* MTAnimationTwUIAdapter.h */,
+			);
+			name = MTAnimation;
+			sourceTree = "<group>";
+		};
 		CB5B264013BE6DA200579B1E = {
 			isa = PBXGroup;
 			children = (
@@ -762,6 +801,7 @@
 				CBB74C5A13BE6E1900C85CB5 /* TUIKit.h */,
 				CBB74C3813BE6E1900C85CB5 /* Support */,
 				CBB74C3D13BE6E1900C85CB5 /* UIKit */,
+				C24814C517761E4B00788D1E /* MTAnimation */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -881,6 +921,7 @@
 				C25125F41775E68400308A86 /* TUITableView+Updating.m */,
 				CBB74C6F13BE6E1900C85CB5 /* TUITableView+Derepeater.h */,
 				CBB74C7013BE6E1900C85CB5 /* TUITableView+Derepeater.m */,
+				C24814C11776197D00788D1E /* TUITableView+Private.h */,
 				CBB74C7113BE6E1900C85CB5 /* TUITableView.h */,
 				CBB74C7213BE6E1900C85CB5 /* TUITableView.m */,
 				487068981628CBCF005D7096 /* TUITableViewCell+Private.h */,
@@ -997,6 +1038,8 @@
 				C29A7DCF1744620A008BF364 /* TUIView+ColorHelpers.h in Headers */,
 				C28B7CA7175A54A4002A2008 /* NSColor+RGBHex.h in Headers */,
 				C25126041775F2C100308A86 /* TUITableView+Updating.h in Headers */,
+				C24814C41776199F00788D1E /* TUITableView+Private.h in Headers */,
+				C24814E517761E8300788D1E /* MTAnimationTwUIAdapter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1076,6 +1119,8 @@
 				C29A7DCD17445F3F008BF364 /* TUIView+ColorHelpers.h in Headers */,
 				C28B7CA5175A54A4002A2008 /* NSColor+RGBHex.h in Headers */,
 				C25125F51775E68400308A86 /* TUITableView+Updating.h in Headers */,
+				C24814C21776199A00788D1E /* TUITableView+Private.h in Headers */,
+				C24814E317761E8300788D1E /* MTAnimationTwUIAdapter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1117,6 +1162,8 @@
 				C29A7DCE17446209008BF364 /* TUIView+ColorHelpers.h in Headers */,
 				C28B7CA6175A54A4002A2008 /* NSColor+RGBHex.h in Headers */,
 				C25126031775F2C000308A86 /* TUITableView+Updating.h in Headers */,
+				C24814C31776199A00788D1E /* TUITableView+Private.h in Headers */,
+				C24814E417761E8300788D1E /* MTAnimationTwUIAdapter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1402,6 +1449,9 @@
 				4820110A165974A400CFDC11 /* NSFont+TUIExtensions.m in Sources */,
 				C28B7CA0175A51DA002A2008 /* NSColor+RGBHex.m in Sources */,
 				C25125FA1775E68400308A86 /* TUITableView+Updating.m in Sources */,
+				C24814D217761E7900788D1E /* MTMatrixInterpolation.c in Sources */,
+				C24814D817761E7900788D1E /* MTTimingFunctions.c in Sources */,
+				C24814E117761E7900788D1E /* UIView+MTAnimation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1481,6 +1531,9 @@
 				C2E21A1E1741BAC6002A813A /* TUIRefreshControl.m in Sources */,
 				C28B7C98175A51D2002A2008 /* NSColor+RGBHex.m in Sources */,
 				C25125F81775E68400308A86 /* TUITableView+Updating.m in Sources */,
+				C24814D017761E7900788D1E /* MTMatrixInterpolation.c in Sources */,
+				C24814D617761E7900788D1E /* MTTimingFunctions.c in Sources */,
+				C24814DF17761E7900788D1E /* UIView+MTAnimation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1564,6 +1617,9 @@
 				48201109165974A300CFDC11 /* NSFont+TUIExtensions.m in Sources */,
 				C28B7C9F175A51DA002A2008 /* NSColor+RGBHex.m in Sources */,
 				C25125F91775E68400308A86 /* TUITableView+Updating.m in Sources */,
+				C24814D117761E7900788D1E /* MTMatrixInterpolation.c in Sources */,
+				C24814D717761E7900788D1E /* MTTimingFunctions.c in Sources */,
+				C24814E017761E7900788D1E /* UIView+MTAnimation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1651,6 +1707,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "${SRCROOT}/MTAnimation/MTAnimation";
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-DNS_BUILD_32_LIKE_64";
@@ -1685,6 +1742,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "${SRCROOT}/MTAnimation/MTAnimation";
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_CFLAGS = "-DNS_BUILD_32_LIKE_64";
 				RUN_CLANG_STATIC_ANALYZER = YES;
@@ -1832,6 +1890,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "${SRCROOT}/MTAnimation/MTAnimation";
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_CFLAGS = "-DNS_BUILD_32_LIKE_64";
 				RUN_CLANG_STATIC_ANALYZER = YES;

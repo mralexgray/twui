@@ -610,7 +610,15 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
     }
     irow = 0; // ...then use zero for subsequent iterations
   }
-  
+}
+
+- (NSIndexPath *)_topVisibleIndexPath
+{
+	NSIndexPath *topVisibleIndex = nil;
+	NSArray *v = [[_visibleItems allKeys] sortedArrayUsingSelector:@selector(compare:)];
+	if([v count])
+		topVisibleIndex = [v objectAtIndex:0];
+	return topVisibleIndex;
 }
 
 - (void)setFrame:(CGRect)f

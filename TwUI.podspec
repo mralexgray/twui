@@ -27,5 +27,10 @@ Pod::Spec.new do |s|
       sss.source_files = 'lib/UIKit/NSColor+TUIExtensions.{h,m}'
       sss.requires_arc = false
     end
+
+    ss.subspec 'MTAnimation' do |sss|
+      sss.source_files = 'MTAnimation/MTAnimation/UIView+MTAnimation.{h,m}', 'MTAnimation/MTAnimation/MTTimingFunctions.{h,c}', 'MTAnimation/MTAnimation/MTMatrixInterpolation.{h,c}', 'MTAnimation/MTAnimation/MTAnimationTypes.h', 'MTAnimationTwUIAdapter.h'
+      sss.requires_arc = true
+    end
   end
 end

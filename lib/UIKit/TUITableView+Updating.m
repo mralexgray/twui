@@ -8,96 +8,119 @@
 
 #import "TUITableView+Updating.h"
 #import "TUITableViewCell+Private.h"
+#import "UIView+MTAnimation.h"
 #import <objc/runtime.h>
+
+
+static const char cellsToBeAnimatedKey;
+static const char updatingKey;
+
+
+@interface TUITableView ()
+@property (nonatomic, strong) NSMutableArray *cellsToBeAnimated;
+@property (nonatomic, assign) BOOL           updating;
+@end
 
 
 @implementation TUITableView (Updating)
 
 - (void)__beginUpdates
 {
-
+    self.updating = YES;
+    [self enumerateIndexPathsUsingBlock:^(NSIndexPath *indexPath, BOOL *stop) {
+        TUITableViewCell *cell  = [self cellForRowAtIndexPath:indexPath];
+        cell.updateEndFrame     = cell.frame;
+        cell.updateEndAlpha     = cell.alpha;
+    }];
 }
 
 - (void)__endUpdates
 {
-
+    self.updating = NO;
+    [TUIView mt_animateViews:self.cellsToBeAnimated duration:0.25 timingFunction:kMTEaseOutSine animations:^{
+        for (TUITableViewCell *cell in self.cellsToBeAnimated) {
+            cell.frame = cell.updateEndFrame;
+            cell.alpha = cell.updateEndAlpha;
+        }
+    } completion:^{
+        [self.cellsToBeAnimated removeAllObjects];
+        for (TUITableViewCell *cell in self.cellsToBeAnimated) {
+            if (cell.updateDeleted) [cell removeFromSuperview];
+        }
+        [self reloadData];
+    }];
 }
 
 - (void)__insertRowsAtIndexPaths:(NSArray *)indexPaths withRowAnimation:(TUITableViewRowAnimation)animation
 {
-    // begin animations
-//    if(animate){
-        [TUIView beginAnimations:NSStringFromSelector(_cmd) context:NULL];
-//    }
+    NSArray *sortedIndexPaths = [indexPaths sortedArrayUsingSelector:@selector(compare:)];
 
-    NSIndexPath *fromIndexPath  = [self _topVisibleIndexPath];
-    NSIndexPath *toIndexPath    = [self _bottomVisibleIndexPath];
+    for (NSIndexPath *currentPath in sortedIndexPaths) {
 
-    for (NSIndexPath *currentPath in indexPaths) {
+        CGFloat newCellHeight = [_delegate tableView:self heightForRowAtIndexPath:currentPath];
 
-        TUITableViewCell *cell = [self cellForRowAtIndexPath:currentPath];
+        [self enumerateIndexPathsUsingBlock:^(NSIndexPath *indexPath, BOOL *stop) {
 
-        // update section headers
-        for(NSInteger i = fromIndexPath.section; i <= toIndexPath.section; i++){
-            TUIView *headerView;
-            if (currentPath.section < i && i <= cell.indexPath.section){
-                // the current index path is above this section and this section is at or
-                // below the origin index path; shift our header down to make room
-                if((headerView = [self headerViewForSection:i]) != nil){
-                    CGRect frame = [self rectForHeaderOfSection:i];
-                    headerView.frame = CGRectMake(frame.origin.x, frame.origin.y - cell.frame.size.height, frame.size.width, frame.size.height);
+            // if this index path is in the place of or below where we want to insert, move the cell down
+            NSComparisonResult result = [indexPath compare:currentPath];
+            if (result != NSOrderedAscending || result == NSOrderedSame) {
+                TUITableViewCell *currentCell = [self cellForRowAtIndexPath:indexPath];
+                if (currentCell) {
+                    CGRect r                    = self.updating ? currentCell.updateEndFrame : currentCell.frame;
+                    r.origin.y                  -= newCellHeight;
+                    currentCell.updateEndFrame  = r;
+                    currentCell.updateEndAlpha  = 1;
+                    [self.cellsToBeAnimated addObject:currentCell];
                 }
-            }else if(currentPath.section >= i && i > cell.indexPath.section){
-                // the current index path is at or below this section and this section is
-                // below the origin index path; shift our header up to make room
-                if((headerView = [self headerViewForSection:i]) != nil){
-                    CGRect frame = [self rectForHeaderOfSection:i];
-                    headerView.frame = CGRectMake(frame.origin.x, frame.origin.y + cell.frame.size.height, frame.size.width, frame.size.height);
-                }
-            }else{
-                // restore the header to it's normal position
-                if((headerView = [self headerViewForSection:i]) != nil){
-                    headerView.frame = [self rectForHeaderOfSection:i];
-                }
-            }
-        }
-
-        // update rows
-        [self enumerateIndexPathsFromIndexPath:fromIndexPath toIndexPath:toIndexPath withOptions:0 usingBlock:^(NSIndexPath *indexPath, BOOL *stop) {
-            TUITableViewCell *displacedCell;
-            if((displacedCell = [self cellForRowAtIndexPath:indexPath]) != nil && ![displacedCell isEqual:cell]){
-                CGRect frame = [self rectForRowAtIndexPath:indexPath];
-                CGRect target;
-
-                if([indexPath compare:currentPath] != NSOrderedAscending){
-                    // the visited index path is above the origin and below the current index path;
-                    // shift the cell down by the height of the dragged cell
-                    target = CGRectMake(frame.origin.x, frame.origin.y - cell.frame.size.height, frame.size.width, frame.size.height);
-                }else{
-                    // the visited cell is outside the affected range and should be returned to its
-                    // normal frame
-                    target = frame;
-                }
-                
-                // only animate if we actually need to
-                if(!CGRectEqualToRect(target, displacedCell.frame)){
-                    displacedCell.frame = target;
-                }
-                
             }
         }];
+
+        TUITableViewCell *newCell   = [_dataSource tableView:self cellForRowAtIndexPath:currentPath];
+        newCell.frame               = [self insertStartFrameForIndexPath:currentPath rowAnimation:animation];
+        newCell.alpha               = animation == TUITableViewRowAnimationFade ? 0 : 1;
+        newCell.updateEndFrame      = [self insertEndFrameForIndexPath:currentPath];
+        newCell.updateEndAlpha      = 1;
+        newCell.updateDeleted       = YES;
+        [self addSubview:newCell];
+
+        [self.cellsToBeAnimated addObject:newCell];
     }
-
-    // commit animations
-//    if(animate){
-        [TUIView commitAnimations];
-//    }
-
 }
 
 - (void)__deleteRowsAtIndexPaths:(NSArray *)indexPaths withRowAnimation:(TUITableViewRowAnimation)animation
 {
+    NSArray *sortedIndexPaths = [indexPaths sortedArrayUsingSelector:@selector(compare:)];
 
+    for (NSIndexPath *currentPath in sortedIndexPaths) {
+
+        TUITableViewCell *cell      = [self cellForRowAtIndexPath:currentPath];
+        CGFloat deletingRowHeight   = cell.frame.size.height;
+
+        [self enumerateIndexPathsUsingBlock:^(NSIndexPath *indexPath, BOOL *stop) {
+
+            // if this index path is in the place of or below where we want to remove, move it up
+            NSComparisonResult result = [indexPath compare:currentPath];
+            if (result != NSOrderedAscending || result == NSOrderedSame) {
+                TUITableViewCell *currentCell = [self cellForRowAtIndexPath:indexPath];
+                if (currentCell) {
+                    CGRect r            = self.updating ? currentCell.updateEndFrame : currentCell.frame;
+                    r.origin.y         += deletingRowHeight;
+                    currentCell.updateEndFrame = r;
+                    currentCell.updateEndAlpha = 1;
+                    [self.cellsToBeAnimated addObject:currentCell];
+                }
+            }
+        }];
+
+        
+
+
+        cell.updateEndFrame = [self deleteEndFrameForIndexPath:currentPath rowAnimation:animation];
+        cell.updateEndAlpha = animation == TUITableViewRowAnimationFade ? 0 : 1;
+        cell.updateDeleted  = YES;
+
+        [self.cellsToBeAnimated addObject:cell];
+    }
 }
 
 
@@ -105,19 +128,62 @@
 
 #pragma mark - Private
 
-- (NSIndexPath *)_topVisibleIndexPath
+- (CGRect)insertStartFrameForIndexPath:(NSIndexPath *)indexPath rowAnimation:(TUITableViewRowAnimation)animation
 {
-	NSIndexPath *topVisibleIndex = nil;
-	NSArray *v = [[_visibleItems allKeys] sortedArrayUsingSelector:@selector(compare:)];
-	if([v count])
-		topVisibleIndex = [v objectAtIndex:0];
-	return topVisibleIndex;
+    CGRect r = [self insertEndFrameForIndexPath:indexPath];
+
+    if (animation == TUITableViewRowAnimationLeft) {
+        r.origin.x -= r.size.width;
+    }
+    else if (animation == TUITableViewRowAnimationRight) {
+        r.origin.x += r.size.width;
+    }
+
+    return r;
 }
 
-- (NSIndexPath *)_bottomVisibleIndexPath
+- (CGRect)insertEndFrameForIndexPath:(NSIndexPath *)indexPath
 {
-	NSArray *v = [[_visibleItems allKeys] sortedArrayUsingSelector:@selector(compare:)];
-    return [v lastObject];
+    CGFloat height      = [_delegate tableView:self heightForRowAtIndexPath:indexPath];
+    CGRect r            = [self rectForRowAtIndexPath:indexPath];
+    r.origin.y          = r.origin.y + (r.size.height - height);
+    r.size.height       = height;
+    return r;
+}
+
+- (CGRect)deleteEndFrameForIndexPath:(NSIndexPath *)indexPath rowAnimation:(TUITableViewRowAnimation)animation
+{
+    CGRect r = [self rectForRowAtIndexPath:indexPath];
+
+    if (animation == TUITableViewRowAnimationRight) {
+        r.origin.x += r.size.width;
+    }
+    else if (animation == TUITableViewRowAnimationLeft) {
+        r.origin.x -= r.size.width;
+    }
+
+    return r;
+}
+
+- (NSMutableArray *)cellsToBeAnimated
+{
+    NSMutableArray *cells = objc_getAssociatedObject(self, &cellsToBeAnimatedKey);
+    if (!cells) {
+        cells = [NSMutableArray new];
+        objc_setAssociatedObject(self, &cellsToBeAnimatedKey, cells, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    }
+    return cells;
+}
+
+- (void)setUpdating:(BOOL)updating
+{
+    objc_setAssociatedObject(self, &updatingKey, @(updating), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)updating
+{
+    NSNumber *n = objc_getAssociatedObject(self, &updatingKey);
+    return n ? [n boolValue] : NO;
 }
 
 

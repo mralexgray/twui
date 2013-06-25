@@ -36,14 +36,14 @@ typedef enum TUITableViewInsertionMethod : NSUInteger {
 } TUITableViewInsertionMethod;
 
 typedef NS_ENUM(NSInteger, TUITableViewRowAnimation) {
+    TUITableViewRowAnimationNone,
     TUITableViewRowAnimationFade,
     TUITableViewRowAnimationRight,           // slide in from right (or out to right)
     TUITableViewRowAnimationLeft,
     TUITableViewRowAnimationTop,
     TUITableViewRowAnimationBottom,
-    TUITableViewRowAnimationNone,            // available in iOS 3.0
-    TUITableViewRowAnimationMiddle,          // available in iOS 3.2.  attempts to keep cell centered in the space it will/did occupy
-    TUITableViewRowAnimationAutomatic = 100  // available in iOS 5.0.  chooses an appropriate animation style for you
+    TUITableViewRowAnimationMiddle,
+    TUITableViewRowAnimationAutomatic = 100
 };
 
 @class TUITableViewCell;
