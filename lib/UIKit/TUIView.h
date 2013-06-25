@@ -150,6 +150,8 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView *view);
  */
 + (id)new;
 
+
+
 /**
  Default is YES. if set to NO, user events (clicks, keys) are ignored and removed from the event queue.
  */
@@ -259,6 +261,15 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView *view);
  Default is CGAffineTransformIdentity. animatable
  */
 @property (nonatomic, assign) CGAffineTransform transform;
+
+
+/**
+ Frame shortcuts
+ */
+@property (nonatomic, assign) CGFloat x;
+@property (nonatomic, assign) CGFloat y;
+@property (nonatomic, assign) CGFloat height;
+@property (nonatomic, assign) CGFloat width;
 
 /**
  Recursively calls -pointInside:withEvent:. point is in frame coordinates (event ignored)

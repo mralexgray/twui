@@ -171,6 +171,9 @@ typedef struct {
 		_visibleSectionHeaders              = [[NSMutableIndexSet alloc] init];
 		_visibleItems                       = [[NSMutableDictionary alloc] init];
 		_tableFlags.animateSelectionChanges = 1;
+
+        _updateAnimationDuration            = 0.25;
+        _updateTimingFunction               = kMTEaseInOutSine;
 	}
 	return self;
 }
@@ -1160,6 +1163,7 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
 {
     [self __deleteRowsAtIndexPaths:indexPaths withRowAnimation:animation];
 }
+
 
 
 - (NSIndexPath *)indexPathForFirstVisibleRow 

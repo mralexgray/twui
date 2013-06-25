@@ -31,6 +31,7 @@ We're currently using TwUI to build [Firehose](https://www.getfirehose.com/). As
 - (06/03/13) TUITextField: when a text field was secure, no caret would show up. Fixed that.
 - (06/03/13) TUIView: turned off subpixel rendering by default. makes text look ugly.
 - (06/13/13) TUIButton: image for selected state won't go back to normal state on hover.
+- (06/25/13) TUIView+Event: pulled in fixes from michaelvillar branch.
 
 **Added**
 - (05/11/13) TUITextView: added `lineSpacing` property.
@@ -47,6 +48,10 @@ We're currently using TwUI to build [Firehose](https://www.getfirehose.com/). As
 - (06/01/13) TUIResponder: added `addAction:forControlEvents:` that just sends the action up the responder chain. This is good for views with controllers.
 - (06/01/13) TUITextView/Field: added `secure` property.
 - (06/14/13) TUIView: added `description` and `recursiveDescription`
+- (06/25/13) MTAnimation: added `MTAnimation` as a submodule so that it's available across the framework and any project that includes it. This is a good thing.
+- (06/25/13) TUIView: added frame convenience accessors. easily change frame values right on the view: e.g. `view.x = 3; view.height = 20`
+- (06/25/13) TUIView: added frame convenience accessors. easily change frame values right on the view: e.g. `view.x = 3; view.height = 20`
+- (06/25/13) TUITableView: added insertion/deletion cell updates. **this is huge**
 
 
 ## Setup

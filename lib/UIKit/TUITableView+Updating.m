@@ -12,12 +12,34 @@
 #import <objc/runtime.h>
 
 
-static const char cellsToBeAnimatedKey;
+static const char updateOperationsKey;
 static const char updatingKey;
 
 
+@interface TUITableViewUpdateOperation : NSObject
+- (id)initWithTableView:(TUITableView *)tableView rowAnimation:(TUITableViewRowAnimation)animation;
+- (void)updateCell:(TUITableViewCell *)cell;
+- (void)insertCell:(TUITableViewCell *)cell;
+- (void)deleteCell:(TUITableViewCell *)cell;
+- (void)tempCell:(TUITableViewCell *)cell;
+- (void)beginWithCompletion:(void (^)())completion;
+@end
+
+
+
+
+@interface TUITableViewCell (FrameShortcuts)
+@property (nonatomic, assign) CGFloat ux;       // update end x
+@property (nonatomic, assign) CGFloat uy;       // update end y
+@property (nonatomic, assign) CGFloat uwidth;   // update end w
+@property (nonatomic, assign) CGFloat uheight;  // update end h
+@end
+
+
+
+
 @interface TUITableView ()
-@property (nonatomic, strong) NSMutableArray *cellsToBeAnimated;
+@property (nonatomic, strong) NSMutableArray *updateOperations;
 @property (nonatomic, assign) BOOL           updating;
 @end
 
@@ -37,25 +59,26 @@ static const char updatingKey;
 - (void)__endUpdates
 {
     self.updating = NO;
-    [TUIView mt_animateViews:self.cellsToBeAnimated duration:0.25 timingFunction:kMTEaseOutSine animations:^{
-        for (TUITableViewCell *cell in self.cellsToBeAnimated) {
-            cell.frame = cell.updateEndFrame;
-            cell.alpha = cell.updateEndAlpha;
-        }
-    } completion:^{
-        for (TUITableViewCell *cell in self.cellsToBeAnimated) {
-            if (cell.animationProp) {
-                [cell removeFromSuperview];
+    for (TUITableViewUpdateOperation *operation in [self.updateOperations copy]) {
+        [operation beginWithCompletion:^{
+            [self.updateOperations removeObject:operation];
+
+            // if all operations have completed
+            if ([self.updateOperations count] == 0) {
+                [self reloadData];
             }
-        }
-        [self.cellsToBeAnimated removeAllObjects];
-        [self reloadData];
-    }];
+        }];
+    }
+
+    // reset the table timing functions to defaults
+    self.updateTimingFunction       = kMTEaseInOutSine;
+    self.updateAnimationDuration    = 0.25;
 }
 
 - (void)__insertRowsAtIndexPaths:(NSArray *)indexPaths withRowAnimation:(TUITableViewRowAnimation)animation
 {
-    NSArray *sortedIndexPaths = [indexPaths sortedArrayUsingSelector:@selector(compare:)];
+    TUITableViewUpdateOperation *operation  = [[TUITableViewUpdateOperation alloc] initWithTableView:self rowAnimation:animation];
+    NSArray *sortedIndexPaths               = [indexPaths sortedArrayUsingSelector:@selector(compare:)];
 
     for (NSIndexPath *currentPath in sortedIndexPaths) {
 
@@ -72,81 +95,97 @@ static const char updatingKey;
                     r.origin.y                  -= newCellHeight;
                     currentCell.updateEndFrame  = r;
                     currentCell.updateEndAlpha  = 1;
-                    [self.cellsToBeAnimated addObject:currentCell];
+                    [operation updateCell:currentCell];
                 }
             }
         }];
 
         TUITableViewCell *newCell   = [_dataSource tableView:self cellForRowAtIndexPath:currentPath];
-        newCell.frame               = [self insertStartFrameForIndexPath:currentPath rowAnimation:animation];
-        newCell.alpha               = animation == TUITableViewRowAnimationFade ? 0 : 1;
-        newCell.updateEndFrame      = [self insertEndFrameForIndexPath:currentPath];
-        newCell.updateEndAlpha      = 1;
-        newCell.animationProp       = YES;
         [self addSubview:newCell];
 
-        [self.cellsToBeAnimated addObject:newCell];
+        newCell.alpha               = animation == TUITableViewRowAnimationFade ? 0 : 1;
+        newCell.updateEndAlpha      = 1;
+
+        CGFloat height              = [_delegate tableView:self heightForRowAtIndexPath:currentPath];
+        CGRect r                    = [self rectForRowAtIndexPath:currentPath];
+        r.origin.y                  = r.origin.y + (r.size.height - height);
+        r.size.height               = height;
+        newCell.updateEndFrame      = r;
+        newCell.frame               = r;
+
+        [operation insertCell:newCell];
     }
+
+    [self.updateOperations addObject:operation];
 }
 
 - (void)__deleteRowsAtIndexPaths:(NSArray *)indexPaths withRowAnimation:(TUITableViewRowAnimation)animation
 {
-    NSArray *sortedIndexPaths = [indexPaths sortedArrayUsingSelector:@selector(compare:)];
+    TUITableViewUpdateOperation *operation  = [[TUITableViewUpdateOperation alloc] initWithTableView:self rowAnimation:animation];
+    NSArray *sortedIndexPaths               = [indexPaths sortedArrayUsingSelector:@selector(compare:)];
 
     for (NSIndexPath *currentPath in sortedIndexPaths) {
 
         TUITableViewCell *cell      = [self cellForRowAtIndexPath:currentPath];
         CGFloat deletingRowHeight   = cell.frame.size.height;
 
+        // animate all other cells up
         [self enumerateIndexPathsUsingBlock:^(NSIndexPath *indexPath, BOOL *stop) {
-
-            // if this index path is in the place of or below where we want to remove, move it up
             NSComparisonResult result = [indexPath compare:currentPath];
             if (result != NSOrderedAscending || result == NSOrderedSame) {
                 TUITableViewCell *currentCell = [self cellForRowAtIndexPath:indexPath];
                 if (currentCell) {
-                    CGRect r            = self.updating ? currentCell.updateEndFrame : currentCell.frame;
-                    r.origin.y         += deletingRowHeight;
-                    currentCell.updateEndFrame = r;
-                    currentCell.updateEndAlpha = 1;
-                    [self.cellsToBeAnimated addObject:currentCell];
+                    CGRect r                    = self.updating ? currentCell.updateEndFrame : currentCell.frame;
+                    r.origin.y                  += deletingRowHeight;
+                    currentCell.updateEndFrame  = r;
+                    [operation updateCell:currentCell];
                 }
             }
         }];
 
-        NSIndexPath *lastIndexPath = [[[_visibleItems allKeys] sortedArrayUsingSelector:@selector(compare:)] lastObject];
-        if (lastIndexPath) {
-            CGFloat heightToCompensateFor = deletingRowHeight;
-            NSInteger count = 0;
+        // create cells that do not currently exist but will be shown when showing cells slide upward
+        NSIndexPath *nextIndexPath = [[[_visibleItems allKeys] sortedArrayUsingSelector:@selector(compare:)] lastObject];
+        if (nextIndexPath) {
+            TUITableViewCell *bottomCell    = _visibleItems[nextIndexPath];
+            CGFloat heightToCompensateFor   = deletingRowHeight;
             while (true) {
-                NSIndexPath *nextIndexPath = [NSIndexPath indexPathForRow:lastIndexPath.row + ++count
-                                                                inSection:lastIndexPath.section];
 
-                if (nextIndexPath.row       >= [self numberOfRowsInSection:nextIndexPath.section]) break;
-                if (nextIndexPath.section   >= [self numberOfSections]) break;
+                // make sure the index path is valid
+                if (nextIndexPath.row >= [_delegate tableView:self numberOfRowsInSection:nextIndexPath.section]) {
+                    nextIndexPath = [NSIndexPath indexPathForRow:0 inSection:nextIndexPath.section + 1];
+                }
+                if (nextIndexPath.section >= [self numberOfSections]) break;
 
+                // create a cell that is off the bottom of the screen but will become visible as it's slid up during deletion.
                 TUITableViewCell *compensationCell  = [_delegate tableView:self cellForRowAtIndexPath:nextIndexPath];
                 if (!compensationCell) break;
 
-                CGRect frame                        = [self rectForRowAtIndexPath:nextIndexPath];
+                // frame and add a cell that will slide up and be visible durtion deletion
+                CGRect frame                        = bottomCell.frame;
+                frame.size.height                   = [_delegate tableView:self heightForRowAtIndexPath:nextIndexPath];
+                frame.origin.y                      -= frame.size.height;
                 compensationCell.frame              = frame;
-                compensationCell.alpha              = 1;
                 frame.origin.y                      += deletingRowHeight;
                 compensationCell.updateEndFrame     = frame;
-                compensationCell.updateEndAlpha     = 1;
-                compensationCell.animationProp      = YES;
                 [self addSubview:compensationCell];
-                [self.cellsToBeAnimated addObject:compensationCell];
+                [operation tempCell:compensationCell];
+
+                // see if we've added enough cells
                 heightToCompensateFor               -= compensationCell.frame.size.height;
                 if (heightToCompensateFor <= 0) break;
+
+                // prepare for the next cell below it
+                bottomCell      = compensationCell;
+                nextIndexPath   = [NSIndexPath indexPathForRow:nextIndexPath.row + 1 inSection:nextIndexPath.section];
             }
         }
 
-        cell.updateEndFrame = [self deleteEndFrameForIndexPath:currentPath rowAnimation:animation];
         cell.updateEndAlpha = animation == TUITableViewRowAnimationFade ? 0 : 1;
 
-        [self.cellsToBeAnimated addObject:cell];
+        [operation deleteCell:cell];
     }
+
+    [self.updateOperations addObject:operation];
 }
 
 
@@ -154,49 +193,14 @@ static const char updatingKey;
 
 #pragma mark - Private
 
-- (CGRect)insertStartFrameForIndexPath:(NSIndexPath *)indexPath rowAnimation:(TUITableViewRowAnimation)animation
+#pragma mark (properties)
+
+- (NSMutableArray *)updateOperations
 {
-    CGRect r = [self insertEndFrameForIndexPath:indexPath];
-
-    if (animation == TUITableViewRowAnimationLeft) {
-        r.origin.x -= r.size.width;
-    }
-    else if (animation == TUITableViewRowAnimationRight) {
-        r.origin.x += r.size.width;
-    }
-
-    return r;
-}
-
-- (CGRect)insertEndFrameForIndexPath:(NSIndexPath *)indexPath
-{
-    CGFloat height      = [_delegate tableView:self heightForRowAtIndexPath:indexPath];
-    CGRect r            = [self rectForRowAtIndexPath:indexPath];
-    r.origin.y          = r.origin.y + (r.size.height - height);
-    r.size.height       = height;
-    return r;
-}
-
-- (CGRect)deleteEndFrameForIndexPath:(NSIndexPath *)indexPath rowAnimation:(TUITableViewRowAnimation)animation
-{
-    CGRect r = [self rectForRowAtIndexPath:indexPath];
-
-    if (animation == TUITableViewRowAnimationRight) {
-        r.origin.x += r.size.width;
-    }
-    else if (animation == TUITableViewRowAnimationLeft) {
-        r.origin.x -= r.size.width;
-    }
-
-    return r;
-}
-
-- (NSMutableArray *)cellsToBeAnimated
-{
-    NSMutableArray *cells = objc_getAssociatedObject(self, &cellsToBeAnimatedKey);
+    NSMutableArray *cells = objc_getAssociatedObject(self, &updateOperationsKey);
     if (!cells) {
         cells = [NSMutableArray new];
-        objc_setAssociatedObject(self, &cellsToBeAnimatedKey, cells, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        objc_setAssociatedObject(self, &updateOperationsKey, cells, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
     return cells;
 }
@@ -210,6 +214,231 @@ static const char updatingKey;
 {
     NSNumber *n = objc_getAssociatedObject(self, &updatingKey);
     return n ? [n boolValue] : NO;
+}
+
+
+@end
+
+
+
+
+
+
+
+@interface TUITableViewUpdateOperation ()
+@property (nonatomic, strong) TUITableView             *tableView;
+@property (nonatomic, assign) TUITableViewRowAnimation rowAnimation;
+@property (nonatomic, strong) NSMutableArray           *cells;
+@property (nonatomic, strong) NSMutableArray           *cellsBeingInserted;
+@property (nonatomic, strong) NSMutableArray           *cellsBeingDeleted;
+@property (nonatomic, strong) NSMutableArray           *temporaryCells;
+@property (nonatomic, assign) MTTimingFunction         animationTimingFunction;
+@property (nonatomic, assign) NSTimeInterval           animationDuration;
+@end
+
+
+@implementation TUITableViewUpdateOperation
+
+- (id)initWithTableView:(TUITableView *)tableView rowAnimation:(TUITableViewRowAnimation)animation
+{
+    self = [super init];
+    if (self) {
+        _tableView                  = tableView;
+        _rowAnimation               = animation;
+        _cells                      = [NSMutableArray new];
+        _cellsBeingInserted         = [NSMutableArray new];
+        _cellsBeingDeleted          = [NSMutableArray new];
+        _temporaryCells             = [NSMutableArray new];
+    }
+    return self;
+}
+
+- (void)updateCell:(TUITableViewCell *)cell
+{
+    [_cells addObject:cell];
+}
+
+- (void)insertCell:(TUITableViewCell *)cell
+{
+    [self updateCell:cell];
+    [_cellsBeingInserted addObject:cell];
+}
+
+- (void)deleteCell:(TUITableViewCell *)cell
+{
+    [self updateCell:cell];
+    [_cellsBeingDeleted addObject:cell];
+}
+
+- (void)tempCell:(TUITableViewCell *)cell
+{
+    [self updateCell:cell];
+    [_temporaryCells addObject:cell];
+}
+
+- (void)beginWithCompletion:(void (^)())completion
+{
+    [self configureInsertingAndDeletingCellFrames];
+
+    [TUIView mt_animateViews:_cells duration:_animationDuration timingFunction:_animationTimingFunction animations:^{
+        for (TUITableViewCell *cell in _cells) {
+            cell.frame = cell.updateEndFrame;
+            cell.alpha = cell.updateEndAlpha;
+        }
+    } completion:^{
+        for (TUITableViewCell *cell in _cellsBeingInserted) {
+            [cell removeFromSuperview]; // these were only for animation, the permaent ones will be put in during table reload.
+        }
+        for (TUITableViewCell *cell in _cellsBeingDeleted) {
+            [cell removeFromSuperview];
+        }
+        for (TUITableViewCell *cell in _temporaryCells) {
+            [cell removeFromSuperview];
+        }
+        [_cells removeAllObjects];
+        [_cellsBeingInserted removeAllObjects];
+        [_cellsBeingDeleted removeAllObjects];
+        [_temporaryCells removeAllObjects];
+        if (completion) completion();
+    }];
+}
+
+
+
+
+#pragma mark - Private
+
+- (void)configureInsertingAndDeletingCellFrames
+{
+    _animationDuration          = _tableView.updateAnimationDuration;
+    _animationTimingFunction    = _tableView.updateTimingFunction;
+
+    for (TUITableViewCell *cell in _cellsBeingInserted) {
+
+        if (_rowAnimation == TUITableViewRowAnimationNone) {
+            _animationDuration = 0.01;
+        }
+        else if (_rowAnimation == TUITableViewRowAnimationFade) {
+            cell.alpha          = 0;
+            cell.updateEndAlpha = 1;
+        }
+        else if (_rowAnimation == TUITableViewRowAnimationRight) {
+            cell.x += cell.width;
+        }
+        else if (_rowAnimation == TUITableViewRowAnimationLeft) {
+            cell.x -= cell.width;
+        }
+        else if (_rowAnimation == TUITableViewRowAnimationTop) {
+            [_tableView sendSubviewToBack:cell];
+            cell.y += cell.height;
+        }
+        else if (_rowAnimation == TUITableViewRowAnimationBottom) {
+            [_tableView sendSubviewToBack:cell];
+            cell.y -= cell.height;
+        }
+        else if (_rowAnimation == TUITableViewRowAnimationMiddle) {
+            [_tableView sendSubviewToBack:cell];
+        }
+        else if (_rowAnimation == TUITableViewRowAnimationGravityDrop) {
+            [_tableView bringSubviewToFront:cell];
+            cell.y                      = [_tableView visibleRect].origin.y + [_tableView visibleRect].size.height;
+            _animationTimingFunction    = kMTEaseOutExpo;
+            _animationDuration          = 0.75;
+        }
+    }
+
+    for (TUITableViewCell *cell in _cellsBeingDeleted) {
+
+        cell.updateEndFrame = cell.frame;
+
+        if (_rowAnimation == TUITableViewRowAnimationNone) {
+            _animationDuration = 0.01;
+        }
+        else if (_rowAnimation == TUITableViewRowAnimationFade) {
+            cell.alpha          = 1;
+            cell.updateEndAlpha = 0;
+        }
+        else if (_rowAnimation == TUITableViewRowAnimationRight) {
+            cell.ux += cell.width;
+        }
+        else if (_rowAnimation == TUITableViewRowAnimationLeft) {
+            cell.ux -= cell.width;
+        }
+        else if (_rowAnimation == TUITableViewRowAnimationTop) {
+            [_tableView sendSubviewToBack:cell];
+            cell.uy += cell.height;
+        }
+        else if (_rowAnimation == TUITableViewRowAnimationBottom) {
+            [_tableView sendSubviewToBack:cell];
+            cell.uy -= cell.height;
+        }
+        else if (_rowAnimation == TUITableViewRowAnimationMiddle) {
+            [_tableView sendSubviewToBack:cell];
+        }
+        else if (_rowAnimation == TUITableViewRowAnimationGravityDrop) {
+            [_tableView bringSubviewToFront:cell];
+            cell.uy                     = [_tableView visibleRect].origin.y - cell.height;
+            _animationTimingFunction    = kMTEaseInExpo;
+            _animationDuration          = 0.75;
+        }
+    }
+}
+
+
+@end
+
+
+
+
+
+@implementation TUITableViewCell (FrameShortcuts)
+
+- (CGFloat)ux
+{
+    return self.updateEndFrame.origin.x;
+}
+
+- (void)setUx:(CGFloat)ux
+{
+    CGRect updateFrame = self.updateEndFrame;
+    updateFrame.origin.x = ux;
+    self.updateEndFrame = updateFrame;
+}
+
+- (CGFloat)uy
+{
+    return self.updateEndFrame.origin.y;
+}
+
+- (void)setUy:(CGFloat)uy
+{
+    CGRect updateFrame = self.updateEndFrame;
+    updateFrame.origin.y = uy;
+    self.updateEndFrame = updateFrame;
+}
+
+- (CGFloat)uwidth
+{
+    return self.updateEndFrame.size.width;
+}
+
+- (void)setUwidth:(CGFloat)uwidth
+{
+    CGRect updateFrame = self.updateEndFrame;
+    updateFrame.size.width = uwidth;
+    self.updateEndFrame = updateFrame;
+}
+
+- (CGFloat)uheight
+{
+    return self.updateEndFrame.size.height;
+}
+
+- (void)setUheight:(CGFloat)uheight
+{
+    CGRect updateFrame = self.updateEndFrame;
+    updateFrame.size.height = uheight;
+    self.updateEndFrame = updateFrame;
 }
 
 

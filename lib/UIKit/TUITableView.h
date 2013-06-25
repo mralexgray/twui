@@ -15,6 +15,8 @@
  */
 
 #import "TUIScrollView.h"
+#import "UIView+MTAnimation.h"
+
 
 typedef enum TUITableViewStyle : NSUInteger {
 	TUITableViewStylePlain,              // regular table view
@@ -43,7 +45,8 @@ typedef NS_ENUM(NSInteger, TUITableViewRowAnimation) {
     TUITableViewRowAnimationTop,
     TUITableViewRowAnimationBottom,
     TUITableViewRowAnimationMiddle,
-    TUITableViewRowAnimationAutomatic = 100
+    TUITableViewRowAnimationGravityDrop,
+    TUITableViewRowAnimationAutomatic = TUITableViewRowAnimationFade
 };
 
 @class TUITableViewCell;
@@ -175,6 +178,8 @@ typedef NS_ENUM(NSInteger, TUITableViewRowAnimation) {
 - (void)endUpdates;
 - (void)insertRowsAtIndexPaths:(NSArray *)indexPaths withRowAnimation:(TUITableViewRowAnimation)animation;
 - (void)deleteRowsAtIndexPaths:(NSArray *)indexPaths withRowAnimation:(TUITableViewRowAnimation)animation;
+@property (nonatomic, assign) MTTimingFunction updateTimingFunction;    // this affects all insert/delete cell calls after this is changed.
+@property (nonatomic, assign) NSTimeInterval   updateAnimationDuration; // this affects all insert/delete cell calls after this is changed.
 
 /**
  Above the top cell, only visible if you pull down (if you have scroll bouncing enabled)

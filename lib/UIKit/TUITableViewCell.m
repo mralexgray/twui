@@ -81,7 +81,6 @@ static inline void tui_viewAnimateRedrawConditionally(TUIView *view, BOOL condit
 
     _updateEndFrame     = CGRectZero;
     _updateEndAlpha     = 1;
-    _animationProp      = NO;
     self.frame          = CGRectZero;
     self.alpha          = 1;
 }
