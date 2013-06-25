@@ -77,6 +77,7 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
 }
 
 - (void)toggleSection:(NSInteger)section animated:(BOOL)animated {
+
     if (animated) {
         [self _toggleSectionWithAnimation:section];
     } else {
@@ -97,6 +98,16 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
 }
 
 - (void)_toggleSectionWithoutAnimation:(NSInteger)section {
+    
+    if(!_tableFlags.layoutSubviewsReentrancyGuard) {
+		_tableFlags.layoutSubviewsReentrancyGuard = 1;
+    } else {
+        __unsafe_unretained TUITableOutlineView *tv = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [tv _toggleSectionWithoutAnimation:section];
+        });
+        return;
+    }
     
     BOOL willOpenSection = (_openedSection == NSIntegerMin);
     BOOL willCloseSection = (_openedSection == section);
@@ -150,7 +161,6 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
         _openningSection = NSIntegerMin;
     }];
     
-    _tableFlags.layoutSubviewsReentrancyGuard = 0;
     
     if (willOpenSection) {
         if (self.delegate && [_delegate respondsToSelector:@selector(tableView:willOpenSection:)]) {
@@ -169,6 +179,8 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
         }
     }
     
+    _tableFlags.layoutSubviewsReentrancyGuard = 0;
+    
     [self reloadData];
 }
 
@@ -177,6 +189,17 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
     if (_openning) {
         return;
     }
+    
+    if(!_tableFlags.layoutSubviewsReentrancyGuard) {
+		_tableFlags.layoutSubviewsReentrancyGuard = 1;
+    } else {
+        __unsafe_unretained TUITableOutlineView *tv = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [tv _toggleSectionWithAnimation:section];
+        });
+        return;
+    }
+
     
     CGRect curSectionRect = [self rectForSection:section];
     CGRect realVisibleRect = [self visibleRect];
@@ -283,199 +306,234 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
     [topSections addIndexes:[self _visibleSectionsBeforeSection:section]];
     [bottomSections addIndexes:[self _visibleSectionsAfterSection:section]];
     
-    if(!_tableFlags.layoutSubviewsReentrancyGuard) {
-        _tableFlags.layoutSubviewsReentrancyGuard = 1;
+    CGRect transitedNewCurSectionRect = newCurSectionRect;
+    if (willOpenSection || willToggleSections) {
+        [CATransaction begin];
+        [CATransaction setDisableActions:YES];
         
-        CGRect transitedNewCurSectionRect = newCurSectionRect;
-        if (willOpenSection || willToggleSections) {
-            [CATransaction begin];
-            [CATransaction setDisableActions:YES];
-            
-            [self _setZposition:FRONT_Z_POSITION ofSectionHeaders:topSections];
-            [self _setZposition:FRONT_Z_POSITION ofSectionHeaders:bottomSections];
-            
-            // moves sections in position that was before opening current section
-            [self _moveSections:topSections forOffset: -_transitionOffset];
-            [self _moveSection:section forOffset: -_transitionOffset];
-            
-            [self sendSubviewToBack:self.openedSectionBackgroundView];
-            
-            if (willToggleSections) {
-                if (isOpenedSectionAboveCurrent) {
-                    [self _setZposition:BACK_Z_POSITION ofSectionContents:[NSIndexSet indexSetWithIndex:_openedSection]];
-                } else {
-                    [self _setZposition:BACK_Z_POSITION ofSectionContents:[NSIndexSet indexSetWithIndex:section]];
+        [self _setZposition:FRONT_Z_POSITION ofSectionHeaders:topSections];
+        [self _setZposition:FRONT_Z_POSITION ofSectionHeaders:bottomSections];
+        
+        // moves sections in position that was before opening current section
+        [self _moveSections:topSections forOffset: -_transitionOffset];
+        [self _moveSection:section forOffset: -_transitionOffset];
+        
+        [self sendSubviewToBack:self.openedSectionBackgroundView];
+        
+        if (willToggleSections) {
+            if (isOpenedSectionAboveCurrent) {
+                [self _setZposition:BACK_Z_POSITION ofSectionContents:[NSIndexSet indexSetWithIndex:_openedSection]];
+            } else {
+                [self _setZposition:BACK_Z_POSITION ofSectionContents:[NSIndexSet indexSetWithIndex:section]];
+            }
+        }
+        
+        [CATransaction flush];
+        [CATransaction commit];
+        
+        transitedNewCurSectionRect = CGRectOffset(newCurSectionRect, 0, -_transitionOffset);
+    }
+    CGRect desiredCurrentSectionRect = transitedNewCurSectionRect;
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        [TUIView beginAnimations:NSStringFromSelector(_cmd) context:NULL];
+        
+        void (^compleationBlock)(BOOL) = ^(BOOL finished) {
+            [TUIView setAnimationsEnabled:NO block:^{
+                //                    NSLog(@"done %@", @(finished));
+                
+                if ((willOpenSection || willToggleSections) && self.delegate && [_delegate respondsToSelector:@selector(tableView:didOpenSection:)]) {
+                    [_delegate tableView:self didOpenSection:section];
                 }
+                
+                if (isOpenedSectionVisible && self.delegate && [_delegate respondsToSelector:@selector(tableView:didCloseSection:)]) {
+                    [_delegate tableView:self didCloseSection:_openedSection];
+                }
+                
+                if (_oldBackgroundView) {
+                    [_oldBackgroundView removeFromSuperview];
+                    _oldBackgroundView = nil;
+                }
+                
+                self.verticalScrollIndicatorVisibility = oldScrollVisibility;
+                
+                _openning = NO;
+                _openedSection = willCloseSection ? NSIntegerMin : section;
+                _openningSection = NSIntegerMin;
+                _transitionOffset = 0;
+                _topOffset = 0;
+                _bottomOffset = 0;
+                
+                // calculate offset from top for current section
+                CGFloat currentSectionHeaderY = [self cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:section]].frame.origin.y;
+                CGFloat currentSectionHeaderTopOffset = self.contentSize.height - currentSectionHeaderY;
+                
+                [self reloadData];
+                
+                // // calculate offset from top for current section after reload
+                CGFloat newCurrentSectionHeaderY = [self rectForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:section]].origin.y;
+                CGFloat newCurrentSectionTopOffset = self.contentSize.height - newCurrentSectionHeaderY;
+                
+                // correct content offset to keep current section header top offset (avoid content "jumping")
+                self.contentOffset = CGPointMake(self.contentOffset.x, self.contentOffset.y + (newCurrentSectionTopOffset - currentSectionHeaderTopOffset));
+                
+                _tableFlags.layoutSubviewsReentrancyGuard = 0;
+            }];
+        };
+        
+        if (willToggleSections) {
+            
+            //                if (isOpenedSectionAboveCurrent) {
+            
+            // visible sections above opened section
+            NSMutableIndexSet *topMovingSections = [[self _visibleSectionsBeforeSection:_openedSection] mutableCopy];
+            [topMovingSections addIndex:_openedSection];
+            
+            NSIndexSet *bottomMovingSections = bottomSections;
+            
+            NSMutableIndexSet *middleMovingSectionWithCurSection = [[self _visibleSectionsAfterSection:_openedSection] mutableCopy];
+            [middleMovingSectionWithCurSection removeIndexes:bottomMovingSections];
+            
+            CGFloat topTransition = 0;
+            if (topMovingSections && [topMovingSections count] > 0) {
+                NSInteger lastTopMovingSection = [topMovingSections lastIndex];
+                CGRect lastTopMovingSectionHeaderRect = [self cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:lastTopMovingSection]].frame;
+                topTransition = CGRectGetMaxY(desiredCurrentSectionRect) - CGRectGetMinY(lastTopMovingSectionHeaderRect);
             }
             
-            [CATransaction flush];
-            [CATransaction commit];
+            CGFloat bottomTransition = 0;
+            if (bottomMovingSections && [bottomMovingSections count] > 0) {
+                NSInteger firstBottomMovingSection = [bottomMovingSections firstIndex];
+                CGRect firstBottomMovingSectionHeaderRect = [self cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:firstBottomMovingSection]].frame;
+                bottomTransition = CGRectGetMinY(desiredCurrentSectionRect) - CGRectGetMaxY(firstBottomMovingSectionHeaderRect);
+            }
+            //                }
             
-            transitedNewCurSectionRect = CGRectOffset(newCurSectionRect, 0, -_transitionOffset);
-        }
-        CGRect desiredCurrentSectionRect = transitedNewCurSectionRect;
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
+            //                [self _setZposition:BACK_Z_POSITION ofSection:_openedSection];
             
-            [TUIView beginAnimations:NSStringFromSelector(_cmd) context:NULL];
+            //                [TUIView animateWithDuration:durationForOffset(curSectionRect.size.height) animations:^{
+            //                    [TUIView setAnimationCurve:TUIViewAnimationCurveEaseIn];
+            //
+            //                    [self _moveSections:topMovingSections forOffset:topTransition];
+            //                    [self _moveSections:bottomMovingSections forOffset:bottomTransition];
+            //
+            //                } completion:^(BOOL finished) {
+            //
+            //                    [self _setZposition:NORMAL_Z_POSITION ofSection:_openedSection];
+            //                    compleationBlock(finished);
+            //                }];
+            //
+            //                goto finish;
             
-            void (^compleationBlock)(BOOL) = ^(BOOL finished) {
-                [TUIView setAnimationsEnabled:NO block:^{
-                    //                    NSLog(@"done %@", @(finished));
-                    
-                    if ((willOpenSection || willToggleSections) && self.delegate && [_delegate respondsToSelector:@selector(tableView:didOpenSection:)]) {
-                        [_delegate tableView:self didOpenSection:section];
-                    }
-                    
-                    if (isOpenedSectionVisible && self.delegate && [_delegate respondsToSelector:@selector(tableView:didCloseSection:)]) {
-                        [_delegate tableView:self didCloseSection:_openedSection];
-                    }
-                    
-                    if (_oldBackgroundView) {
-                        [_oldBackgroundView removeFromSuperview];
-                        _oldBackgroundView = nil;
-                    }
-                    
-                    self.verticalScrollIndicatorVisibility = oldScrollVisibility;
-                    
-                    _openning = NO;
-                    _openedSection = willCloseSection ? NSIntegerMin : section;
-                    _openningSection = NSIntegerMin;
-                    _transitionOffset = 0;
-                    _topOffset = 0;
-                    _bottomOffset = 0;
-                    _tableFlags.layoutSubviewsReentrancyGuard = 0;
-                    
-                    // calculate offset from top for current section
-                    CGFloat currentSectionHeaderY = [self cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:section]].frame.origin.y;
-                    CGFloat currentSectionHeaderTopOffset = self.contentSize.height - currentSectionHeaderY;
-                    
-                    [self reloadData];
-                    
-                    // // calculate offset from top for current section after reload
-                    CGFloat newCurrentSectionHeaderY = [self rectForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:section]].origin.y;
-                    CGFloat newCurrentSectionTopOffset = self.contentSize.height - newCurrentSectionHeaderY;
-                    
-                    // correct content offset to keep current section header top offset (avoid content "jumping")
-                    self.contentOffset = CGPointMake(self.contentOffset.x, self.contentOffset.y + (newCurrentSectionTopOffset - currentSectionHeaderTopOffset));
-                }];
-            };
-            
-            if (willToggleSections) {
+            // !******!
+            // !* In case openned section is lower - we need two step animation
+            // !******!
+            if (isOpenedSectionAboveCurrent && (openedSectionHeight < newCurSectionHeight || CGRectGetMaxY(curSectionHeaderRect) > CGRectGetMaxY(realVisibleRect))) {
                 
-                //                if (isOpenedSectionAboveCurrent) {
+                //                    NSLog(@"Opened above, op height < current");
                 
-                // visible sections above opened section
-                NSMutableIndexSet *topMovingSections = [[self _visibleSectionsBeforeSection:_openedSection] mutableCopy];
-                [topMovingSections addIndex:_openedSection];
+                CGFloat firstOffset = MIN(openedSectionHeight - openedSectionHeaderHeight, (CGRectGetMaxY(realVisibleRect) - CGRectGetMinY(newCurSectionRect) - curSectionHeaderHeight));
+                CGFloat secondOffset = _transitionOffset - firstOffset;
                 
-                NSIndexSet *bottomMovingSections = bottomSections;
+                //                    [self _setZposition:BACK_Z_POSITION ofSection:_openedSection];
                 
-                NSMutableIndexSet *middleMovingSectionWithCurSection = [[self _visibleSectionsAfterSection:_openedSection] mutableCopy];
-                [middleMovingSectionWithCurSection removeIndexes:bottomMovingSections];
-                
-                CGFloat topTransition = 0;
-                if (topMovingSections && [topMovingSections count] > 0) {
-                    NSInteger lastTopMovingSection = [topMovingSections lastIndex];
-                    CGRect lastTopMovingSectionHeaderRect = [self cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:lastTopMovingSection]].frame;
-                    topTransition = CGRectGetMaxY(desiredCurrentSectionRect) - CGRectGetMinY(lastTopMovingSectionHeaderRect);
-                }
-                
-                CGFloat bottomTransition = 0;
-                if (bottomMovingSections && [bottomMovingSections count] > 0) {
-                    NSInteger firstBottomMovingSection = [bottomMovingSections firstIndex];
-                    CGRect firstBottomMovingSectionHeaderRect = [self cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:firstBottomMovingSection]].frame;
-                    bottomTransition = CGRectGetMinY(desiredCurrentSectionRect) - CGRectGetMaxY(firstBottomMovingSectionHeaderRect);
-                }
-                //                }
-                
-                //                [self _setZposition:BACK_Z_POSITION ofSection:_openedSection];
-                
-                //                [TUIView animateWithDuration:durationForOffset(curSectionRect.size.height) animations:^{
-                //                    [TUIView setAnimationCurve:TUIViewAnimationCurveEaseIn];
-                //
-                //                    [self _moveSections:topMovingSections forOffset:topTransition];
-                //                    [self _moveSections:bottomMovingSections forOffset:bottomTransition];
-                //
-                //                } completion:^(BOOL finished) {
-                //
-                //                    [self _setZposition:NORMAL_Z_POSITION ofSection:_openedSection];
-                //                    compleationBlock(finished);
-                //                }];
-                //
-                //                goto finish;
-                
-                // !******!
-                // !* In case openned section is lower - we need two step animation
-                // !******!
-                if (isOpenedSectionAboveCurrent && (openedSectionHeight < newCurSectionHeight || CGRectGetMaxY(curSectionHeaderRect) > CGRectGetMaxY(realVisibleRect))) {
+                [TUIView animateWithDuration:durationForOffset(firstOffset) animations:^{
                     
-                    //                    NSLog(@"Opened above, op height < current");
-                    
-                    CGFloat firstOffset = MIN(openedSectionHeight - openedSectionHeaderHeight, (CGRectGetMaxY(realVisibleRect) - CGRectGetMinY(newCurSectionRect) - curSectionHeaderHeight));
-                    CGFloat secondOffset = _transitionOffset - firstOffset;
-                    
-                    //                    [self _setZposition:BACK_Z_POSITION ofSection:_openedSection];
-                    
-                    [TUIView animateWithDuration:durationForOffset(firstOffset) animations:^{
-                        
-                        [TUIView setAnimationCurve:TUIViewAnimationCurveEaseIn];
-                        [topSections enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
-                            if (idx > _openedSection)
-                                [self _moveSection:idx forOffset:firstOffset];
-                        }];
-                        [self _moveSection:section forOffset:firstOffset];
-                        
-                    } completion:^(BOOL finished) {
-                        [TUIView animateWithDuration:durationForOffset(secondOffset) animations:^{
-                            [TUIView setAnimationCurve:TUIViewAnimationCurveEaseOut];
-                            
-                            [self _moveSections:topSections forOffset:secondOffset];
-                            [self _moveSection:section forOffset:secondOffset];
-                            [self setContentSize:CGSizeMake(self.contentSize.width, newContentHeight)];
-                            
-                            // If content have fit on screen itself, then needs to help with
-                            if (CGRectGetMaxY(curSectionHeaderRect) > CGRectGetMaxY(realVisibleRect)) {
-                                CGPoint newOffset = CGPointMake(self.contentOffset.x, - (CGRectGetMaxY(curSectionHeaderRect) - CGRectGetHeight(realVisibleRect)));
-                                [self setContentOffset: newOffset];
-                            } else if (newContentHeight < CGRectGetHeight(self.bounds)) {
-                                CGPoint newOffset = CGPointMake(self.contentOffset.x, CGRectGetHeight(self.bounds) - newContentHeight);
-                                [self setContentOffset: newOffset];
-                            }
-                        } completion:^(BOOL finished) {
-                            [self _setZposition:NORMAL_Z_POSITION ofSectionContents:[NSIndexSet indexSetWithIndex:_openedSection]];
-                            compleationBlock(finished);
-                        }];
+                    [TUIView setAnimationCurve:TUIViewAnimationCurveEaseIn];
+                    [topSections enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
+                        if (idx > _openedSection)
+                            [self _moveSection:idx forOffset:firstOffset];
                     }];
+                    [self _moveSection:section forOffset:firstOffset];
                     
-                } else if (isOpenedSectionAboveCurrent) {
-                    
-                    //                    NSLog(@"Opened above, op height > current");
-                    
-                    //                    NSLog(@"top sections %@, _opened %@", topSections, @(_openedSection));
-                    
-                    CGFloat firstOffset = _transitionOffset;
-                    CGFloat secondOffset = openedSectionHeight - _transitionOffset - openedSectionHeaderHeight;
-                    
-                    //                    [self _setZposition:BACK_Z_POSITION ofSection:_openedSection];
-                    
-                    [TUIView animateWithDuration:durationForOffset(firstOffset) animations:^{
+                } completion:^(BOOL finished) {
+                    [TUIView animateWithDuration:durationForOffset(secondOffset) animations:^{
+                        [TUIView setAnimationCurve:TUIViewAnimationCurveEaseOut];
                         
-                        [TUIView setAnimationCurve:TUIViewAnimationCurveEaseIn];
-                        [topSections enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
-                            if (idx > _openedSection) {
-                                [self _moveSection:idx forOffset:firstOffset];
-                            }
-                        }];
-                        [self _moveSection:section forOffset:firstOffset];
-                        
-                        [topSections enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
-                            if (idx <= _openedSection) {
-                                [self _moveSection:idx forOffset:-secondOffset];
-                            }
-                        }];
+                        [self _moveSections:topSections forOffset:secondOffset];
+                        [self _moveSection:section forOffset:secondOffset];
                         [self setContentSize:CGSizeMake(self.contentSize.width, newContentHeight)];
                         
+                        // If content have fit on screen itself, then needs to help with
+                        if (CGRectGetMaxY(curSectionHeaderRect) > CGRectGetMaxY(realVisibleRect)) {
+                            CGPoint newOffset = CGPointMake(self.contentOffset.x, - (CGRectGetMaxY(curSectionHeaderRect) - CGRectGetHeight(realVisibleRect)));
+                            [self setContentOffset: newOffset];
+                        } else if (newContentHeight < CGRectGetHeight(self.bounds)) {
+                            CGPoint newOffset = CGPointMake(self.contentOffset.x, CGRectGetHeight(self.bounds) - newContentHeight);
+                            [self setContentOffset: newOffset];
+                        }
+                    } completion:^(BOOL finished) {
+                        [self _setZposition:NORMAL_Z_POSITION ofSectionContents:[NSIndexSet indexSetWithIndex:_openedSection]];
+                        compleationBlock(finished);
+                    }];
+                }];
+                
+            } else if (isOpenedSectionAboveCurrent) {
+                
+                //                    NSLog(@"Opened above, op height > current");
+                
+                //                    NSLog(@"top sections %@, _opened %@", topSections, @(_openedSection));
+                
+                CGFloat firstOffset = _transitionOffset;
+                CGFloat secondOffset = openedSectionHeight - _transitionOffset - openedSectionHeaderHeight;
+                
+                //                    [self _setZposition:BACK_Z_POSITION ofSection:_openedSection];
+                
+                [TUIView animateWithDuration:durationForOffset(firstOffset) animations:^{
+                    
+                    [TUIView setAnimationCurve:TUIViewAnimationCurveEaseIn];
+                    [topSections enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
+                        if (idx > _openedSection) {
+                            [self _moveSection:idx forOffset:firstOffset];
+                        }
+                    }];
+                    [self _moveSection:section forOffset:firstOffset];
+                    
+                    [topSections enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
+                        if (idx <= _openedSection) {
+                            [self _moveSection:idx forOffset:-secondOffset];
+                        }
+                    }];
+                    [self setContentSize:CGSizeMake(self.contentSize.width, newContentHeight)];
+                    
+                    if (newContentHeight < CGRectGetHeight(self.bounds)) {
+                        CGPoint newOffset = CGPointMake(self.contentOffset.x, CGRectGetHeight(self.bounds) - newContentHeight);
+                        [self setContentOffset:newOffset];
+                    } else if (newContentHeight < CGRectGetMaxY(realVisibleRect)) {
+                        CGPoint newOffset = CGPointMake(self.contentOffset.x, CGRectGetHeight(realVisibleRect) - newContentHeight);
+                        [self setContentOffset:newOffset];
+                    }
+                    
+                } completion:^(BOOL finished) {
+                    [self _setZposition:NORMAL_Z_POSITION ofSectionContents:[NSIndexSet indexSetWithIndex:_openedSection]];
+                    compleationBlock(finished);
+                }];
+            } else if ( openedSectionHeight <= newCurSectionHeight || CGRectGetMinY(newCurSectionRect) < CGRectGetMinY(realVisibleRect) ) {
+                // Bottom slides;
+                
+                //                    NSLog(@"Opened below, op height < current");
+                
+                CGFloat firstOffset =  openedSectionHeight - openedSectionHeaderHeight;
+                CGFloat secondOffset = _transitionOffset - openedSectionHeight + curSectionHeaderHeight;
+                [self _setZposition:BACK_Z_POSITION ofSectionContents:[NSIndexSet indexSetWithIndex:section]];
+                
+                [topSections addIndex:section];
+                
+                [TUIView animateWithDuration:durationForOffset(firstOffset) animations:^{
+                    [TUIView setAnimationCurve:TUIViewAnimationCurveEaseIn];
+                    [bottomSections enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
+                        if (idx <= _openedSection)
+                            [self _moveSection:idx forOffset:-firstOffset];
+                    }];
+                    
+                } completion:^(BOOL finished) {
+                    [TUIView animateWithDuration:durationForOffset(secondOffset) animations:^{
+                        [TUIView setAnimationCurve:TUIViewAnimationCurveEaseOut];
+                        
+                        [self _moveSections:bottomSections forOffset:-secondOffset];
+                        [self setContentSize:CGSizeMake(self.contentSize.width, newContentHeight)];
+                        // If content have fit on screen itself, then needs to help with
                         if (newContentHeight < CGRectGetHeight(self.bounds)) {
                             CGPoint newOffset = CGPointMake(self.contentOffset.x, CGRectGetHeight(self.bounds) - newContentHeight);
                             [self setContentOffset:newOffset];
@@ -483,159 +541,120 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
                             CGPoint newOffset = CGPointMake(self.contentOffset.x, CGRectGetHeight(realVisibleRect) - newContentHeight);
                             [self setContentOffset:newOffset];
                         }
-                        
                     } completion:^(BOOL finished) {
-                        [self _setZposition:NORMAL_Z_POSITION ofSectionContents:[NSIndexSet indexSetWithIndex:_openedSection]];
-                        compleationBlock(finished);
-                    }];
-                } else if ( openedSectionHeight <= newCurSectionHeight || CGRectGetMinY(newCurSectionRect) < CGRectGetMinY(realVisibleRect) ) {
-                    // Bottom slides;
-                    
-                    //                    NSLog(@"Opened below, op height < current");
-                    
-                    CGFloat firstOffset =  openedSectionHeight - openedSectionHeaderHeight;
-                    CGFloat secondOffset = _transitionOffset - openedSectionHeight + curSectionHeaderHeight;
-                    [self _setZposition:BACK_Z_POSITION ofSectionContents:[NSIndexSet indexSetWithIndex:section]];
-                    
-                    [topSections addIndex:section];
-                    
-                    [TUIView animateWithDuration:durationForOffset(firstOffset) animations:^{
-                        [TUIView setAnimationCurve:TUIViewAnimationCurveEaseIn];
-                        [bottomSections enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
-                            if (idx <= _openedSection)
-                                [self _moveSection:idx forOffset:-firstOffset];
-                        }];
-                        
-                    } completion:^(BOOL finished) {
-                        [TUIView animateWithDuration:durationForOffset(secondOffset) animations:^{
-                            [TUIView setAnimationCurve:TUIViewAnimationCurveEaseOut];
-                            
-                            [self _moveSections:bottomSections forOffset:-secondOffset];
-                            [self setContentSize:CGSizeMake(self.contentSize.width, newContentHeight)];
-                            // If content have fit on screen itself, then needs to help with
-                            if (newContentHeight < CGRectGetHeight(self.bounds)) {
-                                CGPoint newOffset = CGPointMake(self.contentOffset.x, CGRectGetHeight(self.bounds) - newContentHeight);
-                                [self setContentOffset:newOffset];
-                            } else if (newContentHeight < CGRectGetMaxY(realVisibleRect)) {
-                                CGPoint newOffset = CGPointMake(self.contentOffset.x, CGRectGetHeight(realVisibleRect) - newContentHeight);
-                                [self setContentOffset:newOffset];
-                            }
-                        } completion:^(BOOL finished) {
-                            [self _setZposition:NORMAL_Z_POSITION ofSectionContents:[NSIndexSet indexSetWithIndex:section]];
-                            compleationBlock(finished);
-                        }];
-                    }];
-                } else if (openedSectionHeight > newCurSectionHeight) {
-                    //                    NSLog(@"Opened below, op height > current");
-                    CGFloat firstOffset = newCurSectionHeight - curSectionHeaderHeight;
-                    CGFloat secondOffset = openedSectionHeight - newCurSectionHeight;
-                    
-                    //                    [self _setZposition:BACK_Z_POSITION ofSection:_openedSection];
-                    //                    [self _setZposition:BACK_Z_POSITION ofSection:section];
-                    
-                    [topSections addIndex:section];
-                    
-                    [TUIView animateWithDuration:durationForOffset(firstOffset) animations:^{
-                        
-                        [TUIView setAnimationCurve:TUIViewAnimationCurveEaseIn];
-                        [bottomSections enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
-                            if (idx <= _openedSection)
-                                [self _moveSection:idx forOffset:-firstOffset];
-                        }];
-                        
-                        [bottomSections enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
-                            if (idx > _openedSection)
-                                [self _moveSection:idx forOffset:secondOffset];
-                        }];
-                        
-                        //                        [self setContentSize:CGSizeMake(self.contentSize.width, newContentHeight)];
-                        //
-                        //                        // If content have fit on screen itself, then needs to help with
-                        //                        if (newContentHeight < CGRectGetHeight(self.bounds)) {
-                        //                            CGPoint newOffset = CGPointMake(self.contentOffset.x, CGRectGetHeight(self.bounds) - newContentHeight);
-                        //                            [self setContentOffset:newOffset];
-                        //                        } else if (newContentHeight < CGRectGetMaxY(realVisibleRect)) {
-                        //                            CGPoint newOffset = CGPointMake(self.contentOffset.x, CGRectGetHeight(realVisibleRect) - newContentHeight);
-                        //                            [self setContentOffset:newOffset];
-                        //                        }
-                        
-                    } completion:^(BOOL finished) {
-                        
                         [self _setZposition:NORMAL_Z_POSITION ofSectionContents:[NSIndexSet indexSetWithIndex:section]];
                         compleationBlock(finished);
                     }];
-                }
-                
-                
-            } else if (willCloseSection) {
-                // !***
-                // !** Needs to close
-                // !**
-                
-                //                NSLog(@"Close");
-                
-                CGFloat offset = newCurSectionHeight - curSectionHeaderHeight;
-                [self _setZposition:BACK_Z_POSITION ofSectionContents:[NSIndexSet indexSetWithIndex:section]];
-                [topSections addIndex:section];
-                
-                [TUIView animateWithDuration:durationForOffset(offset) animations:^{
-                    [self _moveSections:bottomSections forOffset:offset];
-                    
-                    //                    [self setContentSize:CGSizeMake(self.contentSize.width, newContentHeight)];
-                    //                    // If content have fit on screen itself, then needs to help with
-                    //                    if (newContentHeight < CGRectGetHeight(self.bounds)) {
-                    //                        CGPoint newOffset = CGPointMake(self.contentOffset.x, CGRectGetHeight(self.bounds) - newContentHeight);
-                    //                        [self setContentOffset:newOffset];
-                    //                    } else if (newContentHeight < CGRectGetMaxY(visibleRect)) {
-                    //                        CGPoint newOffset = CGPointMake(self.contentOffset.x, CGRectGetHeight(visibleRect) - newContentHeight);
-                    //                        [self setContentOffset:newOffset];
-                    //                    }
-                    
-                } completion:^(BOOL finished) {
-                    [self _setZposition:NORMAL_Z_POSITION ofSectionContents:[NSIndexSet indexSetWithIndex:section]];
-                    compleationBlock(finished);
                 }];
+            } else if (openedSectionHeight > newCurSectionHeight) {
+                //                    NSLog(@"Opened below, op height > current");
+                CGFloat firstOffset = newCurSectionHeight - curSectionHeaderHeight;
+                CGFloat secondOffset = openedSectionHeight - newCurSectionHeight;
                 
-            } else if (willOpenSection) {
-                // !**
-                // !** Needs to open section
-                // !**
-                [self _setZposition:BACK_Z_POSITION ofSectionContents:[NSIndexSet indexSetWithIndex:section]];
-                
-                // restrict animation
-                _transitionOffset = MIN(_transitionOffset, CGRectGetHeight(self.visibleRect));
+                //                    [self _setZposition:BACK_Z_POSITION ofSection:_openedSection];
+                //                    [self _setZposition:BACK_Z_POSITION ofSection:section];
                 
                 [topSections addIndex:section];
-                //                NSLog(@"new section rect %@, visible rect %@, content offset %f", NSStringFromRect(transitedNewCurSectionRect), NSStringFromRect(realVisibleRect), self.contentOffset.y);
-                [TUIView animateWithDuration:durationForOffset(_transitionOffset) animations:^{
-                    if (transitedNewCurSectionRect.origin.y < 0) {
-                        [self _moveSections:topSections forOffset:_transitionOffset];
-                    } else {
-                        [self _moveSections:bottomSections forOffset:-_transitionOffset];
-                    }
+                
+                [TUIView animateWithDuration:durationForOffset(firstOffset) animations:^{
                     
-                    // If content have fit on screen itself, then needs to help with
-                    //                    if (CGRectGetMaxY(curSectionHeaderRect) > CGRectGetMaxY(visibleRect)) {
-                    //                        CGPoint newOffset = CGPointMake(self.contentOffset.x, - (CGRectGetMaxY(curSectionHeaderRect) - CGRectGetHeight(visibleRect)));
-                    //                        [self setContentOffset: newOffset];
-                    //                        beginOffset = self.contentOffset;
-                    //                    } else if (newContentHeight < CGRectGetHeight(self.bounds)) {
-                    //                        CGPoint newOffset = CGPointMake(self.contentOffset.x, CGRectGetHeight(self.bounds) - newContentHeight);
-                    //                        [self setContentOffset: newOffset];
-                    //                        beginOffset = self.contentOffset;
-                    //                    }
+                    [TUIView setAnimationCurve:TUIViewAnimationCurveEaseIn];
+                    [bottomSections enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
+                        if (idx <= _openedSection)
+                            [self _moveSection:idx forOffset:-firstOffset];
+                    }];
+                    
+                    [bottomSections enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
+                        if (idx > _openedSection)
+                            [self _moveSection:idx forOffset:secondOffset];
+                    }];
+                    
+                    //                        [self setContentSize:CGSizeMake(self.contentSize.width, newContentHeight)];
+                    //
+                    //                        // If content have fit on screen itself, then needs to help with
+                    //                        if (newContentHeight < CGRectGetHeight(self.bounds)) {
+                    //                            CGPoint newOffset = CGPointMake(self.contentOffset.x, CGRectGetHeight(self.bounds) - newContentHeight);
+                    //                            [self setContentOffset:newOffset];
+                    //                        } else if (newContentHeight < CGRectGetMaxY(realVisibleRect)) {
+                    //                            CGPoint newOffset = CGPointMake(self.contentOffset.x, CGRectGetHeight(realVisibleRect) - newContentHeight);
+                    //                            [self setContentOffset:newOffset];
+                    //                        }
+                    
                 } completion:^(BOOL finished) {
+                    
                     [self _setZposition:NORMAL_Z_POSITION ofSectionContents:[NSIndexSet indexSetWithIndex:section]];
                     compleationBlock(finished);
-                    
                 }];
             }
-        finish:
-            [TUIView commitAnimations];
-        });
-        
-    }
-    
+            
+            
+        } else if (willCloseSection) {
+            // !***
+            // !** Needs to close
+            // !**
+            
+            //                NSLog(@"Close");
+            
+            CGFloat offset = newCurSectionHeight - curSectionHeaderHeight;
+            [self _setZposition:BACK_Z_POSITION ofSectionContents:[NSIndexSet indexSetWithIndex:section]];
+            [topSections addIndex:section];
+            
+            [TUIView animateWithDuration:durationForOffset(offset) animations:^{
+                [self _moveSections:bottomSections forOffset:offset];
+                
+                //                    [self setContentSize:CGSizeMake(self.contentSize.width, newContentHeight)];
+                //                    // If content have fit on screen itself, then needs to help with
+                //                    if (newContentHeight < CGRectGetHeight(self.bounds)) {
+                //                        CGPoint newOffset = CGPointMake(self.contentOffset.x, CGRectGetHeight(self.bounds) - newContentHeight);
+                //                        [self setContentOffset:newOffset];
+                //                    } else if (newContentHeight < CGRectGetMaxY(visibleRect)) {
+                //                        CGPoint newOffset = CGPointMake(self.contentOffset.x, CGRectGetHeight(visibleRect) - newContentHeight);
+                //                        [self setContentOffset:newOffset];
+                //                    }
+                
+            } completion:^(BOOL finished) {
+                [self _setZposition:NORMAL_Z_POSITION ofSectionContents:[NSIndexSet indexSetWithIndex:section]];
+                compleationBlock(finished);
+            }];
+            
+        } else if (willOpenSection) {
+            // !**
+            // !** Needs to open section
+            // !**
+            [self _setZposition:BACK_Z_POSITION ofSectionContents:[NSIndexSet indexSetWithIndex:section]];
+            
+            // restrict animation
+            _transitionOffset = MIN(_transitionOffset, CGRectGetHeight(self.visibleRect));
+            
+            [topSections addIndex:section];
+            //                NSLog(@"new section rect %@, visible rect %@, content offset %f", NSStringFromRect(transitedNewCurSectionRect), NSStringFromRect(realVisibleRect), self.contentOffset.y);
+            [TUIView animateWithDuration:durationForOffset(_transitionOffset) animations:^{
+                if (transitedNewCurSectionRect.origin.y < 0) {
+                    [self _moveSections:topSections forOffset:_transitionOffset];
+                } else {
+                    [self _moveSections:bottomSections forOffset:-_transitionOffset];
+                }
+                
+                // If content have fit on screen itself, then needs to help with
+                //                    if (CGRectGetMaxY(curSectionHeaderRect) > CGRectGetMaxY(visibleRect)) {
+                //                        CGPoint newOffset = CGPointMake(self.contentOffset.x, - (CGRectGetMaxY(curSectionHeaderRect) - CGRectGetHeight(visibleRect)));
+                //                        [self setContentOffset: newOffset];
+                //                        beginOffset = self.contentOffset;
+                //                    } else if (newContentHeight < CGRectGetHeight(self.bounds)) {
+                //                        CGPoint newOffset = CGPointMake(self.contentOffset.x, CGRectGetHeight(self.bounds) - newContentHeight);
+                //                        [self setContentOffset: newOffset];
+                //                        beginOffset = self.contentOffset;
+                //                    }
+            } completion:^(BOOL finished) {
+                [self _setZposition:NORMAL_Z_POSITION ofSectionContents:[NSIndexSet indexSetWithIndex:section]];
+                compleationBlock(finished);
+                
+            }];
+        }
+    finish:
+        [TUIView commitAnimations];
+    });
+
 }
 
 
