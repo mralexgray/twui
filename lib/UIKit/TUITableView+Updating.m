@@ -43,10 +43,12 @@ static const char updatingKey;
             cell.alpha = cell.updateEndAlpha;
         }
     } completion:^{
-        [self.cellsToBeAnimated removeAllObjects];
         for (TUITableViewCell *cell in self.cellsToBeAnimated) {
-            if (cell.updateDeleted) [cell removeFromSuperview];
+            if (cell.animationProp) {
+                [cell removeFromSuperview];
+            }
         }
+        [self.cellsToBeAnimated removeAllObjects];
         [self reloadData];
     }];
 }
@@ -80,7 +82,7 @@ static const char updatingKey;
         newCell.alpha               = animation == TUITableViewRowAnimationFade ? 0 : 1;
         newCell.updateEndFrame      = [self insertEndFrameForIndexPath:currentPath];
         newCell.updateEndAlpha      = 1;
-        newCell.updateDeleted       = YES;
+        newCell.animationProp       = YES;
         [self addSubview:newCell];
 
         [self.cellsToBeAnimated addObject:newCell];
@@ -112,12 +114,36 @@ static const char updatingKey;
             }
         }];
 
-        
+        NSIndexPath *lastIndexPath = [[[_visibleItems allKeys] sortedArrayUsingSelector:@selector(compare:)] lastObject];
+        if (lastIndexPath) {
+            CGFloat heightToCompensateFor = deletingRowHeight;
+            NSInteger count = 0;
+            while (true) {
+                NSIndexPath *nextIndexPath = [NSIndexPath indexPathForRow:lastIndexPath.row + ++count
+                                                                inSection:lastIndexPath.section];
 
+                if (nextIndexPath.row       >= [self numberOfRowsInSection:nextIndexPath.section]) break;
+                if (nextIndexPath.section   >= [self numberOfSections]) break;
+
+                TUITableViewCell *compensationCell  = [_delegate tableView:self cellForRowAtIndexPath:nextIndexPath];
+                if (!compensationCell) break;
+
+                CGRect frame                        = [self rectForRowAtIndexPath:nextIndexPath];
+                compensationCell.frame              = frame;
+                compensationCell.alpha              = 1;
+                frame.origin.y                      += deletingRowHeight;
+                compensationCell.updateEndFrame     = frame;
+                compensationCell.updateEndAlpha     = 1;
+                compensationCell.animationProp      = YES;
+                [self addSubview:compensationCell];
+                [self.cellsToBeAnimated addObject:compensationCell];
+                heightToCompensateFor               -= compensationCell.frame.size.height;
+                if (heightToCompensateFor <= 0) break;
+            }
+        }
 
         cell.updateEndFrame = [self deleteEndFrameForIndexPath:currentPath rowAnimation:animation];
         cell.updateEndAlpha = animation == TUITableViewRowAnimationFade ? 0 : 1;
-        cell.updateDeleted  = YES;
 
         [self.cellsToBeAnimated addObject:cell];
     }

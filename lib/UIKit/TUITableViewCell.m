@@ -79,11 +79,11 @@ static inline void tui_viewAnimateRedrawConditionally(TUIView *view, BOOL condit
 	[self.textRenderers makeObjectsPerformSelector:@selector(resetSelection)];
 	[self setNeedsDisplay];
 
-    _updateEndFrame = CGRectZero;
-    _updateEndAlpha = 1;
-    _updateDeleted  = NO;
-    self.frame      = CGRectZero;
-    self.alpha      = 1;
+    _updateEndFrame     = CGRectZero;
+    _updateEndAlpha     = 1;
+    _animationProp      = NO;
+    self.frame          = CGRectZero;
+    self.alpha          = 1;
 }
 
 - (void)prepareForDisplay {
