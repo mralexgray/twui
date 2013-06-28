@@ -4,6 +4,3 @@
 [submodule "TwUITests/specta"]
 	path = TwUITests/specta
 	url = git://github.com/petejkim/specta.git
-[submodule "MTAnimation"]
-	path = MTAnimation
-	url = https://github.com/mysterioustrousers/MTAnimation.git
