@@ -29,7 +29,7 @@ Pod::Spec.new do |s|
     end
 
     ss.subspec 'MTAnimation' do |sss|
-      sss.source_files = 'MTAnimation/MTAnimation/UIView+MTAnimation.{h,m}', 'MTAnimation/MTAnimation/MTTimingFunctions.{h,c}', 'MTAnimation/MTAnimation/MTMatrixInterpolation.{h,c}', 'MTAnimation/MTAnimation/MTAnimationTypes.h', 'MTAnimationTwUIAdapter.h'
+      sss.source_files = 'MTAnimation-TwUI/MTAnimation/UIView+MTAnimation.{h,m}', 'MTAnimation-TwUI/MTAnimation/MTTimingFunctions.{h,c}', 'MTAnimation-TwUI/MTAnimation/MTMatrixInterpolation.{h,c}', 'MTAnimation-TwUI/MTAnimation/MTAnimationTypes.h'
       sss.requires_arc = true
     end
   end
