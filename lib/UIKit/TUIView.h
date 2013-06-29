@@ -496,12 +496,6 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView *view);
  */
 - (void)removeAllAnimations;
 
-/**
- Prints a recursive view heiercarhy of the view
- */
-- (NSString *)recursiveDescription;
-
-
 @end
 
 @interface TUIView (TUIViewAppKit)
@@ -523,6 +517,12 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView *view);
  @returns whether mouse event occured within the bounds of reciever
  */
 - (BOOL)eventInside:(NSEvent *)event;
+
+/**
+ Prints a recursive view heiercarhy of the view
+ */
+- (NSString *)recursiveDescription;
+
 
 @end
 

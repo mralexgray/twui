@@ -17,7 +17,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "MTAnimationTwUIAdapter.h"
 #import "CAAnimation+TUIExtensions.h"
 #import "CoreText+Additions.h"
 #import "NSAffineTransform+TUIExtensions.h"
