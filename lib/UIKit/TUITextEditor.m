@@ -300,6 +300,7 @@
 	[self _scrollToIndex:MAX(_selectionStart, _selectionEnd)];
 }
 
+
 /* The receiver inserts aString replacing the content specified by replacementRange.
  aString can be either an NSString or NSAttributedString instance.
  selectedRange specifies the selection inside the string being inserted;
