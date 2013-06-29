@@ -113,6 +113,7 @@ typedef NS_ENUM(NSInteger, TUITableViewRowAnimation) {
 		unsigned int forceSaveScrollPosition:1;
 		unsigned int derepeaterEnabled:1;
 		unsigned int layoutSubviewsReentrancyGuard:1;
+		unsigned int reloadReentrancyGuard:1;
 		unsigned int didFirstLayout:1;
 		unsigned int dataSourceNumberOfSectionsInTableView:1;
 		unsigned int delegateTableViewWillDisplayCellForRowAtIndexPath:1;

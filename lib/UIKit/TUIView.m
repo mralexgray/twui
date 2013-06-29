@@ -877,9 +877,11 @@ static void TUISetCurrentContextScaleFactor(CGFloat s)
 - (void)removeFromSuperview // everything should go through this
 {
 	[self _cleanupResponderChain];
-	
+
 	TUIView *superview = [self superview];
 	if(superview) {
+        [self setNextResponder:Nil];
+
 		TUINSView *nsView = self.ancestorTUINSView;
 		[self willMoveToTUINSView:nil];
 

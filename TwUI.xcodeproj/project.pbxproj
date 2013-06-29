@@ -171,9 +171,6 @@
 		C2477179177D546000942D3C /* UIView+MTAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = C2477162177D546000942D3C /* UIView+MTAnimation.m */; };
 		C247717A177D546000942D3C /* UIView+MTAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = C2477162177D546000942D3C /* UIView+MTAnimation.m */; };
 		C247717B177D546000942D3C /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = C2477163177D546000942D3C /* README.md */; };
-		C24814C21776199A00788D1E /* TUITableView+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = C24814C11776197D00788D1E /* TUITableView+Private.h */; };
-		C24814C31776199A00788D1E /* TUITableView+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = C24814C11776197D00788D1E /* TUITableView+Private.h */; };
-		C24814C41776199F00788D1E /* TUITableView+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = C24814C11776197D00788D1E /* TUITableView+Private.h */; };
 		C25125F51775E68400308A86 /* TUITableView+Updating.h in Headers */ = {isa = PBXBuildFile; fileRef = C25125F31775E68400308A86 /* TUITableView+Updating.h */; settings = {ATTRIBUTES = (); }; };
 		C25125F81775E68400308A86 /* TUITableView+Updating.m in Sources */ = {isa = PBXBuildFile; fileRef = C25125F41775E68400308A86 /* TUITableView+Updating.m */; };
 		C25125F91775E68400308A86 /* TUITableView+Updating.m in Sources */ = {isa = PBXBuildFile; fileRef = C25125F41775E68400308A86 /* TUITableView+Updating.m */; };
@@ -536,7 +533,6 @@
 		C2477161177D546000942D3C /* UIView+MTAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+MTAnimation.h"; sourceTree = "<group>"; };
 		C2477162177D546000942D3C /* UIView+MTAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+MTAnimation.m"; sourceTree = "<group>"; };
 		C2477163177D546000942D3C /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
-		C24814C11776197D00788D1E /* TUITableView+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TUITableView+Private.h"; sourceTree = "<group>"; };
 		C25125F31775E68400308A86 /* TUITableView+Updating.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TUITableView+Updating.h"; sourceTree = "<group>"; };
 		C25125F41775E68400308A86 /* TUITableView+Updating.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TUITableView+Updating.m"; sourceTree = "<group>"; };
 		C27D918C1753D93B00C622DA /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
@@ -945,7 +941,6 @@
 				C25125F41775E68400308A86 /* TUITableView+Updating.m */,
 				CBB74C6F13BE6E1900C85CB5 /* TUITableView+Derepeater.h */,
 				CBB74C7013BE6E1900C85CB5 /* TUITableView+Derepeater.m */,
-				C24814C11776197D00788D1E /* TUITableView+Private.h */,
 				CBB74C7113BE6E1900C85CB5 /* TUITableView.h */,
 				CBB74C7213BE6E1900C85CB5 /* TUITableView.m */,
 				487068981628CBCF005D7096 /* TUITableViewCell+Private.h */,
@@ -1065,7 +1060,6 @@
 				C29A7DCF1744620A008BF364 /* TUIView+ColorHelpers.h in Headers */,
 				C28B7CA7175A54A4002A2008 /* NSColor+RGBHex.h in Headers */,
 				C25126041775F2C100308A86 /* TUITableView+Updating.h in Headers */,
-				C24814C41776199F00788D1E /* TUITableView+Private.h in Headers */,
 				C2477177177D546000942D3C /* UIView+MTAnimation.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1150,7 +1144,6 @@
 				C29A7DCD17445F3F008BF364 /* TUIView+ColorHelpers.h in Headers */,
 				C28B7CA5175A54A4002A2008 /* NSColor+RGBHex.h in Headers */,
 				C25125F51775E68400308A86 /* TUITableView+Updating.h in Headers */,
-				C24814C21776199A00788D1E /* TUITableView+Private.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1196,7 +1189,6 @@
 				C2477176177D546000942D3C /* UIView+MTAnimation.h in Headers */,
 				C25126031775F2C000308A86 /* TUITableView+Updating.h in Headers */,
 				C2477167177D546000942D3C /* MTAnimationTypes.h in Headers */,
-				C24814C31776199A00788D1E /* TUITableView+Private.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

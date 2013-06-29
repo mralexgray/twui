@@ -957,48 +957,52 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
 
 - (void)reloadData
 {
+
+    if(!_tableFlags.reloadReentrancyGuard) {
+		_tableFlags.reloadReentrancyGuard = 1;
   
-  // notify our delegate we're about to reload the table
-  if(self.delegate != nil && [self.delegate respondsToSelector:@selector(tableViewWillReloadData:)]){
-    [self.delegate tableViewWillReloadData:self];
-  }
-	
-	_selectedIndexPath = nil;
-  
-	// need to recycle all visible cells, have them be regenerated on layoutSubviews
-	// because the same cells might have different content
-	for(NSIndexPath *i in _visibleItems) {
-		TUITableViewCell *cell = [_visibleItems objectForKey:i];
-		[self _enqueueReusableCell:cell];
-		[cell removeFromSuperview];
-	}
-	
-	// if we have a dragged cell, clear it
-	_dragToReorderCell = nil;
-	
-	// clear visible cells
-	[_visibleItems removeAllObjects];
-	
-	// remove any visible headers, they should be re-added when the table is laid out
-	for(TUITableViewSection *section in _sectionInfo){
-	  TUIView *headerView;
-	  if((headerView = [section headerView]) != nil){
-	    [headerView removeFromSuperview];
-	  }
-	}
-	
-	// clear visible section headers
-	[_visibleSectionHeaders removeAllIndexes];
-	
-	_sectionInfo = nil; // will be regenerated on next layout
-	
-	[self layoutSubviews];
-	
-  // notify our delegate the table view has been reloaded
-  if(self.delegate != nil && [self.delegate respondsToSelector:@selector(tableViewDidReloadData:)]){
-    [self.delegate tableViewDidReloadData:self];
-  }
-  
+        // notify our delegate we're about to reload the table
+        if(self.delegate != nil && [self.delegate respondsToSelector:@selector(tableViewWillReloadData:)]){
+            [self.delegate tableViewWillReloadData:self];
+        }
+
+        _selectedIndexPath = nil;
+
+        // need to recycle all visible cells, have them be regenerated on layoutSubviews
+        // because the same cells might have different content
+        for(NSIndexPath *i in _visibleItems) {
+            TUITableViewCell *cell = [_visibleItems objectForKey:i];
+            [self _enqueueReusableCell:cell];
+            [cell removeFromSuperview];
+        }
+
+        // if we have a dragged cell, clear it
+        _dragToReorderCell = nil;
+
+        // clear visible cells
+        [_visibleItems removeAllObjects];
+
+        // remove any visible headers, they should be re-added when the table is laid out
+        for(TUITableViewSection *section in _sectionInfo){
+            TUIView *headerView;
+            if((headerView = [section headerView]) != nil){
+                [headerView removeFromSuperview];
+            }
+        }
+
+        // clear visible section headers
+        [_visibleSectionHeaders removeAllIndexes];
+
+        _sectionInfo = nil; // will be regenerated on next layout
+        
+        [self layoutSubviews];
+
+        // notify our delegate the table view has been reloaded
+        if(self.delegate != nil && [self.delegate respondsToSelector:@selector(tableViewDidReloadData:)]){
+            [self.delegate tableViewDidReloadData:self];
+        }
+        _tableFlags.reloadReentrancyGuard = 0;
+    }
 }
 
 - (void)layoutSubviews
@@ -1029,12 +1033,18 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
 
 - (void)reloadLayout
 {
-	_sectionInfo = nil; // will be regenerated on next layout
-	
-	[self _preLayoutCells];
-	[super layoutSubviews]; // this will munge with the contentOffset
-	[self _layoutSectionHeaders:YES];
-	[self _layoutCells:YES];
+    if(!_tableFlags.reloadReentrancyGuard) {
+		_tableFlags.reloadReentrancyGuard = 1;
+
+        _sectionInfo = nil; // will be regenerated on next layout
+
+        [self _preLayoutCells];
+        [super layoutSubviews]; // this will munge with the contentOffset
+        [self _layoutSectionHeaders:YES];
+        [self _layoutCells:YES];
+
+        _tableFlags.reloadReentrancyGuard = 0;
+    }
 }
 
 - (void)scrollToRowAtIndexPath:(NSIndexPath *)indexPath atScrollPosition:(TUITableViewScrollPosition)scrollPosition animated:(BOOL)animated

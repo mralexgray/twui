@@ -281,6 +281,9 @@
 			replacementRange = selectedRange;
 		}
 	}
+
+    [[self.undoManager prepareWithInvocationTarget:self] setText:[backingStore.string copy]];
+    [self.undoManager setActionName:@"Typing"];
 	
 	// Add the text
 	[backingStore beginEditing];
@@ -315,7 +318,10 @@
 			replacementRange = selectedRange;
 		}
 	}
-	
+
+    [[self.undoManager prepareWithInvocationTarget:self] setText:[backingStore.string copy]];
+    [self.undoManager setActionName:@"Typing"];
+
 	// Add the text
 	[backingStore beginEditing];
 	if ([aString length] == 0) {

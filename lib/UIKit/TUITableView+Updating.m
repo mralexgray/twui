@@ -38,6 +38,15 @@ static const char updatingKey;
 
 
 
+@interface TUITableViewCellClipView : TUIView
+@end
+
+@implementation TUITableViewCellClipView
+@end
+
+
+
+
 @interface TUITableView ()
 @property (nonatomic, strong) NSMutableArray *updateOperations;
 @property (nonatomic, assign) BOOL           updating;
@@ -136,7 +145,7 @@ static const char updatingKey;
                 TUITableViewCell *currentCell = [self cellForRowAtIndexPath:indexPath];
                 if (currentCell) {
                     CGRect r                    = self.updating ? currentCell.updateEndFrame : currentCell.frame;
-                    r.origin.y                  += deletingRowHeight;
+                    r.origin.y                 += deletingRowHeight;
                     currentCell.updateEndFrame  = r;
                     [operation updateCell:currentCell];
                 }
@@ -163,9 +172,9 @@ static const char updatingKey;
                 // frame and add a cell that will slide up and be visible durtion deletion
                 CGRect frame                        = bottomCell.frame;
                 frame.size.height                   = [_delegate tableView:self heightForRowAtIndexPath:nextIndexPath];
-                frame.origin.y                      -= frame.size.height;
+                frame.origin.y                     -= frame.size.height;
                 compensationCell.frame              = frame;
-                frame.origin.y                      += deletingRowHeight;
+                frame.origin.y                     += deletingRowHeight;
                 compensationCell.updateEndFrame     = frame;
                 [self addSubview:compensationCell];
                 [operation tempCell:compensationCell];
@@ -286,14 +295,13 @@ static const char updatingKey;
             cell.alpha = cell.updateEndAlpha;
         }
     } completion:^{
-        for (TUITableViewCell *cell in _cellsBeingInserted) {
+        NSArray *cells = [_cellsBeingInserted arrayByAddingObjectsFromArray:[_cellsBeingDeleted arrayByAddingObjectsFromArray:_temporaryCells]];
+        for (TUITableViewCell *cell in cells) {
+            TUIView *superview = cell.superview;
             [cell removeFromSuperview]; // these were only for animation, the permaent ones will be put in during table reload.
-        }
-        for (TUITableViewCell *cell in _cellsBeingDeleted) {
-            [cell removeFromSuperview];
-        }
-        for (TUITableViewCell *cell in _temporaryCells) {
-            [cell removeFromSuperview];
+            if ([superview isKindOfClass:[TUITableViewCellClipView class]]) {
+                [superview removeFromSuperview];
+            }
         }
         [_cells removeAllObjects];
         [_cellsBeingInserted removeAllObjects];
@@ -330,11 +338,15 @@ static const char updatingKey;
         }
         else if (_rowAnimation == TUITableViewRowAnimationTop) {
             [_tableView sendSubviewToBack:cell];
-            cell.y += cell.height;
+            [self wrapCellInClipView:cell insert:YES];
+            cell.y     += cell.height;
+            cell.alpha  = 0;
         }
         else if (_rowAnimation == TUITableViewRowAnimationBottom) {
             [_tableView sendSubviewToBack:cell];
-            cell.y -= cell.height;
+            [self wrapCellInClipView:cell insert:YES];
+            cell.y     -= cell.height;
+            cell.alpha  = 0;
         }
         else if (_rowAnimation == TUITableViewRowAnimationMiddle) {
             [_tableView sendSubviewToBack:cell];
@@ -366,11 +378,15 @@ static const char updatingKey;
         }
         else if (_rowAnimation == TUITableViewRowAnimationTop) {
             [_tableView sendSubviewToBack:cell];
-            cell.uy += cell.height;
+            [self wrapCellInClipView:cell insert:YES];
+            cell.uy                += cell.height;
+            cell.updateEndAlpha     = 0;
         }
         else if (_rowAnimation == TUITableViewRowAnimationBottom) {
             [_tableView sendSubviewToBack:cell];
-            cell.uy -= cell.height;
+            [self wrapCellInClipView:cell insert:YES];
+            cell.uy                -= cell.height;
+            cell.updateEndAlpha     = 0;
         }
         else if (_rowAnimation == TUITableViewRowAnimationMiddle) {
             [_tableView sendSubviewToBack:cell];
@@ -382,6 +398,20 @@ static const char updatingKey;
             _animationDuration          = 0.75;
         }
     }
+}
+
+- (void)wrapCellInClipView:(TUITableViewCell *)cell insert:(BOOL)insert
+{
+    CGRect frame                        = insert ? cell.updateEndFrame : cell.frame;
+    TUIView *superview                  = cell.superview;
+    TUITableViewCellClipView *clipView  = [TUITableViewCellClipView new];
+    clipView.clipsToBounds              = YES;
+    clipView.frame                      = CGRectInset(frame, 0, -20);
+    [superview addSubview:clipView];
+    [superview sendSubviewToBack:clipView];
+    cell.frame                          = [superview convertRect:cell.frame toView:clipView];
+    cell.updateEndFrame                 = [superview convertRect:cell.updateEndFrame toView:clipView];
+    [clipView addSubview:cell];
 }
 
 
