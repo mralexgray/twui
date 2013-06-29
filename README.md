@@ -32,6 +32,7 @@ We're currently using TwUI to build [Firehose](https://www.getfirehose.com/). As
 - (06/03/13) TUIView: turned off subpixel rendering by default. makes text look ugly.
 - (06/13/13) TUIButton: image for selected state won't go back to normal state on hover.
 - (06/25/13) TUIView+Event: pulled in fixes from michaelvillar branch.
+- (06/29/13) TUITableView: Added reentrancy guard to table view so if you can reloadData and reloadLayout in succession it won't cause a race condition.
 
 **Added**
 - (05/11/13) TUITextView: added `lineSpacing` property.
