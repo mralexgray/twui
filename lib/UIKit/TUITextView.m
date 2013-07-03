@@ -395,11 +395,11 @@ static CAAnimation *ThrobAnimation()
 	}
 	
 	// Ugh. So this seems to be a decent approximation for the height of the cursor. It doesn't always match the native cursor but what ev.
-	CGRect r = CGRectIntegral([renderer firstRectForCharacterRange:ABCFRangeFromNSRange(selection)]);
-	r.size.width = self.cursorWidth;
-	CGRect fontBoundingBox = CTFontGetBoundingBox((__bridge CTFontRef)self.font);
-	r.size.height = round(fontBoundingBox.origin.y + fontBoundingBox.size.height);
-	r.origin.y += floor(self.font.leading);
+    CGRect r                = CGRectIntegral([renderer firstRectForCharacterRange:ABCFRangeFromNSRange(selection)]);
+    r.size.width            = self.cursorWidth;
+    CGRect fontBoundingBox  = CTFontGetBoundingBox((__bridge CTFontRef)self.font);
+    r.size.height           = round(fontBoundingBox.origin.y + fontBoundingBox.size.height);
+    r.origin.y             += floor(self.font.leading);
 	//NSLog(@"ascent: %f, descent: %f, leading: %f, cap height: %f, x-height: %f, bounding: %@", self.font.ascender, self.font.descender, self.font.leading, self.font.capHeight, self.font.xHeight, NSStringFromRect(CTFontGetBoundingBox(self.font.ctFont)));
 
 	if(self.text.length > 0) {
@@ -424,13 +424,11 @@ static CAAnimation *ThrobAnimation()
 {
 	if(_textViewFlags.delegateTextViewDidChange) {
 		[delegate textViewDidChange:self];
-
     }
 
 	if(spellCheckingEnabled) {
 		[self _checkSpelling];
 	}
-
 }
 
 - (void)_checkSpelling

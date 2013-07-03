@@ -224,7 +224,10 @@
 	if(markedRange.length == 0) {
 		[self unmarkText];
 	}
-	
+
+    [[self.undoManager prepareWithInvocationTarget:self] setText:[backingStore.string copy]];
+    [self.undoManager setActionName:@"Delete"];
+
 	// Actually delete the characters
 	[backingStore deleteCharactersInRange:range];
 	
