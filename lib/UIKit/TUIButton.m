@@ -23,6 +23,8 @@
 #import "TUITextRenderer.h"
 #import "NSColor+TUIExtensions.h"
 #import "TUIActivityIndicatorView.h"
+#import "UIView+MTAnimation.h"
+
 
 @interface TUIButton ()
 @property (nonatomic,         readwrite) TUIButtonType            buttonType;
@@ -103,7 +105,7 @@
     _loadingView.height     = 20;
     _loadingView.width      = _loadingView.height;
     _loadingView.x          = (self.width / 2.0)    - (_loadingView.width / 2.0);
-    _loadingView.y          = (self.height / 2.0)   - (_loadingView.height / 2.0);
+    _loadingView.y          = (self.height / 2.0)   - (_loadingView.height / 2.0) + 1;
 }
 
 
@@ -354,7 +356,6 @@ static CGRect ButtonRectCenteredInRect(CGRect a, CGRect b)
     if (loading) {
         self.imageView.hidden   = YES;
         [self.loadingView startAnimating];
-        
     }
     else {
         self.imageView.hidden   = NO;

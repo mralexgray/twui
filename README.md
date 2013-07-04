@@ -53,6 +53,7 @@ We're currently using TwUI to build [Firehose](https://www.getfirehose.com/). As
 - (06/25/13) TUIView: added frame convenience accessors. easily change frame values right on the view: e.g. `view.x = 3; view.height = 20`
 - (06/25/13) TUITableView: added insertion/deletion cell updates. **this is huge**
 - (06/29/13) TUITextField/TUITextView: added undo to all text editor views.
+- (07/03/13) TUIControl/TUIButton: adding loading state to controls. added a spinner to buttons in loading state.
 
 
 ## Setup
