@@ -22,9 +22,11 @@
 #import "TUIStretchableImage.h"
 #import "TUITextRenderer.h"
 #import "NSColor+TUIExtensions.h"
+#import "TUIActivityIndicatorView.h"
 
 @interface TUIButton ()
-@property(nonatomic, readwrite) TUIButtonType buttonType;
+@property (nonatomic,         readwrite) TUIButtonType            buttonType;
+@property (nonatomic, strong           ) TUIActivityIndicatorView *loadingView;
 - (void)_update;
 @end
 
@@ -93,6 +95,22 @@
     }
     return NO;
 }
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+
+    _loadingView.height     = 20;
+    _loadingView.width      = _loadingView.height;
+    _loadingView.x          = (self.width / 2.0)    - (_loadingView.width / 2.0);
+    _loadingView.y          = (self.height / 2.0)   - (_loadingView.height / 2.0);
+}
+
+
+
+
+
+#pragma mark - Public
 
 - (void)setImageEdgeInsets:(TUIEdgeInsets)i
 {
@@ -255,35 +273,37 @@ static CGRect ButtonRectCenteredInRect(CGRect a, CGRect b)
 
 		[image drawInRect:imageRect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:alpha];
 	}
-	
-	NSString *title = self.currentTitle;
-	if(title != nil) {
-		self.titleLabel.text = title;
-	}
-	
-	NSColor *color = self.currentTitleColor;
-	if(color != nil) {
-		self.titleLabel.textColor = color;
-	}
-	
-	NSColor *shadowColor = self.currentTitleShadowColor;
-	// they may have manually set the renderer's shadow color, in which case we 
-	// don't want to reset it to nothing
-	if(shadowColor != nil) {
-		self.titleLabel.renderer.shadowColor = shadowColor;
-	}
-	
-	CGContextRef ctx = TUIGraphicsGetCurrentContext();
-	CGContextSaveGState(ctx);
-	CGContextTranslateCTM(ctx, _titleEdgeInsets.left, _titleEdgeInsets.bottom);
-	if(!key)
-		CGContextSetAlpha(ctx, 0.5);
-	CGRect titleFrame = self.bounds;
-	titleFrame.size.width -= (_titleEdgeInsets.left + _titleEdgeInsets.right);
-	titleFrame.size.height -= (_titleEdgeInsets.top + _titleEdgeInsets.bottom);
-	self.titleLabel.frame = titleFrame;
-	[self.titleLabel drawRect:self.titleLabel.bounds];
-	CGContextRestoreGState(ctx);
+
+    if (!self.isLoading) {
+        NSString *title = self.currentTitle;
+        if(title != nil) {
+            self.titleLabel.text = title;
+        }
+
+        NSColor *color = self.currentTitleColor;
+        if(color != nil) {
+            self.titleLabel.textColor = color;
+        }
+
+        NSColor *shadowColor = self.currentTitleShadowColor;
+        // they may have manually set the renderer's shadow color, in which case we
+        // don't want to reset it to nothing
+        if(shadowColor != nil) {
+            self.titleLabel.renderer.shadowColor = shadowColor;
+        }
+
+        CGContextRef ctx = TUIGraphicsGetCurrentContext();
+        CGContextSaveGState(ctx);
+        CGContextTranslateCTM(ctx, _titleEdgeInsets.left, _titleEdgeInsets.bottom);
+        if(!key)
+            CGContextSetAlpha(ctx, 0.5);
+        CGRect titleFrame = self.bounds;
+        titleFrame.size.width -= (_titleEdgeInsets.left + _titleEdgeInsets.right);
+        titleFrame.size.height -= (_titleEdgeInsets.top + _titleEdgeInsets.bottom);
+        self.titleLabel.frame = titleFrame;
+        [self.titleLabel drawRect:self.titleLabel.bounds];
+        CGContextRestoreGState(ctx);
+    }
 }
 
 - (void)mouseDown:(NSEvent *)event
@@ -328,12 +348,42 @@ static CGRect ButtonRectCenteredInRect(CGRect a, CGRect b)
 	[super setHighlighted:highlighted];
 }
 
+- (void)setLoading:(BOOL)loading
+{
+    [super setLoading:loading];
+    if (loading) {
+        self.imageView.hidden   = YES;
+        [self.loadingView startAnimating];
+        
+    }
+    else {
+        self.imageView.hidden   = NO;
+        [self.loadingView stopAnimating];
+    }
+}
+
 - (BOOL)reversesTitleShadowWhenHighlighted {
 	return _buttonFlags.reversesTitleShadowWhenHighlighted;
 }
 
 - (void)setReversesTitleShadowWhenHighlighted:(BOOL)reversesTitleShadowWhenHighlighted {
 	_buttonFlags.reversesTitleShadowWhenHighlighted = reversesTitleShadowWhenHighlighted;
+}
+
+
+
+#pragma mark - Private
+
+- (TUIActivityIndicatorView *)loadingView
+{
+    if (!_loadingView) {
+        _loadingView                            = [TUIActivityIndicatorView new];
+        _loadingView.hidesWhenStopped           = YES;
+        _loadingView.activityIndicatorStyle     = TUIActivityIndicatorViewStyleWhite;
+        [_loadingView stopAnimating];
+        [self addSubview:_loadingView];
+    }
+    return _loadingView;
 }
 
 @end

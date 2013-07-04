@@ -41,6 +41,7 @@
 		unsigned int disabled:1;
 		unsigned int selected:1;
 		unsigned int highlighted:1;
+        unsigned int loading:1;
 		unsigned int hover:1;
 	} _controlFlags;
 }
@@ -105,6 +106,8 @@
 		actual = (actual & ~TUIControlStateHover) | TUIControlStateHighlighted;
 	if (_controlFlags.selected)
 		actual |= TUIControlStateSelected;
+    if (_controlFlags.loading)
+        actual |= TUIControlStateLoading;
 	
 	return actual;
 }
@@ -120,7 +123,7 @@
 }
 
 - (BOOL)isEnabled {
-	return !_controlFlags.disabled;
+	return !_controlFlags.disabled && !_controlFlags.loading;
 }
 
 - (void)setEnabled:(BOOL)e {
@@ -145,6 +148,18 @@
 	[self applyStateChangeAnimated:self.animateStateChange block:^{
 		_controlFlags.selected = selected;
 	}];
+}
+
+- (BOOL)isLoading
+{
+    return _controlFlags.loading;
+}
+
+- (void)setLoading:(BOOL)loading
+{
+    [self applyStateChangeAnimated:self.animateStateChange block:^{
+        _controlFlags.loading = loading;
+    }];
 }
 
 - (BOOL)isHighlighted {
@@ -172,8 +187,9 @@
 }
 
 - (void)mouseDown:(NSEvent *)event {
-	if (_controlFlags.disabled)
+	if (_controlFlags.disabled || _controlFlags.loading)
 		return;
+
 	[super mouseDown:event];
 	
 	BOOL track = [self beginTrackingWithEvent:event];
@@ -194,8 +210,9 @@
 }
 
 - (void)mouseDragged:(NSEvent *)event {
-	if (_controlFlags.disabled)
+	if (_controlFlags.disabled || _controlFlags.loading)
 		return;
+
 	[super mouseDragged:event];
 	
 	if (_controlFlags.tracking) {
@@ -219,8 +236,9 @@
 }
 
 - (void)mouseUp:(NSEvent *)event {
-	if (_controlFlags.disabled)
+	if (_controlFlags.disabled || _controlFlags.loading)
 		return;
+
 	[super mouseUp:event];
 	
 	if (_controlFlags.tracking) {
@@ -238,7 +256,7 @@
 }
 
 - (void)willMoveToSuperview:(TUIView *)newSuperview {
-	if (!_controlFlags.disabled && _controlFlags.tracking) {
+	if (!_controlFlags.disabled && !_controlFlags.loading && _controlFlags.tracking) {
 		[self applyStateChangeAnimated:self.animateStateChange block:^{
 			_controlFlags.tracking = 0;
 		}];
@@ -249,7 +267,7 @@
 }
 
 - (void)willMoveToWindow:(TUINSWindow *)newWindow {
-	if (!_controlFlags.disabled && _controlFlags.tracking) {
+	if (!_controlFlags.disabled && !_controlFlags.loading && _controlFlags.tracking) {
 		[self applyStateChangeAnimated:self.animateStateChange block:^{
 			_controlFlags.tracking = 0;
 		}];
@@ -300,19 +318,19 @@
 
 - (void)addTarget:(id)target action:(SEL)action forControlEvents:(TUIControlEvents)controlEvents {
 	if (action != nil) {
-		TUIControlTargetAction *t = [[TUIControlTargetAction alloc] init];
-		t.target = target;
-		t.action = action;
-		t.controlEvents = controlEvents;
-		[self.targetActions addObject:t];
+        TUIControlTargetAction *t   = [[TUIControlTargetAction alloc] init];
+        t.target                    = target;
+        t.action                    = action;
+        t.controlEvents             = controlEvents;
+        [self.targetActions addObject:t];
 	}
 }
 
 - (void)addActionForControlEvents:(TUIControlEvents)controlEvents block:(void(^)(void))block {
 	if (block != nil) {
-		TUIControlTargetAction *t = [[TUIControlTargetAction alloc] init];
-		t.block = block;
-		t.controlEvents = controlEvents;
+        TUIControlTargetAction *t   = [[TUIControlTargetAction alloc] init];
+        t.block                     = block;
+        t.controlEvents             = controlEvents;
 		[self.targetActions addObject:t];
 	}
 }

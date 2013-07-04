@@ -103,6 +103,11 @@ typedef enum TUIControlState : NSUInteger {
 	// The state of a control when a mouse cursor is hovering upon
 	// it. This state can also be read through the tracking property.
 	TUIControlStateHover			= 1 << 3,
+
+    // The state when a control has triggered a long running operation and is
+    // indicating that the operation is in progress. You must set this property
+    // manually with the `loading` property.
+    TUIControlStateLoading          = 1 << 4,
 	
 	TUIControlStateNotKey			= 1 << 11,
 	
@@ -152,6 +157,12 @@ typedef enum TUIControlState : NSUInteger {
 // appearance. But other subclasses or the application object
 // might read or set this control state.
 @property (nonatomic, assign, getter = isSelected) BOOL selected;
+
+/**
+ If YES, the title and image view are hidden and an activity indicator is displayed
+ to indicate activity. This must be set on and off manually.
+ */
+@property (nonatomic, assign, getter = isLoading) BOOL loading;
 
 // By default, a control is not highlighted. TUIControl automatically
 // sets and clears this state automatically when the mouse enters

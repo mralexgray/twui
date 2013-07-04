@@ -1048,7 +1048,6 @@ static float clampBounce(float x) {
 
 - (void)beginGestureWithEvent:(NSEvent *)event
 {
-	
 	if (_scrollViewFlags.delegateScrollViewWillBeginDragging){
 		[_delegate scrollViewWillBeginDragging:self];
 	}

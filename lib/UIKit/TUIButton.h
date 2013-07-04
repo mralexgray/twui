@@ -32,13 +32,13 @@ typedef enum TUIButtonType : NSUInteger {
 
 @interface TUIButton : TUIControl
 {
-	NSMutableDictionary		*_contentLookup;
-	TUIEdgeInsets           _titleEdgeInsets;
-    TUIEdgeInsets           _imageEdgeInsets;
+	NSMutableDictionary         *_contentLookup;
+	TUIEdgeInsets               _titleEdgeInsets;
+    TUIEdgeInsets               _imageEdgeInsets;
 
-	TUIImageView           *_imageView;
-	TUILabel               *_titleView;
-	
+	TUIImageView                *_imageView;
+	TUILabel                    *_titleView;
+
 	NSMenu *popUpMenu;
 	
     struct {
