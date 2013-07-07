@@ -6,8 +6,8 @@
 //
 //
 
-#import "TUIKit.h"
 
+#import <TwUI/TUIKit.h>
 @interface ExampleTableViewController : TUITableViewController
 
 @end

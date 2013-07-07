@@ -24,6 +24,7 @@
 		5C782FD013A54FFF00CF69EF /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C782FCF13A54FFD00CF69EF /* ApplicationServices.framework */; };
 		5C782FD713A556A900CF69EF /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C782FD613A556A800CF69EF /* QuartzCore.framework */; };
 		5ED56678139DC30300031CDF /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5ED56677139DC30300031CDF /* Cocoa.framework */; };
+		7BC179A41789F04A0088AB3C /* TwUI.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = D01D9CEB146F54B300147234 /* TwUI.framework */; };
 		D01D9CF4146F54BC00147234 /* TwUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D01D9CEB146F54B300147234 /* TwUI.framework */; };
 /* End PBXBuildFile section */
 
@@ -64,6 +65,19 @@
 			remoteInfo = TwUI;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		7BC179A31789F03E0088AB3C /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				7BC179A41789F04A0088AB3C /* TwUI.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		484C207315F445EB00B3104E /* clock.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clock.png; sourceTree = "<group>"; };
@@ -212,6 +226,7 @@
 				5ED5666F139DC30300031CDF /* Sources */,
 				5ED56670139DC30300031CDF /* Frameworks */,
 				5ED56671139DC30300031CDF /* Resources */,
+				7BC179A31789F03E0088AB3C /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -229,7 +244,7 @@
 		5ED5666A139DC30300031CDF /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0440;
+				LastUpgradeCheck = 0500;
 			};
 			buildConfigurationList = 5ED5666D139DC30300031CDF /* Build configuration list for PBXProject "Example" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -358,8 +373,13 @@
 		5ED5668F139DC30300031CDF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = NS_BUILD_32_LIKE_64;
@@ -367,6 +387,9 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				ONLY_ACTIVE_ARCH = YES;
@@ -378,13 +401,21 @@
 		5ED56690139DC30300031CDF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PREPROCESSOR_DEFINITIONS = NS_BUILD_32_LIKE_64;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				RUN_CLANG_STATIC_ANALYZER = YES;
@@ -402,8 +433,8 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Example/Example-Prefix.pch";
-				HEADER_SEARCH_PATHS = "../lib/**";
 				INFOPLIST_FILE = "$(SRCROOT)/Example/Example-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				PRODUCT_NAME = Example;
 				WRAPPER_EXTENSION = app;
 			};
@@ -419,8 +450,8 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Example/Example-Prefix.pch";
-				HEADER_SEARCH_PATHS = "../lib/**";
 				INFOPLIST_FILE = "$(SRCROOT)/Example/Example-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				PRODUCT_NAME = Example;
 				WRAPPER_EXTENSION = app;
 			};
