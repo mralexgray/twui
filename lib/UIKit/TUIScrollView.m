@@ -1150,7 +1150,14 @@ static float clampBounce(float x) {
 		[super scrollWheel:event];
 	}
 	
-	if (self.scrollEnabled)
+    if (_scrollViewFlags.touchesBegan && ABS(event.scrollingDeltaY) > 0) {
+        _currentTouchStartedVerticalScroll = YES;
+    }
+    if ((event.momentumPhase & NSEventPhaseEnded) == NSEventPhaseEnded) {
+        _currentTouchStartedVerticalScroll = NO;
+    }
+    
+	if (self.scrollEnabled && (ABS(event.scrollingDeltaX) > 0 || ABS(event.scrollingDeltaY) > 0))
 	{
 		int phase = ScrollPhaseNormal;
 		
@@ -1341,12 +1348,14 @@ static float clampBounce(float x) {
 - (void)touchesBeganWithEvent:(NSEvent *)event {
 	NSUInteger count = [self touchesMatchingPhase:NSTouchPhaseTouching forEvent:event].count;
 	_scrollViewFlags.touchesBegan = (count == 2);
+    _currentTouchStartedVerticalScroll = NO;
 	
 	[self _updateScrollersAnimated:YES];
 }
 
 - (void)touchesEndedWithEvent:(NSEvent *)event {
 	_scrollViewFlags.touchesBegan = NO;
+    _currentTouchStartedVerticalScroll = NO;
 	
 	[self _updateScrollersAnimated:YES];
 }

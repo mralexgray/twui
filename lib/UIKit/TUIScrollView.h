@@ -178,6 +178,7 @@ typedef enum TUIScrollViewIndicator : NSUInteger {
 @property (nonatomic, readonly, getter=isBouncing) BOOL bouncing;
 @property (nonatomic, readonly, getter=isDecelerating) BOOL decelerating;
 @property (nonatomic, readonly, getter=isScrollingToTop) BOOL scrollingToTop;
+@property (nonatomic, readonly, getter=isCurrentTouchStartedVerticalScroll) BOOL currentTouchStartedVerticalScroll;
 
 - (void)setContentOffset:(CGPoint)contentOffset animated:(BOOL)animated;
 - (void)scrollRectToVisible:(CGRect)rect animated:(BOOL)animated;
