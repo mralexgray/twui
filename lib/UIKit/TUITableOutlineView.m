@@ -219,8 +219,6 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
     BOOL willCloseSection = (_openedSection == section);
     BOOL willToggleSections = (_openedSection != NSIntegerMin && isOpenedSectionVisible && _openedSection != section);
     
-    //    NSLog(@"will open %@, will close %@, will toggle %@, top s %@, bottom s %@", @(willOpenSection), @(willCloseSection), @(willToggleSections), topSections, bottomSections);
-    
     
     CGRect openedSectionRect    = [self rectForSection:_openedSection];
     CGFloat openedSectionHeight = CGRectGetHeight(openedSectionRect);
@@ -341,7 +339,6 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
         
         void (^compleationBlock)(BOOL) = ^(BOOL finished) {
             [TUIView setAnimationsEnabled:NO block:^{
-                //                    NSLog(@"done %@", @(finished));
                 
                 if ((willOpenSection || willToggleSections) && self.delegate && [_delegate respondsToSelector:@selector(tableView:didOpenSection:)]) {
                     [_delegate tableView:self didOpenSection:section];

@@ -308,7 +308,6 @@
 -(void)__endDraggingMultipleCells:(TUITableViewCell *)cell offset:(CGPoint)offset location:(CGPoint)location {
     BOOL animate = TRUE;
     
-    NSLog(@"%s",__FUNCTION__);
     // cancel our continuous scroll
     [self endContinuousScrollAnimated:TRUE];
 
