@@ -515,10 +515,15 @@ static NSComparisonResult compareNSViewOrdering (NSView *viewA, NSView *viewB, v
 	// Since this is a continuation of a previously forwarded touch
 	// set, use the previously registered touch view.
 	// Block the internal event forwarding chain while doing this.
+    // Don't process if lastTouchView was removed from hierarchy (lastTouchView.superview = nil) to avoid crash
 	if (!deliveringEvent && self.lastTouchView) {
-		deliveringEvent = YES;
-		[self.lastTouchView touchesMovedWithEvent:event];
-		deliveringEvent = NO;
+        if (self.lastTouchView.superview) {
+            deliveringEvent = YES;
+            [self.lastTouchView touchesMovedWithEvent:event];
+            deliveringEvent = NO;
+        } else {
+            self.lastTouchView = nil;
+        }
 	}
 }
 
@@ -527,7 +532,8 @@ static NSComparisonResult compareNSViewOrdering (NSView *viewA, NSView *viewB, v
 	// Since this is a continuation of a previously forwarded touch
 	// set, use the previously registered touch view and end it.
 	// Block the internal event forwarding chain while doing this.
-	if (!deliveringEvent && self.lastTouchView) {
+    // Don't process if lastTouchView was removed from hierarchy (lastTouchView.superview = nil) to avoid crash
+	if (!deliveringEvent && self.lastTouchView && self.lastTouchView.superview) {
 		deliveringEvent = YES;
 		[self.lastTouchView touchesEndedWithEvent:event];
 		deliveringEvent = NO;
@@ -542,7 +548,8 @@ static NSComparisonResult compareNSViewOrdering (NSView *viewA, NSView *viewB, v
 	// Since this is a continuation of a previously forwarded touch
 	// set, use the previously registered touch view and end it.
 	// Block the internal event forwarding chain while doing this.
-	if (!deliveringEvent && self.lastTouchView) {
+    // Don't process if lastTouchView was removed from hierarchy (lastTouchView.superview = nil) to avoid crash
+	if (!deliveringEvent && self.lastTouchView && self.lastTouchView.superview) {
 		deliveringEvent = YES;
 		[self.lastTouchView touchesCancelledWithEvent:event];
 		deliveringEvent = NO;
