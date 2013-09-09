@@ -243,7 +243,10 @@ static inline void tui_viewAnimateRedrawConditionally(TUIView *view, BOOL condit
     else
         [self.tableView __mouseUpInCell:self offset:_mouseOffset event:event];
 
-    [self.nsWindow makeFirstResponder:self.tableView];
+    if ([self.tableView acceptsFirstResponder]) {
+        [self.nsWindow makeFirstResponder:self.tableView];
+    }
+
 //	[self.tableView selectRowAtIndexPath:self.indexPath animated:YES scrollPosition:TUITableViewScrollPositionNone];
 	[super mouseUp:event];
 
