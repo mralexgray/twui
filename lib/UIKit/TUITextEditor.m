@@ -1,18 +1,3 @@
-/*
- Copyright 2011 Twitter, Inc.
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this work except in compliance with the License.
- You may obtain a copy of the License in the LICENSE file, or at:
- 
- http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- */
 
 #import "TUITextEditor.h"
 #import "TUINSView.h"
@@ -57,11 +42,15 @@
 		for(int i = 0; i < backingStoreLength; i++) {
 			[string appendString:placeholder];
 		}
-		
+
+        // this is because for some reason the secure text field has no blinker if theres no text in it, so we treat it like it's not secure if it's empty.
+        if ([string length] == 0) {
+            return [super drawingAttributedString];
+        }
 		NSAttributedString *securePlaceHolder = [[NSAttributedString alloc] initWithString:string attributes:defaultAttributes];
 		return securePlaceHolder;
 	}
-	
+
 	return [super drawingAttributedString];
 }
 
@@ -144,8 +133,18 @@
 - (void)paste:(id)sender
 {
 	if (self.editable) {
-		[self insertText:[[NSPasteboard generalPasteboard] stringForType:NSPasteboardTypeString]];
+        NSPasteboard *pboard = [NSPasteboard generalPasteboard];
+        NSString *type = [pboard availableTypeFromArray:
+                          [NSArray arrayWithObjects:
+                           NSPasteboardTypeString,
+                           NSURLPboardType,
+                           nil]];
+        if([type isEqualToString:NSPasteboardTypeString])
+            [self insertText:[pboard stringForType:type]];
+        else if([type isEqualToString:NSURLPboardType])
+            [self insertText:[NSURL URLFromPasteboard:pboard].absoluteString];
 	}
+
 	[self _scrollToIndex:MAX(_selectionStart, _selectionEnd)];
 }
 
@@ -210,7 +209,10 @@
 	if(markedRange.length == 0) {
 		[self unmarkText];
 	}
-	
+
+    [[self.undoManager prepareWithInvocationTarget:self] setText:[backingStore.string copy]];
+    [self.undoManager setActionName:@"Delete"];
+
 	// Actually delete the characters
 	[backingStore deleteCharactersInRange:range];
 	
@@ -221,8 +223,6 @@
 	[self _textDidChange];
 	[self _scrollToIndex:MAX(_selectionStart, _selectionEnd)];
 }
-
-
 
 
 //http://developer.apple.com/library/mac/#samplecode/TextInputView/Listings/FadingTextView_m.html%23//apple_ref/doc/uid/DTS40008840-FadingTextView_m-DontLinkElementID_6
@@ -267,6 +267,9 @@
 			replacementRange = selectedRange;
 		}
 	}
+
+    [[self.undoManager prepareWithInvocationTarget:self] setText:[backingStore.string copy]];
+    [self.undoManager setActionName:@"Typing"];
 	
 	// Add the text
 	[backingStore beginEditing];
@@ -282,6 +285,7 @@
 	[self _textDidChange];
 	[self _scrollToIndex:MAX(_selectionStart, _selectionEnd)];
 }
+
 
 /* The receiver inserts aString replacing the content specified by replacementRange.
  aString can be either an NSString or NSAttributedString instance.
@@ -301,7 +305,10 @@
 			replacementRange = selectedRange;
 		}
 	}
-	
+
+    [[self.undoManager prepareWithInvocationTarget:self] setText:[backingStore.string copy]];
+    [self.undoManager setActionName:@"Typing"];
+
 	// Add the text
 	[backingStore beginEditing];
 	if ([aString length] == 0) {

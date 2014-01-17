@@ -1,18 +1,3 @@
-/*
- Copyright 2011 Twitter, Inc.
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this work except in compliance with the License.
- You may obtain a copy of the License in the LICENSE file, or at:
- 
- http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- */
 
 #import "TUIControl.h"
 #import "TUIView+Accessibility.h"
@@ -32,7 +17,7 @@
 @implementation TUIControlTargetAction
 @end
 
-#pragma mark -
+#pragma mark - 
 
 @interface TUIControl () {
 	struct {
@@ -41,6 +26,7 @@
 		unsigned int disabled:1;
 		unsigned int selected:1;
 		unsigned int highlighted:1;
+        unsigned int loading:1;
 		unsigned int hover:1;
 	} _controlFlags;
 }
@@ -56,8 +42,6 @@
 - (id)initWithFrame:(CGRect)rect {
 	if ((self = [super initWithFrame:rect])) {
 		self.periodicDelay = 0.075f;
-		self.controlSize = TUIControlSizeRegular;
-		
 		self.targetActions = [NSMutableArray array];
 		self.accessibilityTraits |= TUIAccessibilityTraitButton;
 		
@@ -107,6 +91,8 @@
 		actual = (actual & ~TUIControlStateHover) | TUIControlStateHighlighted;
 	if (_controlFlags.selected)
 		actual |= TUIControlStateSelected;
+    if (_controlFlags.loading)
+        actual |= TUIControlStateLoading;
 	
 	return actual;
 }
@@ -122,7 +108,7 @@
 }
 
 - (BOOL)isEnabled {
-	return !_controlFlags.disabled;
+	return !_controlFlags.disabled && !_controlFlags.loading;
 }
 
 - (void)setEnabled:(BOOL)e {
@@ -147,6 +133,18 @@
 	[self applyStateChangeAnimated:self.animateStateChange block:^{
 		_controlFlags.selected = selected;
 	}];
+}
+
+- (BOOL)isLoading
+{
+    return _controlFlags.loading;
+}
+
+- (void)setLoading:(BOOL)loading
+{
+    [self applyStateChangeAnimated:self.animateStateChange block:^{
+        _controlFlags.loading = loading;
+    }];
 }
 
 - (BOOL)isHighlighted {
@@ -174,8 +172,9 @@
 }
 
 - (void)mouseDown:(NSEvent *)event {
-	if (_controlFlags.disabled)
+	if (_controlFlags.disabled || _controlFlags.loading)
 		return;
+
 	[super mouseDown:event];
 	
 	BOOL track = [self beginTrackingWithEvent:event];
@@ -196,8 +195,9 @@
 }
 
 - (void)mouseDragged:(NSEvent *)event {
-	if (_controlFlags.disabled)
+	if (_controlFlags.disabled || _controlFlags.loading)
 		return;
+
 	[super mouseDragged:event];
 	
 	if (_controlFlags.tracking) {
@@ -221,8 +221,9 @@
 }
 
 - (void)mouseUp:(NSEvent *)event {
-	if (_controlFlags.disabled)
+	if (_controlFlags.disabled || _controlFlags.loading)
 		return;
+
 	[super mouseUp:event];
 	
 	if (_controlFlags.tracking) {
@@ -240,23 +241,23 @@
 }
 
 - (void)willMoveToSuperview:(TUIView *)newSuperview {
-	if (!_controlFlags.disabled && _controlFlags.tracking) {
+	if (!_controlFlags.disabled && !_controlFlags.loading && _controlFlags.tracking) {
 		[self applyStateChangeAnimated:self.animateStateChange block:^{
 			_controlFlags.tracking = 0;
 		}];
 		
-		[self cancelTrackingWithEvent:nil];
+		[self endTrackingWithEvent:nil];
 		[self setNeedsDisplay];
 	}
 }
 
 - (void)willMoveToWindow:(TUINSWindow *)newWindow {
-	if (!_controlFlags.disabled && _controlFlags.tracking) {
+	if (!_controlFlags.disabled && !_controlFlags.loading && _controlFlags.tracking) {
 		[self applyStateChangeAnimated:self.animateStateChange block:^{
 			_controlFlags.tracking = 0;
 		}];
 		
-		[self cancelTrackingWithEvent:nil];
+		[self endTrackingWithEvent:nil];
 		[self setNeedsDisplay];
 	}
 }
@@ -313,26 +314,33 @@
 	return;
 }
 
-
 #pragma mark - Target Action Interoptability
 
 - (void)addTarget:(id)target action:(SEL)action forControlEvents:(TUIControlEvents)controlEvents {
 	if (action != nil) {
-		TUIControlTargetAction *t = [[TUIControlTargetAction alloc] init];
-		t.target = target;
-		t.action = action;
-		t.controlEvents = controlEvents;
-		[self.targetActions addObject:t];
+        TUIControlTargetAction *t   = [[TUIControlTargetAction alloc] init];
+        t.target                    = target;
+        t.action                    = action;
+        t.controlEvents             = controlEvents;
+        [self.targetActions addObject:t];
 	}
 }
 
 - (void)addActionForControlEvents:(TUIControlEvents)controlEvents block:(void(^)(void))block {
 	if (block != nil) {
-		TUIControlTargetAction *t = [[TUIControlTargetAction alloc] init];
-		t.block = block;
-		t.controlEvents = controlEvents;
+        TUIControlTargetAction *t   = [[TUIControlTargetAction alloc] init];
+        t.block                     = block;
+        t.controlEvents             = controlEvents;
 		[self.targetActions addObject:t];
 	}
+}
+
+- (void)addAction:(SEL)action forControlEvents:(TUIControlEvents)controlEvents
+{
+    __block typeof(self) celf = self;
+    [self addActionForControlEvents:controlEvents block:^{
+        [celf tryToPerform:action with:celf];
+    }];
 }
 
 - (void)removeTarget:(id)target action:(SEL)action forControlEvents:(TUIControlEvents)controlEvents {
@@ -344,7 +352,7 @@
 		BOOL controlMatches = (controlEvents == t.controlEvents);
 		
 		if ((action && targetMatches && actionMatches && controlMatches) ||
-			(!action && targetMatches && controlMatches))
+		   (!action && targetMatches && controlMatches))
 			[targetActionsToRemove addObject:t];
 	}
 	

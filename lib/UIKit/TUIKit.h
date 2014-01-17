@@ -1,18 +1,4 @@
-/*
- Copyright 2011 Twitter, Inc.
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this work except in compliance with the License.
- You may obtain a copy of the License in the LICENSE file, or at:
- 
- http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- */
+
 
 #import <Foundation/Foundation.h>
 
@@ -22,11 +8,14 @@
 #import "NSBezierPath+TUIExtensions.h"
 #import "NSClipView+TUIExtensions.h"
 #import "NSColor+TUIExtensions.h"
+//#import "NSColor+RGBHex.h"
 #import "NSFont+TUIExtensions.h"
 #import "NSImage+TUIExtensions.h"
 #import "NSScrollView+TUIExtensions.h"
 #import "NSShadow+TUIExtensions.h"
 #import "NSView+TUIExtensions.h"
+#import "UIView+MTAnimation.h"
+
 #import "TUIActivityIndicatorView.h"
 #import "TUIAttributedString.h"
 #import "TUIBridgedScrollView.h"
@@ -48,7 +37,6 @@
 #import "TUIResponder.h"
 #import "TUIScrollView.h"
 #import "TUIScrollView+TUIBridgedScrollView.h"
-#import "TUISlider.h"
 #import "TUIStretchableImage.h"
 #import "TUIStringDrawing.h"
 #import "TUITableView+Additions.h"
@@ -65,3 +53,9 @@
 #import "TUIView+TUIBridgedView.h"
 #import "TUIViewController.h"
 #import "TUIViewNSViewContainer.h"
+#import "TUIRefreshControl.h"
+
+
+
+#import "TUISlider.h"
+#import "TUITableOulineView.h"

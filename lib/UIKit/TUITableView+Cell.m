@@ -1,18 +1,3 @@
-/*
- Copyright 2011 Twitter, Inc.
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this work except in compliance with the License.
- You may obtain a copy of the License in the LICENSE file, or at:
- 
- http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- */
 
 #import "TUITableView+Cell.h"
 #import "TUITableViewCell+Private.h"
@@ -110,7 +95,10 @@
   
   CGRect visible = [self visibleRect];
   // dragged cell destination frame
-  CGRect dest = CGRectMake(0, roundf(MAX(visible.origin.y, MIN(visible.origin.y + visible.size.height - cell.frame.size.height, location.y + visible.origin.y - offset.y))), self.bounds.size.width, cell.frame.size.height);
+  CGRect dest = CGRectMake(0,
+                           roundf(MAX(visible.origin.y, MIN(visible.origin.y + visible.size.height - cell.frame.size.height, location.y + visible.origin.y - offset.y))),
+                           self.bounds.size.width,
+                           cell.frame.size.height);
   // bring to front
   [[cell superview] bringSubviewToFront:cell];
   // move the cell

@@ -14,7 +14,6 @@
 		07342D8416D677BF00A72F52 /* TwUI.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = D01D9CEB146F54B300147234 /* TwUI.framework */; };
 		484C208B15F445EB00B3104E /* clock.png in Resources */ = {isa = PBXBuildFile; fileRef = 484C207315F445EB00B3104E /* clock.png */; };
 		484C208C15F445EB00B3104E /* clock@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 484C207415F445EB00B3104E /* clock@2x.png */; };
-		484C208D15F445EB00B3104E /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 484C207515F445EB00B3104E /* Credits.rtf */; };
 		484C208E15F445EB00B3104E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 484C207715F445EB00B3104E /* InfoPlist.strings */; };
 		484C208F15F445EB00B3104E /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 484C207915F445EB00B3104E /* MainMenu.xib */; };
 		484C209115F445EB00B3104E /* ExampleAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 484C207E15F445EB00B3104E /* ExampleAppDelegate.m */; };
@@ -33,44 +32,6 @@
 		D491662516FE8360001A8CFD /* TUICarouselNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = D491662416FE8360001A8CFD /* TUICarouselNavigationController.m */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		D01D9CEA146F54B300147234 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D01D9CE0146F54B300147234 /* TwUI.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = CB5B264C13BE6DA200579B1E;
-			remoteInfo = TwUI;
-		};
-		D01D9CEC146F54B300147234 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D01D9CE0146F54B300147234 /* TwUI.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = CB5E321813BE7098004B7899;
-			remoteInfo = "Dynamic Library";
-		};
-		D01D9CEE146F54B300147234 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D01D9CE0146F54B300147234 /* TwUI.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 5EE983B713BE7809005F430D;
-			remoteInfo = "Static Library";
-		};
-		D01D9CF0146F54B300147234 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D01D9CE0146F54B300147234 /* TwUI.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = CB5B266113BE6DA300579B1E;
-			remoteInfo = Tests;
-		};
-		D01D9CF2146F54BA00147234 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D01D9CE0146F54B300147234 /* TwUI.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = CB5B264B13BE6DA200579B1E;
-			remoteInfo = TwUI;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXCopyFilesBuildPhase section */
 		07342D8016D677B400A72F52 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -78,7 +39,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				07342D8416D677BF00A72F52 /* TwUI.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -91,7 +51,6 @@
 		0726D94316DCD19F003DAC87 /* TUINavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TUINavigationController.h; path = ../../lib/UIKit/TUINavigationController.h; sourceTree = "<group>"; };
 		484C207315F445EB00B3104E /* clock.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clock.png; sourceTree = "<group>"; };
 		484C207415F445EB00B3104E /* clock@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "clock@2x.png"; sourceTree = "<group>"; };
-		484C207615F445EB00B3104E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
 		484C207815F445EB00B3104E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		484C207A15F445EB00B3104E /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		484C207B15F445EB00B3104E /* Example-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Example-Info.plist"; sourceTree = "<group>"; };
@@ -129,7 +88,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D01D9CF4146F54BC00147234 /* TwUI.framework in Frameworks */,
 				5C782FD713A556A900CF69EF /* QuartzCore.framework in Frameworks */,
 				5C782FD013A54FFF00CF69EF /* ApplicationServices.framework in Frameworks */,
 				5ED56678139DC30300031CDF /* Cocoa.framework in Frameworks */,
@@ -178,7 +136,6 @@
 				484C207715F445EB00B3104E /* InfoPlist.strings */,
 				484C207C15F445EB00B3104E /* Example-Prefix.pch */,
 				484C208A15F445EB00B3104E /* main.m */,
-				484C207515F445EB00B3104E /* Credits.rtf */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -203,7 +160,6 @@
 		5ED56676139DC30300031CDF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				D01D9CE0146F54B300147234 /* TwUI.xcodeproj */,
 				5C782FD613A556A800CF69EF /* QuartzCore.framework */,
 				5C782FCF13A54FFD00CF69EF /* ApplicationServices.framework */,
 				5ED56677139DC30300031CDF /* Cocoa.framework */,
@@ -222,17 +178,6 @@
 			name = "Other Frameworks";
 			sourceTree = "<group>";
 		};
-		D01D9CE1146F54B300147234 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				D01D9CEB146F54B300147234 /* TwUI.framework */,
-				D01D9CED146F54B300147234 /* libtwui.dylib */,
-				D01D9CEF146F54B300147234 /* libtwui.a */,
-				D01D9CF1146F54B300147234 /* Tests.octest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -248,7 +193,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				D01D9CF3146F54BA00147234 /* PBXTargetDependency */,
 			);
 			name = Example;
 			productName = ConcordeExample;
@@ -261,7 +205,7 @@
 		5ED5666A139DC30300031CDF /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0440;
+				LastUpgradeCheck = 0500;
 			};
 			buildConfigurationList = 5ED5666D139DC30300031CDF /* Build configuration list for PBXProject "Example" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -273,49 +217,12 @@
 			mainGroup = 5ED56668139DC30300031CDF;
 			productRefGroup = 5ED56674139DC30300031CDF /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = D01D9CE1146F54B300147234 /* Products */;
-					ProjectRef = D01D9CE0146F54B300147234 /* TwUI.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				5ED56672139DC30300031CDF /* Example */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		D01D9CEB146F54B300147234 /* TwUI.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = TwUI.framework;
-			remoteRef = D01D9CEA146F54B300147234 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		D01D9CED146F54B300147234 /* libtwui.dylib */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.dylib";
-			path = libtwui.dylib;
-			remoteRef = D01D9CEC146F54B300147234 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		D01D9CEF146F54B300147234 /* libtwui.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libtwui.a;
-			remoteRef = D01D9CEE146F54B300147234 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		D01D9CF1146F54B300147234 /* Tests.octest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = Tests.octest;
-			remoteRef = D01D9CF0146F54B300147234 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		5ED56671139DC30300031CDF /* Resources */ = {
@@ -324,7 +231,6 @@
 			files = (
 				484C208B15F445EB00B3104E /* clock.png in Resources */,
 				484C208C15F445EB00B3104E /* clock@2x.png in Resources */,
-				484C208D15F445EB00B3104E /* Credits.rtf in Resources */,
 				484C208E15F445EB00B3104E /* InfoPlist.strings in Resources */,
 				484C208F15F445EB00B3104E /* MainMenu.xib in Resources */,
 				484C209715F445EB00B3104E /* large-image.jpeg in Resources */,
@@ -356,23 +262,7 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXTargetDependency section */
-		D01D9CF3146F54BA00147234 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = TwUI;
-			targetProxy = D01D9CF2146F54BA00147234 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
 /* Begin PBXVariantGroup section */
-		484C207515F445EB00B3104E /* Credits.rtf */ = {
-			isa = PBXVariantGroup;
-			children = (
-				484C207615F445EB00B3104E /* en */,
-			);
-			name = Credits.rtf;
-			sourceTree = "<group>";
-		};
 		484C207715F445EB00B3104E /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -395,8 +285,13 @@
 		5ED5668F139DC30300031CDF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = NS_BUILD_32_LIKE_64;
@@ -404,6 +299,9 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				ONLY_ACTIVE_ARCH = YES;
@@ -415,13 +313,21 @@
 		5ED56690139DC30300031CDF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PREPROCESSOR_DEFINITIONS = NS_BUILD_32_LIKE_64;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				RUN_CLANG_STATIC_ANALYZER = YES;
@@ -434,12 +340,18 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Example/Example-Prefix.pch";
 				HEADER_SEARCH_PATHS = "../lib/**";
 				INFOPLIST_FILE = "$(SRCROOT)/Example/Example-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OTHER_LDFLAGS = (
+					"-framework",
+					AtoZ,
+				);
 				PRODUCT_NAME = Example;
 				WRAPPER_EXTENSION = app;
 			};
@@ -451,11 +363,17 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Example/Example-Prefix.pch";
 				HEADER_SEARCH_PATHS = "../lib/**";
 				INFOPLIST_FILE = "$(SRCROOT)/Example/Example-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OTHER_LDFLAGS = (
+					"-framework",
+					AtoZ,
+				);
 				PRODUCT_NAME = Example;
 				WRAPPER_EXTENSION = app;
 			};

@@ -1,22 +1,7 @@
-/*
- Copyright 2011 Twitter, Inc.
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this work except in compliance with the License.
- You may obtain a copy of the License in the LICENSE file, or at:
- 
- http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- */
 
 #import <CoreServices/CoreServices.h>
 #import "TUIScrollView+Private.h"
-#import "TUINSView.h"
+#import "TUIKit.h"
 #import "TUIScroller.h"
 
 #define KNOB_Z_POSITION 6000
@@ -107,7 +92,7 @@ static BOOL isAtleastMountainLion = NO;
 	if ((self = [super initWithFrame:frame]))
 	{
 		_layer.masksToBounds = NO; // differs from UIKit
-		[super setAcceptsTouchEvents:YES];
+		
 		decelerationRate = 0.88;
 		
 		_scrollViewFlags.bounceEnabled = [self.class requiresElasticSrolling];
@@ -253,15 +238,6 @@ static BOOL isAtleastMountainLion = NO;
 	_scrollViewFlags.scrollDisabled = !b;
 }
 
-// Force touch events through and disable resting touches.
-- (void)setAcceptsTouchEvents:(BOOL)acceptsTouchEvents {
-	[super setAcceptsTouchEvents:YES];
-}
-
-- (void)setWantsRestingTouches:(BOOL)wantsRestingTouches {
-	[super setWantsRestingTouches:NO];
-}
-
 - (TUIEdgeInsets)contentInset
 {
 	return _contentInset;
@@ -352,7 +328,7 @@ static CVReturn scrollCallback(CVDisplayLinkRef displayLink, const CVTimeStamp *
 	CGSize s = _contentSize;
 	
 	s.height += _contentInset.top;
-	
+
 	CGFloat mx = offset.x + s.width;
 	if (s.width > b.size.width) {
 		if (mx < b.size.width) {
@@ -1023,11 +999,8 @@ static float clampBounce(float x) {
 	[self _updateScrollersAnimated:NO];
 }
 
-- (BOOL)isTracking {
-	return _scrollViewFlags.gestureBegan || _scrollViewFlags.touchesBegan;
-}
-
-- (BOOL)isDragging {
+- (BOOL)isDragging
+{
 	return _scrollViewFlags.gestureBegan;
 }
 
@@ -1060,14 +1033,15 @@ static float clampBounce(float x) {
 
 - (void)beginGestureWithEvent:(NSEvent *)event
 {
-	
 	if (_scrollViewFlags.delegateScrollViewWillBeginDragging){
 		[_delegate scrollViewWillBeginDragging:self];
 	}
 	
 	if (_scrollViewFlags.bounceEnabled) {
+		[self willChangeValueForKey:@"dragging"];
 		_throw.throwing = 0;
 		_scrollViewFlags.gestureBegan = 1; // this won't happen if window isn't key on 10.6, lame
+		[self didChangeValueForKey:@"dragging"];
 	}
 	
 }
@@ -1130,8 +1104,10 @@ static float clampBounce(float x) {
 	}
 	
 	if (_scrollViewFlags.bounceEnabled) {
+		[self willChangeValueForKey:@"dragging"];
 		_scrollViewFlags.gestureBegan = 0;
 		[self _startThrow];
+		[self didChangeValueForKey:@"dragging"];
 		
 		if ([self.class requiresElasticSrolling]) {
 			_scrollViewFlags.ignoreNextScrollPhaseNormal_10_7 = 1;
@@ -1296,10 +1272,8 @@ static float clampBounce(float x) {
 	}
 }
 
-#pragma mark - Scroller Visibility
-
 - (void)mouseDown:(NSEvent *)event onSubview:(TUIView *)subview {
-	if (subview == self.verticalScroller || subview == self.horizontalScroller) {
+	if (subview == self.verticalScroller || subview == self.horizontalScroller){
 		_scrollViewFlags.mouseDownInScroller = YES;
 		[self _updateScrollersAnimated:YES];
 	}
@@ -1308,7 +1282,7 @@ static float clampBounce(float x) {
 }
 
 - (void)mouseUp:(NSEvent *)event fromSubview:(TUIView *)subview {
-	if (subview == self.verticalScroller || subview == self.horizontalScroller) {
+	if (subview == self.verticalScroller || subview == self.horizontalScroller){
 		_scrollViewFlags.mouseDownInScroller = NO;
 		[self _updateScrollersAnimated:YES];
 	}
@@ -1319,39 +1293,22 @@ static float clampBounce(float x) {
 - (void)mouseEntered:(NSEvent *)event onSubview:(TUIView *)subview {
 	[super mouseEntered:event onSubview:subview];
 	
-	if (!_scrollViewFlags.mouseInside)
+	if (!_scrollViewFlags.mouseInside){
 		_scrollViewFlags.mouseInside = YES;
+	}
 }
 
 - (void)mouseExited:(NSEvent *)event fromSubview:(TUIView *)subview {
 	[super mouseExited:event fromSubview:subview];
 	
 	CGPoint location = [self localPointForEvent:event];
-	CGPoint updatedLocation = CGPointMake(location.x, location.y + self.visibleRect.origin.y);
+	CGRect visible = [self visibleRect];
+	CGPoint updatedLocation = CGPointMake(location.x, location.y + visible.origin.y);
 	
-	if (_scrollViewFlags.mouseInside && ![self pointInside:updatedLocation withEvent:event]) {
+	if (_scrollViewFlags.mouseInside && ![self pointInside:updatedLocation withEvent:event]){
 		_scrollViewFlags.mouseInside = NO;
 	}
 }
-
-- (void)touchesBeganWithEvent:(NSEvent *)event {
-	NSUInteger count = [self touchesMatchingPhase:NSTouchPhaseTouching forEvent:event].count;
-	_scrollViewFlags.touchesBegan = (count == 2);
-	
-	[self _updateScrollersAnimated:YES];
-}
-
-- (void)touchesEndedWithEvent:(NSEvent *)event {
-	_scrollViewFlags.touchesBegan = NO;
-	
-	[self _updateScrollersAnimated:YES];
-}
-
-- (void)touchesCancelledWithEvent:(NSEvent *)event {
-	[self touchesEndedWithEvent:event];
-}
-
-#pragma mark - Key Commands
 
 - (BOOL)performKeyAction:(NSEvent *)event {
 	switch ([[event charactersIgnoringModifiers] characterAtIndex:0]) {
@@ -1377,7 +1334,5 @@ static float clampBounce(float x) {
 	
 	return NO;
 }
-
-#pragma mark - 
 
 @end

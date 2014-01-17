@@ -94,9 +94,10 @@
 // When the tab is tapped with two fingers, let it pulse, otherwise
 // do nothing. To let it pulse, use the selected property and toggle it.
 - (void)touchesBeganWithEvent:(NSEvent *)event {
-	if([self touchesMatchingPhase:NSTouchPhaseTouching forEvent:event].count != 2)
-		return;
-	
+//	if([self touchesMatchingPhase:NSTouchPhaseTouching forEvent:event].count != 2)
+//	if([event touchesMatchingPhase:NSTouchPhaseTouching forEvent:event].count != 2)
+//		return;
+
 	// Using -redraw within an animation block lets us crossfade
 	// the tab selection. When we finish this animation, queue
 	// the pulsing with a timer set repeat the -flash method.
@@ -154,8 +155,8 @@
 		
 		for(int i = 0; i < count; ++i) {
 			ExampleTab *tab = [[ExampleTab alloc] initWithFrame:CGRectZero];
-			tab.acceptsTouchEvents = YES;
-			tab.wantsRestingTouches = YES;
+//			tab.acceptsTouchEvents = YES;
+//			tab.wantsRestingTouches = YES;
 			tab.tag = i;
 			
 			// The layout of an individual tab is a function of the superview bounds,

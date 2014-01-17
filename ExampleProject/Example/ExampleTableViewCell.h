@@ -14,8 +14,8 @@
  limitations under the License.
  */
 
-#import "TUIKit.h"
-
+//#import "TUIKit.h"
+#import <AtoZ/AtoZ.h>
 @interface ExampleTableViewCell : TUITableViewCell
 
 @property (nonatomic, copy) NSAttributedString *attributedString;

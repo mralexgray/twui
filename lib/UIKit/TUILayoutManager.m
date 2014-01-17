@@ -30,7 +30,7 @@
 
 - (id)init {
 	if((self = [super init])) {
-		_layoutConstraints = [[NSMutableArray alloc] init];
+		_layoutConstraints = NSMutableArray.new;
 	}
 	return self;
 }
@@ -74,7 +74,7 @@
 		_processingChanges = NO;
 		
 		_constraints = [NSMapTable mapTableWithWeakToStrongObjects];
-		_viewsToProcess = [[NSMutableArray alloc] init];
+		_viewsToProcess = NSMutableArray.new;
 		_processedViews = [[NSMutableSet alloc] init];
 	}
 	return self;

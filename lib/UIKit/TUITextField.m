@@ -1,22 +1,9 @@
-/*
- Copyright 2011 Twitter, Inc.
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this work except in compliance with the License.
- You may obtain a copy of the License in the LICENSE file, or at:
- 
- http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- */
 
 #import "TUITextField.h"
 #import "TUIButton.h"
 #import "TUITextViewEditor.h"
+
+static NSImage *__clearButtonImage = nil;
 
 @interface TUITextFieldEditor : TUITextViewEditor
 @end
@@ -33,9 +20,10 @@
 
 - (void)setDelegate:(id <TUITextViewDelegate>)d
 {
-	_textFieldFlags.delegateTextFieldShouldReturn = [d respondsToSelector:@selector(textFieldShouldReturn:)];
-	_textFieldFlags.delegateTextFieldShouldClear = [d respondsToSelector:@selector(textFieldShouldClear:)];
-	_textFieldFlags.delegateTextFieldShouldTabToNext = [d respondsToSelector:@selector(textFieldShouldTabToNext:)];
+	_textFieldFlags.delegateTextFieldShouldReturn           = [d respondsToSelector:@selector(textFieldShouldReturn:)];
+	_textFieldFlags.delegateTextFieldShouldClear            = [d respondsToSelector:@selector(textFieldShouldClear:)];
+	_textFieldFlags.delegateTextFieldShouldTabToNext        = [d respondsToSelector:@selector(textFieldShouldTabToNext:)];
+	_textFieldFlags.delegateTextFieldShouldTabToPrevious    = [d respondsToSelector:@selector(textFieldShouldTabToPrevious:)];
 	[super setDelegate:d];
 }
 
@@ -46,8 +34,36 @@
 
 - (void)_tabToNext
 {
-	if(_textFieldFlags.delegateTextFieldShouldTabToNext)
-		[(id<TUITextFieldDelegate>)delegate textFieldShouldTabToNext:self];
+    void (^tabToNext)() = ^{
+        [self.nextKeyView makeFirstResponder];
+        [self.nextKeyView selectAll:self];
+    };
+
+	if(_textFieldFlags.delegateTextFieldShouldTabToNext) {
+        if ([(id<TUITextFieldDelegate>)delegate textFieldShouldTabToNext:self]) {
+            tabToNext();
+        }
+    }
+    else {
+        tabToNext();
+    }
+}
+
+- (void)_tabToPrevious
+{
+    void (^tabToPrevious)() = ^{
+        [self.previousKeyView makeFirstResponder];
+        [self.previousKeyView selectAll:self];
+    };
+
+	if(_textFieldFlags.delegateTextFieldShouldTabToPrevious) {
+        if ([(id<TUITextFieldDelegate>)delegate textFieldShouldTabToPrevious:self]) {
+            tabToPrevious();
+        }
+    }
+    else {
+        tabToPrevious();
+    }
 }
 
 - (void)setRightButton:(TUIButton *)b
@@ -75,10 +91,16 @@ doClear:
 	}
 }
 
++ (void)setClearButtonImage:(NSImage *)clearButtonImage
+{
+    __clearButtonImage = clearButtonImage;
+}
+
 - (TUIButton *)clearButton
 {
-	TUIButton *b = [TUIButton buttonWithType:TUIButtonTypeCustom];
-	[b setImage:[NSImage imageNamed:@"clear-button.png"] forState:TUIControlStateNormal];
+	TUIButton *b = [TUIButton button];
+    NSImage *clearButtonImage = __clearButtonImage ?: [NSImage imageNamed:@"clear-button.png"];
+	[b setImage:clearButtonImage forState:TUIControlStateNormal];
 	[b addTarget:self action:@selector(clear:) forControlEvents:TUIControlEventMouseUpInside];
 	return b;
 }
@@ -95,6 +117,11 @@ doClear:
 - (void)insertTab:(id)sender
 {
 	[[self _textField] _tabToNext];
+}
+
+- (void)insertBacktab:(id)sender
+{
+    [[self _textField] _tabToPrevious];
 }
 
 - (void)insertNewline:(id)sender
