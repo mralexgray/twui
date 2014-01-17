@@ -58,4 +58,4 @@
 
 
 #import "TUISlider.h"
-#import "TUITableOulineView.h"
+#import "TUITableOutlineView.h"

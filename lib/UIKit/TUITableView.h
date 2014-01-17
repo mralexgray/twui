@@ -22,7 +22,7 @@ typedef NS_ENUM(NSInteger, TUITableViewInsertionMethod) {
   TUITableViewInsertionMethodBeforeIndex  = NSOrderedAscending,
   TUITableViewInsertionMethodAtIndex      = NSOrderedSame,
   TUITableViewInsertionMethodAfterIndex   = NSOrderedDescending
-} TUITableViewInsertionMethod;
+};
 
 typedef NS_ENUM(NSInteger, TUITableViewRowAnimation) {
     TUITableViewRowAnimationNone,

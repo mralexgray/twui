@@ -556,9 +556,7 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
         }
         sectionIndex++;
     }
-    sectionIndex++;
-  }
-	
+
 	return -1;
 }
 
@@ -588,8 +586,6 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
         }
         sectionIndex++;
     }
-    sectionIndex++;
-  }
 	
 	return -1;
 }
@@ -637,8 +633,6 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
         }
         irow = 0; // ...then use zero for subsequent iterations
     }
-    
-  }
 }
 
 - (NSIndexPath *)_topVisibleIndexPath
