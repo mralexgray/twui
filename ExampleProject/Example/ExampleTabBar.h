@@ -14,8 +14,8 @@
  limitations under the License.
  */
 
-#import "TUIKit.h"
-
+//#import "TUIKit.h"
+#import <AtoZ/AtoZ.h>
 @class ExampleTabBar;
 
 @protocol ExampleTabBarDelegate <NSObject>

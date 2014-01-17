@@ -1,18 +1,3 @@
-/*
- Copyright 2011 Twitter, Inc.
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this work except in compliance with the License.
- You may obtain a copy of the License in the LICENSE file, or at:
- 
- http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- */
 
 #import "TUIView.h"
 
@@ -103,6 +88,11 @@ typedef enum TUIControlState : NSUInteger {
 	// The state of a control when a mouse cursor is hovering upon
 	// it. This state can also be read through the tracking property.
 	TUIControlStateHover			= 1 << 3,
+
+    // The state when a control has triggered a long running operation and is
+    // indicating that the operation is in progress. You must set this property
+    // manually with the `loading` property.
+    TUIControlStateLoading          = 1 << 4,
 	
 	TUIControlStateNotKey			= 1 << 11,
 	
@@ -112,27 +102,6 @@ typedef enum TUIControlState : NSUInteger {
 	// Additional control-state flags reserved for framework use.
 	TUIControlStateReserved			= 0xFF000000
 } TUIControlState;
-
-// These constants specify the position of a button’s image relative to
-// its title. These constants are to be used in controls which contain
-// both an image and a title, to specify relative location.
-//
-// TUIControlImagePositionNone		- The image is not displayed.
-// TUIControlImagePositionOnly		- The image is displayed, but not the title.
-// TUIControlImagePositionLeft		- The image is to the left of the title.
-// TUIControlImagePositionRight		- The image is to the right of the title.
-// TUIControlImagePositionBelow		- The image is below the title.
-// TUIControlImagePositionAbove		- The image is above the title.
-// TUIControlImagePositionOverlap	- The image overlaps with the title.
-typedef enum TUIControlImagePosition : NSUInteger {
-	TUIControlImagePositionNone		= 0,
-	TUIControlImagePositionOnly		= 1,
-	TUIControlImagePositionLeft		= 10,
-	TUIControlImagePositionRight	= 11,
-	TUIControlImagePositionBelow	= 100,
-	TUIControlImagePositionAbove	= 101,
-	TUIControlImagePositionOverlap	= 1000
-} TUIControlImagePosition;
 
 // These constants specify a cell’s size. These constants are used
 // by the .controlSize property of a control, and only if the
@@ -146,6 +115,7 @@ typedef enum TUIControlSize : NSUInteger {
     TUIControlSizeSmall		= NSSmallControlSize,
     TUIControlSizeMini		= NSMiniControlSize
 } TUIControlSize;
+
 
 // TUIControl is the base class for control objects such as
 // buttons and sliders that convey user intent to the application.
@@ -186,6 +156,12 @@ typedef enum TUIControlSize : NSUInteger {
 // appearance. But other subclasses or the application object
 // might read or set this control state.
 @property (nonatomic, assign, getter = isSelected) BOOL selected;
+
+/**
+ If YES, the title and image view are hidden and an activity indicator is displayed
+ to indicate activity. This must be set on and off manually.
+ */
+@property (nonatomic, assign, getter = isLoading) BOOL loading;
 
 // By default, a control is not highlighted. TUIControl automatically
 // sets and clears this state automatically when the mouse enters
@@ -245,23 +221,23 @@ typedef enum TUIControlSize : NSUInteger {
 // opts to cancel it - only when the user cancels the tracking.
 - (void)endTrackingWithEvent:(NSEvent *)event;
 
-// When control tracking ends, this method is called to allow
-// the control to clean up. It is called when the control or the
-// system cancels mouse tracking (view heirarchy changes, etc).
-- (void)cancelTrackingWithEvent:(NSEvent *)event;
-
 // Add target/action for a particular event. You can call this
 // multiple times and you can specify multiple target/actions
 // for a particular event. Passing in nil as the target goes
 // up the responder chain. The action may optionally include
 // the sender and the event as parameters, in that order.
 // Ex: - (void)method:(id)sender event:(NSEvent *)event;
-//
+// 
 // The action cannot be NULL. You may also choose to submit a block
 // as an action for a control event mask. You may add any
 // number of blocks as well.
 - (void)addTarget:(id)target action:(SEL)action forControlEvents:(TUIControlEvents)controlEvents;
 - (void)addActionForControlEvents:(TUIControlEvents)controlEvents block:(void(^)(void))action;
+
+/**
+ Sends the action up the responder chain when the control even occurs
+ */
+- (void)addAction:(SEL)action forControlEvents:(TUIControlEvents)controlEvents;
 
 // Remove the target and action for a set of events. Pass NULL
 // for the action to remove all actions for that target. You

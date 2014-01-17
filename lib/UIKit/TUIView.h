@@ -1,21 +1,7 @@
-/*
- Copyright 2011 Twitter, Inc.
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this work except in compliance with the License.
- You may obtain a copy of the License in the LICENSE file, or at:
- 
- http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- */
 
 #import "TUIResponder.h"
 #import "TUIAccessibility.h"
+#import "TUIView+ColorHelpers.h"
 
 extern NSString * const TUIViewWillMoveToWindowNotification; // both notification's userInfo will contain the new window under the key TUIViewWindow
 extern NSString * const TUIViewDidMoveToWindowNotification;
@@ -63,10 +49,10 @@ typedef enum TUIViewContentMode : NSUInteger {
 @class TUINSWindow;
 @class TUIView;
 
-typedef void(^TUIViewDrawRect)(TUIView *, CGRect);
-typedef CGRect(^TUIViewLayout)(TUIView *);
+typedef void(^TUIViewDrawRect)(TUIView *view, CGRect rect);
+typedef CGRect(^TUIViewLayout)(TUIView *view);
 
-extern CGRect(^TUIViewCenteredLayout)(TUIView*);
+extern CGRect(^TUIViewCenteredLayout)(TUIView *view);
 
 @protocol TUIViewDelegate;
 
@@ -116,8 +102,6 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView*);
 		unsigned int clearsContextBeforeDrawing:1;
 		unsigned int drawInBackground:1;
 		unsigned int needsDisplayWhenWindowsKeyednessChanges:1;
-		unsigned int acceptsTouchEvents:1;
-		unsigned int wantsRestingTouches:1;
 		
 		unsigned int delegateMouseEntered:1;
 		unsigned int delegateMouseExited:1;
@@ -147,6 +131,11 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView*);
 - (id)initWithFrame:(CGRect)frame;
 
 /**
+ Calls alloc and the designated initializer with a zero frame.
+ */
++ (id)new;
+
+/**
  Default is YES. if set to NO, user events (clicks, keys) are ignored and removed from the event queue.
  */
 @property (nonatomic,getter=isUserInteractionEnabled) BOOL userInteractionEnabled;
@@ -171,9 +160,19 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView*);
 @property (nonatomic, assign) BOOL resizeWindowByDragging;
 
 /**
+ A view, that is currently limited to, becomes the next first repsonder on tab.
+ */
+@property (nonatomic, strong) TUIView *nextKeyView;
+
+/**
+ Like `nextKeyView` but the reverse.
+ */
+@property (nonatomic, strong) TUIView *previousKeyView;
+
+/**
  If set to NO, will disable subpixel antialiasing for text.
  */
-@property (nonatomic, assign) BOOL subpixelTextRenderingEnabled; // defaults to YES
+@property (nonatomic, assign) BOOL subpixelTextRenderingEnabled; // defaults to NO
 
 /**
  Tooltip will pop up if cursor hovers a view for toolTipDelay seconds
@@ -246,6 +245,15 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView*);
  */
 @property (nonatomic, assign) CGAffineTransform transform;
 
+
+/**
+ Frame shortcuts
+ */
+@property (nonatomic, assign) CGFloat x;
+@property (nonatomic, assign) CGFloat y;
+@property (nonatomic, assign) CGFloat height;
+@property (nonatomic, assign) CGFloat width;
+
 /**
  Recursively calls -pointInside:withEvent:. point is in frame coordinates (event ignored)
  */
@@ -280,6 +288,8 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView*);
 
 @property (nonatomic, readonly) TUIView *superview;
 @property (nonatomic, readonly, strong) NSArray *subviews;
+
+- (TUIView *)closestSuperviewOfKind:(Class)klass;
 
 /**
  Recursive search, handy for debugging.
@@ -365,6 +375,11 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView*);
 - (void)setEverythingNeedsDisplay;
 
 /**
+ Makes it really easy to draw gradients in views
+ */
+- (void)drawGradientFromPoint:(NSPoint)point1 color:(NSColor *)color1 toPoint:(NSPoint)point2 color:(NSColor *)color2;
+
+/**
  When YES, content and subviews are clipped to the bounds of the view. Default is NO.
  */
 @property (nonatomic) BOOL clipsToBounds;
@@ -393,6 +408,7 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView*);
  default is YES. if set to NO, the view must fill its entire bounds, otherwise the view may contain graphical garbage.
  */
 @property (nonatomic) BOOL clearsContextBeforeDrawing;
+
 
 @end
 
@@ -484,6 +500,12 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView*);
  @returns whether mouse event occured within the bounds of reciever
  */
 - (BOOL)eventInside:(NSEvent *)event;
+
+/**
+ Prints a recursive view heiercarhy of the view
+ */
+- (NSString *)recursiveDescription;
+
 
 @end
 

@@ -1,18 +1,3 @@
-/*
- Copyright 2011 Twitter, Inc.
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this work except in compliance with the License.
- You may obtain a copy of the License in the LICENSE file, or at:
- 
- http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- */
 
 #import <pthread.h>
 #import "NSColor+TUIExtensions.h"
@@ -21,6 +6,7 @@
 #import "TUILayoutManager.h"
 #import "TUINSView.h"
 #import "TUINSView+Private.h"
+#import "TUIView+Private.h"
 #import "TUINSWindow.h"
 #import "TUITextRenderer.h"
 #import "TUIViewController.h"
@@ -146,13 +132,19 @@ static pthread_key_t TUICurrentContextScaleFactorTLSKey;
 {
 	if((self = [super init]))
 	{
-		_viewFlags.clearsContextBeforeDrawing = 1;
-		self.frame = frame;
-		toolTipDelay = 1.5;
-		self.isAccessibilityElement = YES;
-		accessibilityFrame = CGRectNull; // null rect means we'll just get the view's frame and use that
+		_viewFlags.clearsContextBeforeDrawing   = 1;
+        _viewFlags.disableSubpixelTextRendering = 1;
+		self.frame                              = frame;
+		toolTipDelay                            = 1.5;
+		self.isAccessibilityElement             = YES;
+		accessibilityFrame                      = CGRectNull; // null rect means we'll just get the view's frame and use that
 	}
 	return self;
+}
+
++ (id)new
+{
+    return [[self alloc] initWithFrame:CGRectZero];
 }
 
 - (CALayer *)layer
@@ -214,6 +206,62 @@ static pthread_key_t TUICurrentContextScaleFactorTLSKey;
 - (void)setResizeWindowByDragging:(BOOL)b
 {
 	_viewFlags.resizeWindowByDragging = b;
+}
+
+- (TUIView *)nextKeyView
+{
+    if (_nextKeyView) return _nextKeyView;
+
+    CGFloat nexY            = 0;
+    CGFloat maxY            = 0;
+    TUIView *nextCandidate  = nil;
+    TUIView *loopCandidate  = nil;
+    for (TUIView *sibling in [self.superview subviews]) {
+        if (sibling.frame.origin.y > nexY && [sibling acceptsFirstResponder] && sibling.frame.origin.y < self.frame.origin.y) {
+            nextCandidate   = sibling;
+            nexY            = sibling.frame.origin.y;
+        }
+        if (sibling.frame.origin.y > maxY && [sibling acceptsFirstResponder]) {
+            loopCandidate   = sibling;
+            maxY            = sibling.frame.origin.y;
+        }
+    }
+    if (nextCandidate && nextCandidate != self) {
+        return nextCandidate;
+    }
+    else if (loopCandidate && loopCandidate != self) {
+        return loopCandidate;
+    }
+
+    return self;
+}
+
+- (TUIView *)previousKeyView
+{
+   if (_previousKeyView) return _previousKeyView;
+
+    CGFloat preY            = NSIntegerMax;
+    CGFloat minY            = NSIntegerMax;
+    TUIView *nextCandidate  = nil;
+    TUIView *loopCandidate  = nil;
+    for (TUIView *sibling in [self.superview subviews]) {
+        if (sibling.frame.origin.y < preY && [sibling acceptsFirstResponder] && sibling.frame.origin.y > self.frame.origin.y) {
+            nextCandidate   = sibling;
+            preY            = sibling.frame.origin.y;
+        }
+        if (sibling.frame.origin.y < minY && [sibling acceptsFirstResponder]) {
+            loopCandidate   = sibling;
+            minY            = sibling.frame.origin.y;
+        }
+    }
+    if (nextCandidate && nextCandidate != self) {
+        return nextCandidate;
+    }
+    else if (loopCandidate && loopCandidate != self) {
+        return loopCandidate;
+    }
+
+    return self;
 }
 
 - (BOOL)subpixelTextRenderingEnabled
@@ -376,6 +424,7 @@ static void TUISetCurrentContextScaleFactor(CGFloat s)
 
 		if (self.drawRect) {
 			// drawRect is implemented via a block
+            [self drawRect:rectToDraw];
 			self.drawRect(self, rectToDraw);
 		} else if ((drawRectIMP != dontCallThisBasicDrawRectIMP) && ![self _disableDrawRect]) {
 			// drawRect is overridden by subclass
@@ -567,7 +616,7 @@ static void TUISetCurrentContextScaleFactor(CGFloat s)
 - (void)prepareSubview:(TUIView *)view insertionBlock:(void (^)(void))block
 {
 	if (!_subviews) {
-		_subviews = [[NSMutableArray alloc] init];
+		_subviews = NSMutableArray.new;
 	}
 
 	TUINSView *originalNSView = view.ancestorTUINSView;
@@ -641,6 +690,56 @@ static void TUISetCurrentContextScaleFactor(CGFloat s)
 {
 	[self.layer setAffineTransform:t];
 }
+
+
+- (CGFloat)x
+{
+    return self.frame.origin.x;
+}
+
+- (void)setX:(CGFloat)newX
+{
+    CGRect newFrame     = self.frame;
+    newFrame.origin.x   = newX;
+    self.frame          = newFrame;
+}
+
+- (CGFloat)y
+{
+    return self.frame.origin.y;
+}
+
+- (void)setY:(CGFloat)newY
+{
+    CGRect newFrame     = self.frame;
+    newFrame.origin.y   = newY;
+    self.frame          = newFrame;
+}
+
+- (CGFloat)height
+{
+    return self.frame.size.height;
+}
+
+- (void)setHeight:(CGFloat)newHeight
+{
+    CGRect newFrame         = self.frame;
+    newFrame.size.height    = newHeight;
+    self.frame              = newFrame;
+}
+
+- (CGFloat)width
+{
+    return self.frame.size.width;
+}
+
+- (void)setWidth:(CGFloat)newWidth
+{
+    CGRect newFrame     = self.frame;
+    newFrame.size.width = newWidth;
+    self.frame          = newFrame;
+}
+
 
 - (NSArray *)sortedSubviews // back to front order
 {
@@ -738,6 +837,16 @@ static void TUISetCurrentContextScaleFactor(CGFloat s)
 	return n;
 }
 
+- (TUIView *)closestSuperviewOfKind:(Class)klass
+{
+    TUIView *v = self;
+    while (![v isKindOfClass:klass]) {
+        v = v.superview;
+    }
+    return v;
+}
+
+
 - (void)_cleanupResponderChain // called when a view is about to be removed from the heirarchy
 {
 	[self.subviews makeObjectsPerformSelector:@selector(_cleanupResponderChain)]; // call this first because subviews may pass first responder responsibility up to the superview
@@ -753,9 +862,11 @@ static void TUISetCurrentContextScaleFactor(CGFloat s)
 - (void)removeFromSuperview // everything should go through this
 {
 	[self _cleanupResponderChain];
-	
+
 	TUIView *superview = [self superview];
 	if(superview) {
+        [self setNextResponder:Nil];
+
 		TUINSView *nsView = self.ancestorTUINSView;
 		[self willMoveToTUINSView:nil];
 
@@ -1039,6 +1150,7 @@ static void TUISetCurrentContextScaleFactor(CGFloat s)
 - (void)setNeedsDisplayInRect:(CGRect)rect
 {
 	_context.dirtyRect = rect;
+
 	[self.layer setNeedsDisplayInRect:rect];
 }
 
@@ -1105,6 +1217,20 @@ static void TUISetCurrentContextScaleFactor(CGFloat s)
 - (void)setClearsContextBeforeDrawing:(BOOL)newValue
 {
 	_viewFlags.clearsContextBeforeDrawing = newValue;
+}
+
+- (void)drawGradientFromPoint:(NSPoint)point1 color:(NSColor *)color1 toPoint:(NSPoint)point2 color:(NSColor *)color2
+{
+    CGContextRef context = [[NSGraphicsContext currentContext] graphicsPort];
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGFloat locations[] = { 0.0, 1.0 };
+    NSArray *colors = @[ (__bridge id)color1.tui_CGColor, (__bridge id)color2.tui_CGColor ];
+
+    CGGradientRef gradient = CGGradientCreateWithColors(colorSpace, (__bridge CFArrayRef)colors, locations);
+    CGContextDrawLinearGradient(context, gradient, point1, point2, 0);
+
+    CFRelease(gradient);
+    CFRelease(colorSpace);
 }
 
 @end
@@ -1176,5 +1302,34 @@ static void TUISetCurrentContextScaleFactor(CGFloat s)
 {
 	return [self pointInside:[self localPointForEvent:event] withEvent:event];
 }
+
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"<%@: %p, frame: %@, bounds: %@>", NSStringFromClass([self class]), (void *)self, NSStringFromRect(self.frame), NSStringFromRect(self.bounds)];
+}
+
+- (NSString *)recursiveDescription
+{
+     return [self recursiveDescriptionAtLevel:0 lines:[NSMutableArray array]];
+}
+
+- (NSString *)recursiveDescriptionAtLevel:(NSInteger)level lines:(NSMutableArray *)lines
+{
+    NSMutableString *tabs = [NSMutableString string];
+    for (NSInteger i = 0; i < level; i++) {
+        [tabs appendString:@"  "];
+    }
+    NSString *line = [NSString stringWithFormat:@"\n%@%@", tabs, [self description]];
+    [lines addObject:line];
+
+    level++;
+    for (TUIView *v in self.subviews) {
+        [v recursiveDescriptionAtLevel:level lines:lines];
+    }
+    return [lines componentsJoinedByString:@""];
+}
+
+
+
 
 @end

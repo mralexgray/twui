@@ -114,7 +114,7 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
     CGFloat headerHeight    = CGRectGetHeight(headerRect);
     CGFloat newHeight = (_contentHeight - openedSectionHeight) + headerHeight;
     
-#warning This is not proper height and needs to be improved
+// FIXME  This is not proper height and needs to be improved
     if (haveOpened && topSections) {
         _topOffset = openedSectionHeight;
         _bottomOffset = sectionHeight;
@@ -445,8 +445,6 @@ CG_INLINE CGFloat durationForOffset(CGFloat offset)
 {
     return (_openning && _openningSection == section) || (section == _openedSection);
 }
-
-
 
 #pragma mark - Helpers
 - (void)_orderFrontSection:(NSInteger)section

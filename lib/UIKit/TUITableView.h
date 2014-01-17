@@ -1,20 +1,7 @@
-/*
- Copyright 2011 Twitter, Inc.
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this work except in compliance with the License.
- You may obtain a copy of the License in the LICENSE file, or at:
- 
- http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- */
 
 #import "TUIScrollView.h"
+#import <TwUI/UIView+MTAnimation.h>
+
 
 typedef enum TUITableViewStyle : NSUInteger {
 	TUITableViewStylePlain,              // regular table view
@@ -35,6 +22,18 @@ typedef enum TUITableViewInsertionMethod : NSUInteger {
   TUITableViewInsertionMethodAfterIndex   = NSOrderedDescending
 } TUITableViewInsertionMethod;
 
+typedef NS_ENUM(NSInteger, TUITableViewRowAnimation) {
+    TUITableViewRowAnimationNone,
+    TUITableViewRowAnimationFade,
+    TUITableViewRowAnimationRight,           // slide in from right (or out to right)
+    TUITableViewRowAnimationLeft,
+    TUITableViewRowAnimationTop,
+    TUITableViewRowAnimationBottom,
+    TUITableViewRowAnimationMiddle,
+    TUITableViewRowAnimationGravityDrop,
+    TUITableViewRowAnimationAutomatic = TUITableViewRowAnimationFade
+};
+
 @class TUITableViewCell;
 @protocol TUITableViewDataSource;
 
@@ -50,6 +49,7 @@ typedef enum TUITableViewInsertionMethod : NSUInteger {
 - (void)tableView:(TUITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath; // happens on left/right mouse down, key up/down
 - (void)tableView:(TUITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath;
 - (void)tableView:(TUITableView *)tableView didClickRowAtIndexPath:(NSIndexPath *)indexPath withEvent:(NSEvent *)event; // happens on left/right mouse up (can look at clickCount)
+- (void)tableView:(TUITableView *)tableView didPressEnterOnRowAtIndexPath:(NSIndexPath *)indexPath withEvent:(NSEvent *)event; // happens on left/right mouse up (can look at clickCount)
 
 - (BOOL)tableView:(TUITableView*)tableView shouldSelectRowAtIndexPath:(NSIndexPath*)indexPath forEvent:(NSEvent*)event; // YES, if not implemented
 - (NSMenu *)tableView:(TUITableView *)tableView menuForRowAtIndexPath:(NSIndexPath *)indexPath withEvent:(NSEvent *)event;
@@ -83,7 +83,7 @@ typedef enum TUITableViewInsertionMethod : NSUInteger {
 	NSInteger                     _futureMakeFirstResponderToken;
 	NSIndexPath            * _keepVisibleIndexPathForReload;
 	CGFloat                       _relativeOffsetForReload;
-	
+
 	// drag-to-reorder state
   TUITableViewCell            * _dragToReorderCell;
   CGPoint                       _currentDragToReorderLocation;
@@ -98,6 +98,7 @@ typedef enum TUITableViewInsertionMethod : NSUInteger {
 		unsigned int forceSaveScrollPosition:1;
 		unsigned int derepeaterEnabled:1;
 		unsigned int layoutSubviewsReentrancyGuard:1;
+		unsigned int reloadReentrancyGuard:1;
 		unsigned int didFirstLayout:1;
 		unsigned int dataSourceNumberOfSectionsInTableView:1;
 		unsigned int delegateTableViewWillDisplayCellForRowAtIndexPath:1;
@@ -158,6 +159,13 @@ typedef enum TUITableViewInsertionMethod : NSUInteger {
 
 - (void)selectRowAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated scrollPosition:(TUITableViewScrollPosition)scrollPosition;
 - (void)deselectRowAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated;
+
+- (void)beginUpdates;
+- (void)endUpdates;
+- (void)insertRowsAtIndexPaths:(NSArray *)indexPaths withRowAnimation:(TUITableViewRowAnimation)animation;
+- (void)deleteRowsAtIndexPaths:(NSArray *)indexPaths withRowAnimation:(TUITableViewRowAnimation)animation;
+@property (nonatomic, assign) MTTimingFunction updateTimingFunction;    // this affects all insert/delete cell calls after this is changed.
+@property (nonatomic, assign) NSTimeInterval   updateAnimationDuration; // this affects all insert/delete cell calls after this is changed.
 
 /**
  Above the top cell, only visible if you pull down (if you have scroll bouncing enabled)

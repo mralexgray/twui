@@ -14,7 +14,8 @@
  limitations under the License.
  */
 
-#import "TUIKit.h"
+//#import "TUIKit.h"
+#import <AtoZ/AtoZ.h>
 #import "ExampleTabBar.h"
 
 @interface ExampleScrollView : TUIView

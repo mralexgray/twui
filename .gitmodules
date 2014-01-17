@@ -4,3 +4,6 @@
 [submodule "TwUITests/specta"]
 	path = TwUITests/specta
 	url = git://github.com/petejkim/specta.git
+[submodule "MTAnimation-TwUI"]
+	path = MTAnimation-TwUI
+	url = https://github.com/mysterioustrousers/MTAnimation-TwUI

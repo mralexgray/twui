@@ -1,18 +1,3 @@
-/*
- Copyright 2011 Twitter, Inc.
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this work except in compliance with the License.
- You may obtain a copy of the License in the LICENSE file, or at:
- 
- http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- */
 
 #import "CoreText+Additions.h"
 
@@ -138,6 +123,36 @@ static inline BOOL RangeContainsIndex(CFRange range, CFIndex index)
 	BOOL a = (index >= range.location);
 	BOOL b = (index <= (range.location + range.length));
 	return (a && b);
+}
+
+CFIndex AB_CTFrameGetIndexForBeginningOfLineWithCharIndex(CTFrameRef frame, CFIndex charIndex)
+{
+    NSArray *lines = (__bridge NSArray *)CTFrameGetLines(frame);
+    CFIndex linesCount = [lines count];
+    CFIndex totalCount = 0;
+    for(CFIndex i = 0; i < linesCount; ++i) {
+		CTLineRef line = (__bridge CTLineRef)[lines objectAtIndex:i];
+		CFIndex count = CTLineGetGlyphCount(line);
+        if(charIndex > totalCount && charIndex <= totalCount + count)
+            return totalCount;
+        totalCount += count;
+    }
+    return 0;
+}
+
+CFIndex AB_CTFrameGetIndexForEndingOfLineWithCharIndex(CTFrameRef frame, CFIndex charIndex)
+{
+    NSArray *lines = (__bridge NSArray *)CTFrameGetLines(frame);
+    CFIndex linesCount = [lines count];
+    CFIndex totalCount = 0;
+    for(CFIndex i = 0; i < linesCount; ++i) {
+		CTLineRef line = (__bridge CTLineRef)[lines objectAtIndex:i];
+		CFIndex count = CTLineGetGlyphCount(line);
+        if(charIndex >= totalCount && charIndex < totalCount + count)
+            return totalCount + count;
+        totalCount += count;
+    }
+    return totalCount;
 }
 
 void AB_CTFrameGetIndexForPositionInLine(NSString *string, CTFrameRef frame, CFIndex lineIndex, float xPosition, CFIndex *index)

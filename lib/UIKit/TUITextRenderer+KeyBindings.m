@@ -1,18 +1,3 @@
-/*
- Copyright 2011 Twitter, Inc.
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this work except in compliance with the License.
- You may obtain a copy of the License in the LICENSE file, or at:
- 
- http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- */
 
 #import "TUITextRenderer.h"
 #import "TUITextEditor.h"
@@ -29,6 +14,44 @@ static NSAttributedString *killBuffer = nil;
 @end
 
 @implementation NSString (ABTokenizerAdditions)
+
+- (CFIndex)ab_beginningOfLineGivenCursor:(CFIndex)cursor
+{
+    __block CFIndex ret = -1;
+	[self enumerateSubstringsInRange:NSMakeRange(0, [self length])
+                             options:NSStringEnumerationByLines|NSStringEnumerationReverse|NSStringEnumerationSubstringNotRequired
+                          usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop)
+     {
+         CFIndex l = substringRange.location;
+         if(l <= cursor) {
+             ret = l;
+             *stop = YES;
+         }
+     }];
+	if(ret == -1) {
+		ret = 0; // go to beginning
+	}
+	return ret;
+}
+
+- (CFIndex)ab_endOfLineGivenCursor:(CFIndex)cursor
+{
+    __block CFIndex ret = -1;
+	[self enumerateSubstringsInRange:NSMakeRange(0, [self length])
+                             options:NSStringEnumerationByLines|NSStringEnumerationSubstringNotRequired
+                          usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop)
+     {
+         CFIndex l = substringRange.location + substringRange.length;
+         if(l >= cursor) {
+             ret = l;
+             *stop = YES;
+         }
+     }];
+	if(ret == -1) {
+		ret = [self length]; // go to end
+	}
+	return ret;
+}
 
 - (CFIndex)ab_endOfWordGivenCursor:(CFIndex)cursor // if cursor is in word, return end of current word, if past, end of next word
 {
@@ -237,28 +260,30 @@ static NSAttributedString *killBuffer = nil;
 
 - (void)moveToBeginningOfLineAndModifySelection:(id)sender
 {
-	_selectionEnd = 0; // fixme for multiline
+    _selectionEnd = AB_CTFrameGetIndexForBeginningOfLineWithCharIndex(self.ctFrame, _selectionEnd);
 	[self.view setNeedsDisplay];
 	[self _scrollToIndex:MIN(_selectionStart, _selectionEnd)];
 }
 
 - (void)moveToEndOfLineAndModifySelection:(id)sender
 {
-	_selectionEnd = [TEXT length]; // fixme for multiline
+	_selectionEnd = AB_CTFrameGetIndexForEndingOfLineWithCharIndex(self.ctFrame, _selectionEnd);
 	[self.view setNeedsDisplay];
 	[self _scrollToIndex:MIN(_selectionStart, _selectionEnd)];
 }
 
 - (void)moveToBeginningOfLine:(id)sender
 {
-	_selectionStart = _selectionEnd = 0;
+	_selectionStart = _selectionEnd = AB_CTFrameGetIndexForBeginningOfLineWithCharIndex(self.ctFrame,
+                                                                                        MIN(_selectionEnd,_selectionStart));
 	[self.view setNeedsDisplay];
 	[self _scrollToIndex:MIN(_selectionStart, _selectionEnd)];
 }
 
 - (void)moveToEndOfLine:(id)sender
 {
-	_selectionStart = _selectionEnd = [TEXT length];
+	_selectionStart = _selectionEnd = AB_CTFrameGetIndexForEndingOfLineWithCharIndex(self.ctFrame,
+                                                                                     MAX(_selectionEnd,_selectionStart));
 	[self.view setNeedsDisplay];
 	[self _scrollToIndex:MIN(_selectionStart, _selectionEnd)];
 }

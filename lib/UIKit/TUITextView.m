@@ -1,18 +1,3 @@
-/*
- Copyright 2011 Twitter, Inc.
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this work except in compliance with the License.
- You may obtain a copy of the License in the LICENSE file, or at:
- 
- http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- */
 
 #import "TUITextView.h"
 #import "TUICGAdditions.h"
@@ -80,6 +65,7 @@
 @synthesize autocorrectionEnabled;
 @synthesize autocorrectedResults;
 @synthesize placeholderRenderer;
+@synthesize lineSpacing;
 
 - (NSFont *)font {
 	// Fall back to the system font if none (or an invalid one) was set.
@@ -93,21 +79,24 @@
 
 - (void)_updateDefaultAttributes
 {
-	NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
+	NSMutableDictionary *defaultAttributes = [NSMutableDictionary dictionary];
 	
 	if (self.textColor != nil) {
-		[attributes setObject:(__bridge id)self.textColor.tui_CGColor forKey:(__bridge id)kCTForegroundColorAttributeName];
+		[defaultAttributes setObject:(__bridge id)self.textColor.tui_CGColor forKey:(__bridge id)kCTForegroundColorAttributeName];
 	}
 	
-	NSParagraphStyle *style = ABNSParagraphStyleForTextAlignment(textAlignment);
+	NSMutableParagraphStyle *style = [ABNSParagraphStyleForTextAlignment(textAlignment) mutableCopy];
 	if (style != nil) {
-		[attributes setObject:style forKey:NSParagraphStyleAttributeName];
+        if (lineSpacing) {
+            style.lineSpacing = [lineSpacing floatValue];
+        }
+		[defaultAttributes setObject:style forKey:NSParagraphStyleAttributeName];
 	}
+
+	[defaultAttributes setObject:self.font forKey:(__bridge id)kCTFontAttributeName];
 	
-	[attributes setObject:self.font forKey:(__bridge id)kCTFontAttributeName];
-	
-	renderer.defaultAttributes = attributes;
-	renderer.markedAttributes = attributes;
+	renderer.defaultAttributes = defaultAttributes;
+	renderer.markedAttributes = defaultAttributes;
 }
 
 - (Class)textEditorClass
@@ -237,6 +226,22 @@
 	[self _updateDefaultAttributes];
 }
 
+- (void)setLineSpacing:(NSNumber *)ls
+{
+    lineSpacing = ls;
+    [self _updateDefaultAttributes];
+}
+
+- (BOOL)secure
+{
+    return renderer.secure;
+}
+
+- (void)setSecure:(BOOL)secure
+{
+    renderer.secure = secure;
+}
+
 - (BOOL)hasText
 {
 	return [[self text] length] > 0;
@@ -296,6 +301,7 @@ static CAAnimation *ThrobAnimation()
 
 - (void)drawRect:(CGRect)rect
 {
+    [super drawRect:rect];
 	CGContextRef ctx = TUIGraphicsGetCurrentContext();
 	static const CGFloat singleLineWidth = 20000.0f;
 	
@@ -374,19 +380,19 @@ static CAAnimation *ThrobAnimation()
 	}
 	
 	// Ugh. So this seems to be a decent approximation for the height of the cursor. It doesn't always match the native cursor but what ev.
-	CGRect r = CGRectIntegral([renderer firstRectForCharacterRange:ABCFRangeFromNSRange(selection)]);
-	r.size.width = self.cursorWidth;
-	CGRect fontBoundingBox = CTFontGetBoundingBox((__bridge CTFontRef)self.font);
-	r.size.height = round(fontBoundingBox.origin.y + fontBoundingBox.size.height);
-	r.origin.y += floor(self.font.leading);
+    CGRect r                = CGRectIntegral([renderer firstRectForCharacterRange:ABCFRangeFromNSRange(selection)]);
+    r.size.width            = self.cursorWidth;
+    CGRect fontBoundingBox  = CTFontGetBoundingBox((__bridge CTFontRef)self.font);
+    r.size.height           = round(fontBoundingBox.origin.y + fontBoundingBox.size.height);
+    r.origin.y             += floor(self.font.leading);
 	//NSLog(@"ascent: %f, descent: %f, leading: %f, cap height: %f, x-height: %f, bounding: %@", self.font.ascender, self.font.descender, self.font.leading, self.font.capHeight, self.font.xHeight, NSStringFromRect(CTFontGetBoundingBox(self.font.ctFont)));
-	
+
 	if(self.text.length > 0) {
 		unichar lastCharacter = [self.text characterAtIndex:MAX(selection.location - 1, 0)];
 		// Sigh. So if the string ends with a return, CTFrameGetLines doesn't consider that a new line. So we have to fudge it.
 		if(lastCharacter == '\n') {
 			CGRect firstCharacterRect = [renderer firstRectForCharacterRange:CFRangeMake(0, 0)];
-			r.origin.y -= firstCharacterRect.size.height;
+			r.origin.y -= (r.size.height + [lineSpacing floatValue]);
 			r.origin.x = firstCharacterRect.origin.x;
 		}
 	}
@@ -401,9 +407,10 @@ static CAAnimation *ThrobAnimation()
 
 - (void)_textDidChange
 {
-	if(_textViewFlags.delegateTextViewDidChange)
+	if(_textViewFlags.delegateTextViewDidChange) {
 		[delegate textViewDidChange:self];
-	
+    }
+
 	if(spellCheckingEnabled) {
 		[self _checkSpelling];
 	}
@@ -411,7 +418,7 @@ static CAAnimation *ThrobAnimation()
 
 - (void)_checkSpelling
 {
-	NSTextCheckingType checkingTypes = NSTextCheckingTypeSpelling;
+	NSTextCheckingTypes checkingTypes = (NSTextCheckingTypes)NSTextCheckingTypeSpelling;
 	if(autocorrectionEnabled) checkingTypes |= NSTextCheckingTypeCorrection | NSTextCheckingTypeReplacement;
 	
 	NSRange wholeLineRange = NSMakeRange(0, [self.text length]);

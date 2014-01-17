@@ -1,18 +1,3 @@
-/*
- Copyright 2011 Twitter, Inc.
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this work except in compliance with the License.
- You may obtain a copy of the License in the LICENSE file, or at:
- 
- http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- */
 
 #import "TUIView.h"
 #import "TUIGeometry.h"
@@ -119,32 +104,31 @@ typedef enum TUIScrollViewIndicator : NSUInteger {
 	BOOL x;
 	
 	struct {
-		unsigned didChangeContentInset:1;
-		unsigned bounceEnabled:1;
-		unsigned alwaysBounceVertical:1;
-		unsigned alwaysBounceHorizontal:1;
-		unsigned mouseInside:1;
-		unsigned mouseDownInScroller:1;
-		unsigned ignoreNextScrollPhaseNormal_10_7:1;
-		unsigned gestureBegan:1;
-		unsigned touchesBegan:1;
-		unsigned animationMode:2;
-		unsigned scrollDisabled:1;
-		unsigned scrollIndicatorStyle:2;
-		unsigned verticalScrollIndicatorVisibility:2;
-		unsigned horizontalScrollIndicatorVisibility:2;
-		unsigned verticalScrollIndicatorShowing:1;
-		unsigned horizontalScrollIndicatorShowing:1;
-		unsigned verticalScrollIndicatorExpanded:1;
-		unsigned horizontalScrollIndicatorExpanded:1;
-		unsigned delegateScrollViewDidScroll:1;
-		unsigned delegateScrollViewWillBeginDragging:1;
-		unsigned delegateScrollViewDidEndDragging:1;
-		unsigned delegateScrollViewDidEndDecelerating:1;
-		unsigned delegateScrollViewWillShowScrollIndicator:1;
-		unsigned delegateScrollViewDidShowScrollIndicator:1;
-		unsigned delegateScrollViewWillHideScrollIndicator:1;
-		unsigned delegateScrollViewDidHideScrollIndicator:1;
+		unsigned int didChangeContentInset:1;
+		unsigned int bounceEnabled:1;
+		unsigned int alwaysBounceVertical:1;
+		unsigned int alwaysBounceHorizontal:1;
+		unsigned int mouseInside:1;
+		unsigned int mouseDownInScroller:1;
+		unsigned int ignoreNextScrollPhaseNormal_10_7:1;
+		unsigned int gestureBegan:1;
+		unsigned int animationMode:2;
+		unsigned int scrollDisabled:1;
+		unsigned int scrollIndicatorStyle:2;
+		unsigned int verticalScrollIndicatorVisibility:2;
+		unsigned int horizontalScrollIndicatorVisibility:2;
+		unsigned int verticalScrollIndicatorShowing:1;
+		unsigned int horizontalScrollIndicatorShowing:1;
+		unsigned int verticalScrollIndicatorExpanded:1;
+		unsigned int horizontalScrollIndicatorExpanded:1;
+		unsigned int delegateScrollViewDidScroll:1;
+		unsigned int delegateScrollViewWillBeginDragging:1;
+		unsigned int delegateScrollViewDidEndDragging:1;
+		unsigned int delegateScrollViewDidEndDecelerating:1;
+		unsigned int delegateScrollViewWillShowScrollIndicator:1;
+		unsigned int delegateScrollViewDidShowScrollIndicator:1;
+		unsigned int delegateScrollViewWillHideScrollIndicator:1;
+		unsigned int delegateScrollViewDidHideScrollIndicator:1;
 	} _scrollViewFlags;
 }
 
@@ -173,7 +157,6 @@ typedef enum TUIScrollViewIndicator : NSUInteger {
 @property (nonatomic, readonly) CGPoint pullOffset;
 @property (nonatomic, readonly) CGPoint bounceOffset;
 
-@property (nonatomic, readonly, getter=isTracking) BOOL tracking;
 @property (nonatomic, readonly, getter=isDragging) BOOL dragging;
 @property (nonatomic, readonly, getter=isBouncing) BOOL bouncing;
 @property (nonatomic, readonly, getter=isDecelerating) BOOL decelerating;

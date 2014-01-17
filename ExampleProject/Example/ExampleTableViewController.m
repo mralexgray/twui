@@ -9,7 +9,7 @@
 #import "ExampleTableViewController.h"
 #import "ExampleSectionHeaderView.h"
 #import "ExampleTableViewCell.h"
-#import "TUICGAdditions.h"
+//#import "TUICGAdditions.h"
 
 @implementation ExampleTableViewController
 
@@ -22,15 +22,15 @@
 	self.tableView.alwaysBounceVertical = YES;
 	self.tableView.dataSource = self;
 	self.tableView.delegate = self;
-    self.tableView.backgroundColor = [NSColor blueColor];
+	self.tableView.backgroundColor = GRAY2;
 	[self.tableView reloadData];
 	self.tableView.maintainContentOffsetAfterReload = YES;
 	self.tableView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
 	
-	TUILabel *footerLabel = [[TUILabel alloc] initWithFrame:CGRectMake(0, 0, _tableView.frame.size.width, 44)];
+	TUILabel *footerLabel = [TUILabel.alloc initWithFrame:CGRectMake(0, 0, _tableView.frame.size.width, 44)];
 	footerLabel.alignment = TUITextAlignmentCenter;
 	footerLabel.backgroundColor = [NSColor clearColor];
-	footerLabel.font = [NSFont fontWithName:@"HelveticaNeue-Bold" size:15];
+	footerLabel.font = [NSFont fontWithName:@"UbuntuMono-Bold" size:15];
 	footerLabel.text = @"Example Footer View";
 	self.tableView.footerView = footerLabel;
     self.tableView.footerView.backgroundColor = [NSColor redColor];
@@ -39,7 +39,7 @@
     [reloadButton addActionForControlEvents:TUIControlEventMouseUpInside block:^{
         [self.tableView reloadData];
     }];
-    [reloadButton setImage:[NSImage imageNamed:NSImageNameRefreshTemplate] forState:TUIControlStateNormal];
+    [reloadButton setImage:NSIMG.randomMonoIcon forState:TUIControlStateNormal];
     reloadButton.frame = CGRectMake(10, 10, 24, 24);
     
     [self.tableView.footerView addSubview:reloadButton];
@@ -50,26 +50,27 @@
 - (NSInteger)numberOfSectionsInTableView:(TUITableView *)tableView {
 	return 8;
 }
-
+static AZIndexedObjects *set = nil;
 - (NSInteger)tableView:(TUITableView *)table numberOfRowsInSection:(NSInteger)section {
 //    return 5;
 //    NSLog(@"RQ NUMS");
  	if ([(TUITableOulineView *)table sectionIsOpened:section] ) {
-        switch (section) {
-            case 0:     return 10;
-            case 1:     return 4;
-            case 3:     return 20;
-            default:    return 5;
-        }
+
+		set = set ?: AZIndexedObjects.new;
+		NSN* ct =  set[section];
+		if (!ct)
+		set[section] = ct = @(RAND_INT_VAL(2, 10));
+		return [ct integerValue];
     }
     return 0;
 }
 
 - (CGFloat)tableView:(TUITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return 50.0;
+	return 30.0;
 }
 
 - (TUIView *)tableView:(TUITableView *)tableView headerViewForSection:(NSInteger)section {
+
 	ExampleSectionHeaderView *header = [[ExampleSectionHeaderView alloc] initWithFrame:CGRectMake(0, 0, 100, 32)];
 	TUIAttributedString *title = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"Example Section %d", (int)section]];
 	title.color = [NSColor blackColor];
@@ -193,6 +194,8 @@
 }
 
 -(NSIndexPath *)tableView:(TUITableView *)tableView targetIndexPathForMoveFromRowAtIndexPath:(NSIndexPath *)fromPath toProposedIndexPath:(NSIndexPath *)proposedPath {
+
+	AZLOGCMD;
 	// optionally revise the drag-to-reorder drop target index path by returning a different index path
 	// than proposedPath.  if proposedPath is suitable, return that.  if this method is not implemented,
 	// proposedPath is used by default.

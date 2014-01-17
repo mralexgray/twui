@@ -1,18 +1,3 @@
-/*
- Copyright 2011 Twitter, Inc.
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this work except in compliance with the License.
- You may obtain a copy of the License in the LICENSE file, or at:
- 
- http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- */
 
 #import "TUITextRenderer+Event.h"
 #import "ABActiveRange.h"
@@ -21,6 +6,8 @@
 #import "TUINSWindow.h"
 #import "TUITextEditor.h"
 #import "TUITextRenderer+Private.h"
+#import "TUIGeometry.h"
+
 
 @implementation TUITextRenderer (Event)
 
@@ -194,7 +181,7 @@ normal:
 		self.hitRange = hitActiveRange;
 	}
 	
-	CGRect totalRect = CGRectUnion(previousSelectionRect, [self rectForCurrentSelection]);
+	CGRect totalRect = TUIRectUnion(previousSelectionRect, [self rectForCurrentSelection]);
 	[view setNeedsDisplayInRect:totalRect];
 	if([self acceptsFirstResponder])
 		[[view nsWindow] tui_makeFirstResponder:self];
@@ -223,7 +210,7 @@ normal:
 	
 	_selectionAffinity = TUITextSelectionAffinityCharacter; // reset affinity
 	
-	CGRect totalRect = CGRectUnion(previousSelectionRect, [self rectForCurrentSelection]);
+	CGRect totalRect = TUIRectUnion(previousSelectionRect, [self rectForCurrentSelection]);
 	[view setNeedsDisplayInRect:totalRect];
 }
 
@@ -234,7 +221,7 @@ normal:
 	CFIndex i = [self stringIndexForEvent:event];
 	_selectionEnd = i;
 	
-	CGRect totalRect = CGRectUnion(previousSelectionRect, [self rectForCurrentSelection]);
+	CGRect totalRect = TUIRectUnion(previousSelectionRect, [self rectForCurrentSelection]);
 	[view setNeedsDisplayInRect:totalRect];
 }
 
@@ -257,7 +244,7 @@ normal:
 			if(CGRectEqualToRect(totalRect, CGRectNull)) {
 				totalRect = rect;
 			} else {
-				totalRect = CGRectUnion(rect, totalRect);
+				totalRect = TUIRectUnion(rect, totalRect);
 			}
 		}
 	}
