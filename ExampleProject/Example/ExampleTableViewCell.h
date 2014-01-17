@@ -15,7 +15,7 @@
  */
 
 //#import "TUIKit.h"
-#import <AtoZ/AtoZ.h>
+
 @interface ExampleTableViewCell : TUITableViewCell
 
 @property (nonatomic, copy) NSAttributedString *attributedString;
